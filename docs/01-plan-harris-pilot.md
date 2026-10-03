@@ -247,8 +247,11 @@ Fallback: road ground at the refined camera position + a mount height estimated 
 from `computed_rotation`. Propagate both into the intervals: mount-height error passes 1:1 into FFE;
 a 1° pitch error at 20 m is ~0.35 m.
 
-Licences: Ultralytics YOLO is AGPL-3.0; Depth Anything V2 Base/Large/Giant and UniDepth are
-non-commercial — fine for this internal pilot, flagged for any production choice.
+Commercial models and paid APIs are allowed (owner, 2026-10-03); report the price and limits of
+each one used. Prices, limits and a VLM budget are in `docs/02-floor-height-methods.md` §
+Commercial options. Licence flags for any production choice: Ultralytics YOLO is AGPL-3.0
+(enterprise licence by quote); Depth Anything V2 Base/Large/Giant and UniDepth are non-commercial
+with no public commercial licence; Ning code is non-commercial.
 
 ## 6. Evaluation
 

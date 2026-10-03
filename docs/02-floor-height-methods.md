@@ -64,6 +64,63 @@ US11532093) — U.
 For the pilot (internal research) non-commercial weights are acceptable; anything chosen for the
 product must have a commercial-compatible licence.
 
+## Commercial options: pricing and limits (owner, 2026-10-03: commercial models are allowed)
+
+Prices checked 2026-10-03 from the vendors' pages; re-check before committing a budget.
+
+### Vision-language models (M7, and as a helper for M2/M3)
+
+| Model | Input / output per 1M tokens | Image cost | Batch | Limits that matter |
+|---|---|---|---|---|
+| Claude Opus 5.5 (`claude-opus-5-5`) | $4 / $20 | image tokens = ⌈w/28⌉ × ⌈h/28⌉; high-res tier up to 2576 px long edge / 4,784 tokens | 50% off (Message Batches) | ≤ 600 images per request; > 20 images per request → each ≤ 2000 px; 10 MB per image; thinking can't be disabled (use low effort) |
+| Claude Sonnet 5.5 (`claude-sonnet-5-5`) | $2 / $10 | same formula, high-res tier | 50% off | as above |
+| Claude Haiku 4.5 (`claude-haiku-4-5`) | $1 / $5 | same formula, standard tier (≤ 1568 px / 1,568 tokens) | 50% off | 100 images per request |
+| Gemini 3.8 Flash / 3.7 Flash | $0.75 / $3.75 (intro, to 2026-12-31; then $1.50 / $7.50) | Google's page cites a fixed 560 tokens per input image for some models (U for these) | 50% off | — |
+| Gemini 3.1 Pro (preview) | $2 / $12 (≤ 200 k prompt) | as above | 50% off | preview |
+| OpenAI GPT-5 / GPT-5.5 | $1.25 / $10 and $5 / $30 (third-party summaries; U) | tokenization not verified | — | verify on openai.com before use |
+
+Sources: Claude vision docs (platform.claude.com/docs/en/build-with-claude/vision), Claude model
+price table (claude-api skill, cached 2026-09-25), Gemini pricing (ai.google.dev/gemini-api/docs/pricing),
+OpenAI figures from third-party pricing summaries (unverified).
+
+**Budget example (estimate, not measured).** ~20 k houses × 2 views = 40 k calls; a façade crop of
+1024 × 768 px = 37 × 28 = **1,036 image tokens** (Claude formula) + ~500 prompt tokens in, ~600
+tokens out (incl. low-effort thinking):
+
+| Model | Per call | 40 k calls | With batch (−50%) |
+|---|---|---|---|
+| Claude Opus 5.5 | ≈ $0.018 | ≈ $740 | ≈ $370 |
+| Claude Sonnet 5.5 | ≈ $0.009 | ≈ $370 | ≈ $185 |
+| Claude Haiku 4.5 | ≈ $0.005 | ≈ $185 | ≈ $92 |
+| Gemini 3.8 Flash (intro price, 560-token image assumed) | ≈ $0.003 | ≈ $120 | ≈ $60 |
+
+Output length dominates the Claude cost: keep the answer to a small structured object (step
+count, foundation class, door-bottom pixel row, confidence) and measure real token use on 100 houses
+in P0 before scaling. Run the pilot sample first (1,500 houses per area) — roughly a quarter of the
+figures above.
+
+### Detectors, segmentation, depth
+
+| Option | Licence / price | Limitation |
+|---|---|---|
+| Ultralytics YOLOv8 / v11 | AGPL-3.0 free; **Enterprise licence by quote** (not published; one community report ~$5 k/yr, U); platform Pro plan $29/seat/month is still AGPL | needed only if we ship YOLO code/weights in a closed product; RT-DETR (Apache-2.0) or Detectron2 (Apache-2.0) avoid it |
+| Grounding DINO, OWLv2, SAM / SAM 2, RT-DETR | Apache-2.0, free | SAM 3 has its own licence (litigation-termination clause) |
+| BRAILS++ Klepac FFH predictor | BSD-3, free | weights download from Dropbox |
+| Depth Anything V2 Base/Large/Giant, UniDepth | CC-BY-NC, **no public commercial licence** | Small (Apache-2.0) is commercial-safe but weaker; or use Metric3D v2 (BSD-2), ZoeDepth (MIT), Depth Pro (Apple licence, legal review) |
+| Ning et al. code | non-commercial | research comparison only |
+
+### Imagery
+
+| Source | Price | Limitation |
+|---|---|---|
+| Mapillary API v4 | free with a token | 60 k entity / 10 k search requests per minute, 50 k tiles per day; CC BY-SA attribution + logo/link on extracted data; crowd-sourced coverage |
+| Google Street View Static | 10 k free / month, then $7.00 per 1 k (to 100 k), lower tiers above | **terms forbid testing / validating ML models on it and storing images** — price is not the blocker |
+
+### Compute
+
+One 24 GB-class cloud GPU for detectors, segmentation and depth; a few dollars per hour on common
+clouds (estimate — price it in P0). Storage for the pilot is ~25–50 GB (plan §8).
+
 ## Benchmark shortlist (cheapest first), mapped to plan IDs
 
 | Plan ID | Method | Why |
