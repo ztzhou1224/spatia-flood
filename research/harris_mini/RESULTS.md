@@ -72,7 +72,7 @@ python evaluate.py B C
 ## Image step (Mapillary + VLM), 2026-10-03
 
 Every number below is from `eval_image.py B C` (full output in `eval_image_output.txt`) or the
-script named next to it. Imagery is Mapillary only; no Google Street View, no Bee Maps.
+script named next to it. Imagery is Mapillary only; no Google Street View (Bee Maps: addendum at the end).
 
 ### Setup
 
@@ -205,11 +205,10 @@ of houses.**
 3. **The reading's error is ~σ 1.5 ft, not the 0.72 ft the earlier simulation hoped for**, with a
    +0.5 ft bias on slab houses, and raised-house flags are mostly false (precision 0.01–0.07).
 4. What would have to change: imagery from the street the door faces, near the truth epoch (Bee Maps
-   is being tested next, see below), a filter for multi-unit buildings, rejecting dark images, and a
+   tested next, below), a filter for multi-unit buildings, rejecting dark images, and a
    calibration of the VLM height on certified houses before it is used.
 
-**Bee Maps status**: the owner asked to try it and supplied a key (stored in the gitignored `.env`).
-It authenticates, but `GET /balance` returned 0, so no Bee Maps imagery has been queried.
+**Bee Maps**: tested afterwards at the owner's request; see the next section.
 
 **Attribution.** Values derived from Mapillary imagery (the VLM reads and anything computed from them)
 are © Mapillary contributors, CC BY-SA 4.0 (https://www.mapillary.com); any published table using
@@ -223,3 +222,52 @@ python mapillary_views.py C 800 2539 ; python mapillary_views.py B 300 5127   # 
 python vlm_read.py C B                                                          # GEMINI_API_KEY; cached
 python eval_image.py B C
 ```
+
+## Bee Maps addendum (owner request, 2026-10-03)
+
+Bee Maps (Hivemapper) imagery: paid, licensed only within our implementation, no redistribution,
+Hivemapper owns derivatives. The owner asked for it and paid for it; every row is tagged
+`provider=beemaps` (`beemaps_views.parquet`, `beemaps_vlm_reads.parquet`), no image or Bee Maps-derived
+value leaves `data/` except the aggregate scores below. Outputs: `eval_beemaps_only_output.txt`,
+`eval_mapillary_beemaps_output.txt`.
+
+- **Method (`beemaps_views.py`)**: only for sampled houses with no Mapillary door height, in the same
+  random order. A `catalog=true` query (`/latest/poly`, response `cost: 0`) over footprint + 50 m;
+  view rules as for Mapillary perspective images (8–45 m, no building in between, centroid within the
+  device half-FOV from `/devices` focal − 5° of the GPS heading; forward-mounted camera); the signed URL
+  from a ~4 m box around the chosen frame; one frame downloaded per house. Same VLM prompt (v2).
+- **Spend (from `data/harris_mini/beemaps/my_spend.jsonl`)**: 7,390 catalog queries, 302 URL queries
+  (returning 1,161 frames with signed URLs), **256 images downloaded = $1.28 at $0.005 per image
+  view**. The owner's dashboard bills "Image view" per frame; if URL issuance were billed too it would
+  be 1,161 × $0.005 = $5.81 — to be confirmed on the dashboard. Before that, two non-catalog test
+  queries (no frame downloaded). The API's own `credits`/`balance` counter went negative and
+  does not track dollars (owner: ignore it). Gemini: 256 more calls (≈ $0.67 at the assumed list
+  prices); 2,147 of the 2,500-call budget used in total (≈ $5.53).
+- **Coverage**: of 2,478 C houses tried, 157 got a view (34 more had a qualifying frame the URL query
+  did not return); of 4,912 B houses, 99 (12 not returned). Captures are 2025-12 → 2026-08, mostly
+  2026-06/07 — 6–8 years after the answer key.
+
+| Bee Maps alone | B (all 5,127) | C (all 2,539) |
+|---|---|---|
+| ≥ 1 view | 99 (1.9%) | 157 (6.2%) |
+| front door visible / height read | 10 (0.2%) | 40 (1.6%) |
+| scored houses with a height: direct VLM MAE vs GBM + lidar | 1.47 vs 0.21 (n 9) | 0.78 vs 0.28 (n 38) |
+| raised detection precision (TP/FP) | 0.03 (1/29) | 0.02 (1/57) |
+
+| Mapillary + Bee Maps | B | C |
+|---|---|---|
+| height read, core sample | 12/300 (4.0%; Mapillary alone 3.7%) | 39/800 (4.9%; 2.4%) |
+| height read, all sampled | 225 (4.4%; 4.2%) | 101 (4.0%; 2.4%) |
+| scored houses with a height: direct VLM vs GBM + lidar | 1.02 vs 0.26 (n 197) | 0.97 vs 0.48 (n 97) |
+| all scored houses: GBM + lidar / direct with fallback | 0.269 / 0.302 | 0.765 / 0.785 |
+| raised houses with a height | 0 of 41 scored | 4 of 175 scored |
+
+VLM height error on Bee Maps images (n 50): MAE 0.94 ft, bias +0.61, within 1 ft 72% (Mapillary n 276:
+1.03, +0.41, 64%); C only (n 40) 0.83 ft. Better than Mapillary in C (front-of-house dashcam frames),
+still near the σ 1.5 ft simulation and biased high.
+
+**Verdict unchanged.** Bee Maps adds front-facing, recent frames and nearly doubles the share of C
+houses with a reading (2.4% → 4.0%), but still reaches almost no raised houses (1 of 198 sampled in C
+got a Bee Maps view of a visible house that is raised), and where it reads, the VLM height is worse
+than GBM + lidar + neighbours. For this target (front-door height) and this reader (a general VLM,
+no calibration), street imagery does not pay in these two areas.

@@ -1,0 +1,121 @@
+providers: ('mapillary', 'beemaps')
+
+## Area B: 5127 sampled houses (536 in the 10% pool, scored 4591); training rows with a VLM height per fold: [22, 16, 23, 23, 28]
+coverage of core 300 sampled: >=1 view 58 (19.3%); house visible 48 (16.0%); door visible 12 (4.0%); height read 12 (4.0%)
+coverage of all 5127 sampled: >=1 view 905 (17.7%); house visible 825 (16.1%); door visible 236 (4.6%); height read 225 (4.4%)
+raised (front door > 3 ft above LAG) among sampled: 49
+
+### B: all scored sampled houses
+| method                                            |    n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:--------------------------------------------------|-----:|------:|------------:|-----------:|------:|-------:|
+| G1 lidar LAG + neighbour height                   | 4591 | 0.344 |       0.786 |      0.956 | 0.725 | -0.022 |
+| GBM + lidar ground                                | 4591 | 0.269 |       0.878 |      0.978 | 0.543 | -0.018 |
+| Direct: lidar LAG + VLM height                    |  197 | 1.021 |       0.335 |      0.599 | 2.245 |  0.63  |
+| Direct, fallback GBM + lidar                      | 4591 | 0.302 |       0.854 |      0.963 | 0.614 |  0.008 |
+| GBM + lidar + VLM features                        |  483 | 0.291 |       0.878 |      0.975 | 0.554 | -0.04  |
+| GBM + lidar + VLM, fallback GBM + lidar           | 4591 | 0.269 |       0.878 |      0.979 | 0.545 | -0.018 |
+| GBM + lidar, VLM override only if VLM says raised | 4591 | 0.298 |       0.859 |      0.964 | 0.597 |  0.013 |
+
+### B: scored houses WITH a VLM height
+| method                                            |   n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:--------------------------------------------------|----:|------:|------------:|-----------:|------:|-------:|
+| G1 lidar LAG + neighbour height                   | 197 | 0.347 |       0.787 |      0.949 | 0.761 |  0.086 |
+| GBM + lidar ground                                | 197 | 0.264 |       0.898 |      0.97  | 0.504 |  0.029 |
+| Direct: lidar LAG + VLM height                    | 197 | 1.021 |       0.335 |      0.599 | 2.245 |  0.63  |
+| Direct, fallback GBM + lidar                      | 197 | 1.021 |       0.335 |      0.599 | 2.245 |  0.63  |
+| GBM + lidar + VLM features                        | 197 | 0.264 |       0.898 |      0.975 | 0.506 |  0.034 |
+| GBM + lidar + VLM, fallback GBM + lidar           | 197 | 0.264 |       0.898 |      0.975 | 0.506 |  0.034 |
+| GBM + lidar, VLM override only if VLM says raised | 197 | 0.925 |       0.452 |      0.635 | 2.245 |  0.753 |
+
+### B: scored houses, true door > 3 ft above LAG
+| method                                            |   n |     MAE |   within_05 |   within_1 |     p90 |    bias |
+|:--------------------------------------------------|----:|--------:|------------:|-----------:|--------:|--------:|
+| G1 lidar LAG + neighbour height                   |  41 |   1.848 |       0.049 |      0.171 |   2.781 |  -1.848 |
+| GBM + lidar ground                                |  41 |   1.621 |       0     |      0.268 |   2.706 |  -1.621 |
+| Direct: lidar LAG + VLM height                    |   0 | nan     |     nan     |    nan     | nan     | nan     |
+| Direct, fallback GBM + lidar                      |  41 |   1.621 |       0     |      0.268 |   2.706 |  -1.621 |
+| GBM + lidar + VLM features                        |   3 |   2.943 |       0     |      0     |   4.33  |  -2.943 |
+| GBM + lidar + VLM, fallback GBM + lidar           |  41 |   1.622 |       0     |      0.268 |   2.706 |  -1.622 |
+| GBM + lidar, VLM override only if VLM says raised |  41 |   1.621 |       0     |      0.268 |   2.706 |  -1.621 |
+
+### B: ... of which with a VLM height
+| method                                            |   n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:--------------------------------------------------|----:|------:|------------:|-----------:|------:|-------:|
+| G1 lidar LAG + neighbour height                   |   0 |   nan |         nan |        nan |   nan |    nan |
+| GBM + lidar ground                                |   0 |   nan |         nan |        nan |   nan |    nan |
+| Direct: lidar LAG + VLM height                    |   0 |   nan |         nan |        nan |   nan |    nan |
+| Direct, fallback GBM + lidar                      |   0 |   nan |         nan |        nan |   nan |    nan |
+| GBM + lidar + VLM features                        |   0 |   nan |         nan |        nan |   nan |    nan |
+| GBM + lidar + VLM, fallback GBM + lidar           |   0 |   nan |         nan |        nan |   nan |    nan |
+| GBM + lidar, VLM override only if VLM says raised |   0 |   nan |         nan |        nan |   nan |    nan |
+
+### B: raised detection (house visible in >=1 view, n=825, true raised 6)
+TP 4 FP 304 FN 2; precision 0.01; recall 0.67; recall vs all sampled raised 0.08
+
+## Area C: 2539 sampled houses (262 in the 10% pool, scored 2277); training rows with a VLM height per fold: [2, 3, 4, 4, 3]
+coverage of core 800 sampled: >=1 view 100 (12.5%); house visible 98 (12.2%); door visible 40 (5.0%); height read 39 (4.9%)
+coverage of all 2539 sampled: >=1 view 310 (12.2%); house visible 304 (12.0%); door visible 102 (4.0%); height read 101 (4.0%)
+raised (front door > 3 ft above LAG) among sampled: 198
+
+### C: all scored sampled houses
+| method                                            |    n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:--------------------------------------------------|-----:|------:|------------:|-----------:|------:|-------:|
+| G1 lidar LAG + neighbour height                   | 2277 | 0.805 |       0.599 |      0.838 | 1.415 | -0.191 |
+| GBM + lidar ground                                | 2277 | 0.765 |       0.731 |      0.901 | 0.984 | -0.32  |
+| Direct: lidar LAG + VLM height                    |   97 | 0.966 |       0.526 |      0.753 | 1.861 |  0.008 |
+| Direct, fallback GBM + lidar                      | 2277 | 0.785 |       0.719 |      0.894 | 1.11  | -0.308 |
+| GBM + lidar + VLM features                        |  216 | 0.359 |       0.852 |      0.958 | 0.611 | -0.12  |
+| GBM + lidar + VLM, fallback GBM + lidar           | 2277 | 0.765 |       0.731 |      0.901 | 0.984 | -0.32  |
+| GBM + lidar, VLM override only if VLM says raised | 2277 | 0.779 |       0.723 |      0.895 | 1.066 | -0.3   |
+
+### C: scored houses WITH a VLM height
+| method                                            |   n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:--------------------------------------------------|----:|------:|------------:|-----------:|------:|-------:|
+| G1 lidar LAG + neighbour height                   |  97 | 0.404 |       0.722 |      0.928 | 0.898 |  0.045 |
+| GBM + lidar ground                                |  97 | 0.484 |       0.814 |      0.928 | 0.773 | -0.295 |
+| Direct: lidar LAG + VLM height                    |  97 | 0.966 |       0.526 |      0.753 | 1.861 |  0.008 |
+| Direct, fallback GBM + lidar                      |  97 | 0.966 |       0.526 |      0.753 | 1.861 |  0.008 |
+| GBM + lidar + VLM features                        |  97 | 0.484 |       0.814 |      0.928 | 0.773 | -0.295 |
+| GBM + lidar + VLM, fallback GBM + lidar           |  97 | 0.484 |       0.814 |      0.928 | 0.773 | -0.295 |
+| GBM + lidar, VLM override only if VLM says raised |  97 | 0.828 |       0.629 |      0.794 | 1.861 |  0.179 |
+
+### C: scored houses, true door > 3 ft above LAG
+| method                                            |   n |   MAE |   within_05 |   within_1 |    p90 |   bias |
+|:--------------------------------------------------|----:|------:|------------:|-----------:|-------:|-------:|
+| G1 lidar LAG + neighbour height                   | 175 | 4.428 |       0.063 |      0.16  |  9.883 | -3.862 |
+| GBM + lidar ground                                | 175 | 5.731 |       0     |      0.177 | 11.636 | -5.731 |
+| Direct: lidar LAG + VLM height                    |   4 | 5.308 |       0     |      0     |  9.861 | -5.308 |
+| Direct, fallback GBM + lidar                      | 175 | 5.732 |       0     |      0.166 | 11.76  | -5.732 |
+| GBM + lidar + VLM features                        |   4 | 5.291 |       0     |      0.5   | 10.01  | -5.291 |
+| GBM + lidar + VLM, fallback GBM + lidar           | 175 | 5.731 |       0     |      0.177 | 11.636 | -5.731 |
+| GBM + lidar, VLM override only if VLM says raised | 175 | 5.72  |       0     |      0.166 | 11.636 | -5.72  |
+
+### C: ... of which with a VLM height
+| method                                            |   n |   MAE |   within_05 |   within_1 |    p90 |   bias |
+|:--------------------------------------------------|----:|------:|------------:|-----------:|-------:|-------:|
+| G1 lidar LAG + neighbour height                   |   4 | 1.112 |           0 |        0.5 |  1.607 | -1.112 |
+| GBM + lidar ground                                |   4 | 5.291 |           0 |        0.5 | 10.01  | -5.291 |
+| Direct: lidar LAG + VLM height                    |   4 | 5.308 |           0 |        0   |  9.861 | -5.308 |
+| Direct, fallback GBM + lidar                      |   4 | 5.308 |           0 |        0   |  9.861 | -5.308 |
+| GBM + lidar + VLM features                        |   4 | 5.291 |           0 |        0.5 | 10.01  | -5.291 |
+| GBM + lidar + VLM, fallback GBM + lidar           |   4 | 5.291 |           0 |        0.5 | 10.01  | -5.291 |
+| GBM + lidar, VLM override only if VLM says raised |   4 | 4.795 |           0 |        0   |  8.424 | -4.795 |
+
+### C: raised detection (house visible in >=1 view, n=304, true raised 6)
+TP 4 FP 96 FN 2; precision 0.04; recall 0.67; recall vs all sampled raised 0.02
+
+## VLM height error (VLM height - true FFE + LAG), all sampled houses with a height
+all: n 326, MAE 1.01, bias +0.44, SD 1.46, median abs 0.68, within 1 ft 65%
+B: n 225, MAE 1.03, bias +0.62, SD 1.20, median abs 0.79, within 1 ft 61%
+C: n 101, MAE 0.98, bias +0.04, SD 1.86, median abs 0.47, within 1 ft 74%
+beemaps: n 50, MAE 0.94, bias +0.61, SD 1.27, median abs 0.62, within 1 ft 72%
+mapillary: n 276, MAE 1.03, bias +0.41, SD 1.49, median abs 0.72, within 1 ft 64%
+true > 3 ft: n 6, MAE 3.88, bias -3.88, SD 4.20, median abs 2.00, within 1 ft 17%
+true <= 3 ft: n 320, MAE 0.96, bias +0.52, SD 1.24, median abs 0.67, within 1 ft 66%
+simulated sigma 0.72: MAE 0.58, within 1 ft 84%
+simulated sigma 1.5: MAE 1.20, within 1 ft 49%
+image capture minus answer-key RecordedAt (years; RecordedAt present for 96 of 326): quartiles [-5.9, 6.3, 8.4]
+MAE by image capture year: {2012: '1.02 (n 46)', 2015: '0.93 (n 6)', 2021: '1.12 (n 105)', 2024: '1.26 (n 13)', 2025: '1.05 (n 4)', 2026: '0.92 (n 152)'}
+MAE pano vs perspective: {False: '0.96 (n 159)', True: '1.07 (n 167)'}
+
+## 10 worst VLM heights: omitted (Bee Maps-derived per-image rows stay in data/)
