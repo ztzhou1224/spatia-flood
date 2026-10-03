@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+data/
+*.parquet
+*.tif
+*.tiff
+*.laz
+*.las
+*.duckdb
+*.duckdb.wal
+*.json.gz
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
