@@ -1,0 +1,76 @@
+# Coverage test (national inputs only)
+
+## 1. Floor without neighbours (front-door FFE, ft; precision A+B)
+
+### Area B (learned from C where marked transfer/const)
+|                          |    n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:-------------------------|-----:|------:|------------:|-----------:|------:|-------:|
+| neighbours               | 4591 | 0.254 |       0.89  |      0.979 | 0.526 | -0.011 |
+| const                    | 5127 | 0.517 |       0.563 |      0.895 | 1.018 | -0.389 |
+| nsi+lidar                | 5026 | 0.757 |       0.318 |      0.736 | 1.337 | -0.693 |
+| nsi + lidar median grade | 5026 | 0.355 |       0.77  |      0.963 | 0.71  | -0.058 |
+| nsi only                 | 5026 | 0.348 |       0.776 |      0.959 | 0.705 |  0.062 |
+| era transfer             | 5127 | 0.523 |       0.555 |      0.895 | 1.014 | -0.373 |
+| gbm transfer             | 5127 | 0.453 |       0.611 |      0.95  | 0.837 | -0.347 | 
+
+NSI foundation types matched: {'S': 5904, 'B': 106, 'C': 14, 'P': 1}; NSI default height by type: {'B': 2.0, 'C': 2.0, 'P': 5.25, 'S': 0.75}; NSI ground minus lidar LAG median 0.69 ft
+
+### Area C (learned from B where marked transfer/const)
+|                          |    n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:-------------------------|-----:|------:|------------:|-----------:|------:|-------:|
+| neighbours               | 2277 | 0.733 |       0.769 |      0.906 | 0.945 | -0.326 |
+| const                    | 2539 | 1.046 |       0.443 |      0.8   | 1.413 | -0.161 |
+| nsi+lidar                | 2450 | 1.016 |       0.551 |      0.784 | 1.851 | -0.792 |
+| nsi + lidar median grade | 2450 | 0.804 |       0.593 |      0.881 | 1.1   |  0.021 |
+| nsi only                 | 2450 | 0.849 |       0.52  |      0.867 | 1.141 |  0.114 |
+| era transfer             | 2539 | 1.04  |       0.452 |      0.801 | 1.46  | -0.221 |
+| gbm transfer             | 2539 | 0.775 |       0.713 |      0.909 | 0.923 | -0.218 | 
+
+NSI foundation types matched: {'S': 2935, 'B': 99, 'C': 39, 'P': 1, 'W': 1}; NSI default height by type: {'B': 2.0, 'C': 2.0, 'P': 5.25, 'S': 0.75, 'W': 2.0}; NSI ground minus lidar LAG median 0.70 ft
+
+## 2. Risk ranking, single signals (ROC AUC; 0.5 = none)
+
+### Area B: flooded any event 470, Harvey 389 of 6189
+|                                                                                   |   fl_any |   fl_harvey |
+|:----------------------------------------------------------------------------------|---------:|------------:|
+| ('FEMA zone', 'measured floor')                                                   |    0.61  |       0.638 |
+| ('BFE - floor (no BFE = low)', 'measured floor')                                  |    0.317 |       0.249 |
+| ('- floor above nearest water (REM)', 'measured floor')                           |    0.475 |       0.448 |
+| ('- ground above nearest water', 'measured floor')                                |    0.483 |       0.46  |
+| ('depression depth', 'measured floor')                                            |    0.585 |       0.568 |
+| ('- relative elevation (1 km)', 'measured floor')                                 |    0.658 |       0.622 |
+| ('FEMA zone', 'national floor (gbm transfer)')                                    |    0.61  |       0.638 |
+| ('BFE - floor (no BFE = low)', 'national floor (gbm transfer)')                   |    0.316 |       0.246 |
+| ('- floor above nearest water (REM)', 'national floor (gbm transfer)')            |    0.489 |       0.462 |
+| ('- ground above nearest water', 'national floor (gbm transfer)')                 |    0.483 |       0.46  |
+| ('depression depth', 'national floor (gbm transfer)')                             |    0.585 |       0.568 |
+| ('- relative elevation (1 km)', 'national floor (gbm transfer)')                  |    0.658 |       0.622 |
+| ('PRIMo Harvey hindcast water - floor (event-specific, local)', 'measured floor') |  nan     |       0.89  | 
+
+### Area C: flooded any event 653, Harvey 633 of 3259
+|                                                                                   |   fl_any |   fl_harvey |
+|:----------------------------------------------------------------------------------|---------:|------------:|
+| ('FEMA zone', 'measured floor')                                                   |    0.516 |       0.515 |
+| ('BFE - floor (no BFE = low)', 'measured floor')                                  |    0.572 |       0.571 |
+| ('- floor above nearest water (REM)', 'measured floor')                           |    0.532 |       0.536 |
+| ('- ground above nearest water', 'measured floor')                                |    0.591 |       0.597 |
+| ('depression depth', 'measured floor')                                            |    0.515 |       0.514 |
+| ('- relative elevation (1 km)', 'measured floor')                                 |    0.633 |       0.634 |
+| ('NOAA surge: - lowest category', 'measured floor')                               |    0.564 |       0.563 |
+| ('FEMA zone', 'national floor (gbm transfer)')                                    |    0.516 |       0.515 |
+| ('BFE - floor (no BFE = low)', 'national floor (gbm transfer)')                   |    0.583 |       0.583 |
+| ('- floor above nearest water (REM)', 'national floor (gbm transfer)')            |    0.574 |       0.58  |
+| ('- ground above nearest water', 'national floor (gbm transfer)')                 |    0.591 |       0.597 |
+| ('depression depth', 'national floor (gbm transfer)')                             |    0.515 |       0.514 |
+| ('- relative elevation (1 km)', 'national floor (gbm transfer)')                  |    0.633 |       0.634 |
+| ('NOAA surge: - lowest category', 'national floor (gbm transfer)')                |    0.564 |       0.563 |
+| ('PRIMo Harvey hindcast water - floor (event-specific, local)', 'measured floor') |  nan     |       0.59  | 
+
+## 3. Combined risk model (logistic): local block CV vs trained in the OTHER area
+
+|                    |   local 1 km block CV |   trained in other area |   FEMA zone alone |
+|:-------------------|----------------------:|------------------------:|------------------:|
+| ('B', 'fl_any')    |                 0.694 |                   0.544 |             0.61  |
+| ('B', 'fl_harvey') |                 0.736 |                   0.499 |             0.638 |
+| ('C', 'fl_any')    |                 0.631 |                   0.509 |             0.516 |
+| ('C', 'fl_harvey') |                 0.631 |                   0.466 |             0.515 |
