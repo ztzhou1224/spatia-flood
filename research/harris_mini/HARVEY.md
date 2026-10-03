@@ -33,7 +33,7 @@ areas: **B Cypress Creek** and **C Clear Lake**. Every number is from `harvey.py
 | Flood rate inside SFHA / 0.2% zone / minimal-hazard X | 30% / 34% / 4.3% | 20% / 12% / 17% |
 | Harvey points outside the SFHA (all building types, point location) | 85% of 614 | 67% of 1,068 |
 
-In B the zone does separate risk (SFHA and 0.2% houses flooded about 7× as often as minimal-X houses),
+In B the zone does separate risk (SFHA and 0.2% houses flooded 7–8× as often as minimal-X houses),
 but minimal-X houses are so numerous that they hold 61% of the flooded ones. In C the zone barely
 separates anything.
 
@@ -64,7 +64,7 @@ Cypress Creek, flood rate by simulated water minus measured floor:
 | 1–2 ft above | 53 | 87% |
 | 2–4 ft above | 40 | 75% |
 
-With the estimated floor the same pattern holds (0.5 → 2 ft above: 54–78%; 2–4 ft above: 93%).
+With the estimated floor the same pattern holds (0–2 ft above: 54–78%; 2–4 ft above: 93%).
 Calling "water above the floor" a flood gives precision 0.56–0.66, recall 0.44–0.46 in B.
 
 **Clear Lake is weaker**, for two visible reasons:
