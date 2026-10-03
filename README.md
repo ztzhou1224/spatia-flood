@@ -17,5 +17,5 @@ This repo starts with research and one pilot:
 - [`research/`](research/) — the scripts behind the Florida Elevation Certificate backtest and the
   public-source survey (reproducible; they download public data, no data is committed).
 
-Status: **planning**. Nothing is built yet; the pilot is implemented by a separate session from
+Status: **planning** (pilot plan GIS-reviewed, approved with changes). Nothing is built yet; the pilot is implemented by a separate session from
 `docs/01-plan-harris-pilot.md`.
