@@ -95,18 +95,20 @@ if __name__ == "__main__":
     allerr = []
     for area in sys.argv[1:]:
         h = load(area)
-        sample = set(pd.read_csv(D / area / "image_sample.csv").oid)
+        smp = pd.read_csv(D / area / "image_sample.csv")
+        sample, core = set(smp.oid), set(smp.oid[smp.core])
         rd = house_reads(area)
         pred, pool, img, hv, ntr = run(h, rd)
         s = h.oid.isin(sample)
         print(f"\n## Area {area}: {int(s.sum())} sampled houses ({int((s & pool).sum())} in the 10% pool, "
               f"scored {int((s & ~pool).sum())}); training rows with a VLM height per fold: {ntr}")
-        n = int(s.sum()); hs = hv[s]
-        print(f"coverage of all {n} sampled: >=1 view {int(hs.n_views.notna().sum())} "
-              f"({hs.n_views.notna().mean():.1%}); house visible {int(hs.any_visible.fillna(False).sum())} "
-              f"({hs.any_visible.fillna(False).mean():.1%}); door visible {int(hs.any_door.fillna(False).sum())} "
-              f"({hs.any_door.fillna(False).mean():.1%}); height read {int(hs.any_h.fillna(False).sum())} "
-              f"({hs.any_h.fillna(False).mean():.1%})")
+        for lab, sm in (("core", h.oid.isin(core)), ("all", s)):
+            n = int(sm.sum()); hs = hv[sm]
+            print(f"coverage of {lab} {n} sampled: >=1 view {int(hs.n_views.notna().sum())} "
+                  f"({hs.n_views.notna().mean():.1%}); house visible {int(hs.any_visible.fillna(False).sum())} "
+                  f"({hs.any_visible.fillna(False).mean():.1%}); door visible {int(hs.any_door.fillna(False).sum())} "
+                  f"({hs.any_door.fillna(False).mean():.1%}); height read {int(hs.any_h.fillna(False).sum())} "
+                  f"({hs.any_h.fillna(False).mean():.1%})")
         raised = h.ffh > 3
         print(f"raised (front door > 3 ft above LAG) among sampled: {int((s & raised).sum())}")
         mask = s & ~pool
