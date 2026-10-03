@@ -5,7 +5,7 @@ Every response is cached as JSON in data/harris_mini/<AREA>/vlm/ (keyed by model
 reruns cost nothing. Every billed call is appended to data/harris_mini/vlm_calls.jsonl; the script
 refuses to exceed BUDGET calls in total. The model sees only the image crop, the camera type and the
 camera-to-footprint distance; never the answer key.
-Usage: python vlm_read.py AREA [AREA ...]
+Usage: python vlm_read.py [--beemaps] AREA [AREA ...]
 """
 import base64, io, json, os, sys, time
 from concurrent.futures import ThreadPoolExecutor
@@ -113,15 +113,19 @@ def read_one(r) -> dict:
 
 if __name__ == "__main__":
     limit = int(os.environ.get("VLM_LIMIT", "0"))
-    for area in sys.argv[1:]:
-        v = pd.read_parquet(D / area / "views.parquet")
+    bm = "--beemaps" in sys.argv  # Bee Maps crops (provider=beemaps), read into their own table
+    for area in [a for a in sys.argv[1:] if not a.startswith("--")]:
+        v = pd.read_parquet(D / area / ("beemaps_views.parquet" if bm else "views.parquet"))
         v = v[v.path.notna()].assign(area=area)
+        if bm:
+            v = v.assign(image_id="bm_" + v.sequence.astype(str) + "_" + v.idx.astype(int).astype(str), is_pano=False)
         if limit: v = v.head(limit)
         (D / area / "vlm").mkdir(exist_ok=True)
         with ThreadPoolExecutor(6) as ex:
             rows = list(ex.map(read_one, v.itertuples()))
         df = pd.DataFrame(rows)
-        if not limit: df.to_parquet(D / area / "vlm_reads.parquet", index=False)
+        if bm: df["provider"] = "beemaps"
+        if not limit: df.to_parquet(D / area / ("beemaps_vlm_reads.parquet" if bm else "vlm_reads.parquet"), index=False)
         print(f"{area}: {len(df)} reads, parsed {int(df.parse_ok.sum())}; "
               f"house visible {int(df.get('house_visible', pd.Series(dtype=bool)).fillna(False).sum())}, "
               f"door visible {int(df.get('front_door_visible', pd.Series(dtype=bool)).fillna(False).sum())}, "

@@ -8,7 +8,7 @@ target, as pool neighbour labels, and by the scorer.
 
 Per house, the image reading is the highest-confidence view that saw the door and gave a height; if
 none did, the foundation comes from the highest-confidence view that saw the house.
-Usage: python eval_image.py AREA [AREA ...]
+Usage: python eval_image.py [--beemaps | --beemaps-only] AREA [AREA ...]
 """
 import sys
 import numpy as np, pandas as pd, lightgbm as lgb
@@ -19,10 +19,21 @@ RAISED = {"raised_crawlspace", "piers_or_stilts"}
 DENSITY = 0.10
 
 
-def house_reads(area: str) -> pd.DataFrame:
-    v = pd.read_parquet(D / area / "views.parquet")
-    r = pd.read_parquet(D / area / "vlm_reads.parquet").merge(
-        v[["oid", "image_id", "captured", "is_pano", "dist_m"]], on=["oid", "image_id"])
+def reads_for(area: str, provider: str) -> pd.DataFrame:
+    if provider == "mapillary":
+        v = pd.read_parquet(D / area / "views.parquet")
+        r = pd.read_parquet(D / area / "vlm_reads.parquet")
+    else:
+        v = pd.read_parquet(D / area / "beemaps_views.parquet")
+        v = v[v.path.notna()].copy()
+        v["image_id"] = "bm_" + v.sequence.astype(str) + "_" + v.idx.astype(int).astype(str)
+        v["is_pano"] = False
+        r = pd.read_parquet(D / area / "beemaps_vlm_reads.parquet")
+    return r.merge(v[["oid", "image_id", "captured", "is_pano", "dist_m"]], on=["oid", "image_id"]).assign(provider=provider)
+
+
+def house_reads(area: str, providers: tuple[str, ...] = ("mapillary",)) -> pd.DataFrame:
+    r = pd.concat([reads_for(area, p) for p in providers], ignore_index=True)
     r = r[r.parse_ok]
     r["has_h"] = r.front_door_visible & r.house_visible & r.door_threshold_height_above_ground_ft.notna()
     out = []
@@ -37,7 +48,7 @@ def house_reads(area: str) -> pd.DataFrame:
                        vlm_steps=best.steps_to_door if len(gh) else np.nan,
                        vlm_found=best.foundation, vlm_encl=bool(best.lower_level_enclosure_visible),
                        vlm_conf=best.confidence, vlm_image=best.image_id, vlm_captured=best.captured,
-                       vlm_pano=best.is_pano, vlm_notes=best.notes)
+                       vlm_pano=best.is_pano, vlm_notes=best.notes, vlm_provider=best.provider)
         out.append(row)
     return pd.DataFrame(out)
 
@@ -93,11 +104,15 @@ def score(h, pred, mask):
 if __name__ == "__main__":
     pd.set_option("display.width", 220)
     allerr = []
-    for area in sys.argv[1:]:
+    # --beemaps: Mapillary + Bee Maps reads (best-confidence view per house); --beemaps-only: Bee Maps alone
+    providers = (("beemaps",) if "--beemaps-only" in sys.argv else
+                 ("mapillary", "beemaps") if "--beemaps" in sys.argv else ("mapillary",))
+    print("providers:", providers)
+    for area in [a for a in sys.argv[1:] if not a.startswith("--")]:
         h = load(area)
         smp = pd.read_csv(D / area / "image_sample.csv")
         sample, core = set(smp.oid), set(smp.oid[smp.core])
-        rd = house_reads(area)
+        rd = house_reads(area, providers)
         pred, pool, img, hv, ntr = run(h, rd)
         s = h.oid.isin(sample)
         print(f"\n## Area {area}: {int(s.sum())} sampled houses ({int((s & pool).sum())} in the 10% pool, "
@@ -130,12 +145,12 @@ if __name__ == "__main__":
                                         vlm_h=img.vlm_h[e.index], image=hv.vlm_image[e.index],
                                         captured=hv.vlm_captured[e.index], pano=hv.vlm_pano[e.index],
                                         found=hv.vlm_found[e.index], conf=hv.vlm_conf[e.index],
-                                        notes=hv.vlm_notes[e.index],
+                                        notes=hv.vlm_notes[e.index], provider=hv.vlm_provider[e.index],
                                         truth_rec=pd.to_datetime(h.rec[e.index], unit="ms", utc=True))))
     E = pd.concat(allerr, ignore_index=True)
     rng = np.random.default_rng(0)
     print("\n## VLM height error (VLM height - true FFE + LAG), all sampled houses with a height")
-    for lab, g in [("all", E)] + list(E.groupby("area")) + [("true > 3 ft", E[E.ffh > 3]), ("true <= 3 ft", E[E.ffh <= 3])]:
+    for lab, g in [("all", E)] + list(E.groupby("area")) + list(E.groupby("provider")) + [("true > 3 ft", E[E.ffh > 3]), ("true <= 3 ft", E[E.ffh <= 3])]:
         print(f"{lab}: n {len(g)}, MAE {g.err.abs().mean():.2f}, bias {g.err.mean():+.2f}, SD {g.err.std():.2f}, "
               f"median abs {g.err.abs().median():.2f}, within 1 ft {(g.err.abs() <= 1).mean():.0%}")
     for sg in (0.72, 1.5):
@@ -150,5 +165,5 @@ if __name__ == "__main__":
     print("\n## 10 worst VLM heights")
     w = E.reindex(E.err.abs().sort_values(ascending=False).index).head(10)
     w["captured"] = w.captured.dt.date
-    print(w[["area", "image", "captured", "pano", "ffh", "vlm_h", "err", "found", "conf", "notes"]].round(2).to_markdown(index=False))
-    E.drop(columns=["notes"]).to_csv(D / "vlm_height_errors.csv", index=False)
+    print(w[["area", "provider", "image", "captured", "pano", "ffh", "vlm_h", "err", "found", "conf", "notes"]].round(2).to_markdown(index=False))
+    E.drop(columns=["notes"]).to_csv(D / f"vlm_height_errors_{'_'.join(providers)}.csv", index=False)
