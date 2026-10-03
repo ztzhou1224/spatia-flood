@@ -231,7 +231,7 @@ anchor is only a declared variant with the §4.5 alignment applied. `[GIS 8]`
 | M1a | Gradient boosting on non-image features: ring and front ground, street elevation, year built, type, footprint area, flood zone / BFE | no | no answer-key neighbours |
 | M1b | M1a + neighbours' answer-key values, training folds only | no | the Florida "neighbour certificates" analogue (docs/00 §5) |
 | M2 | Klepac door-scale (BRAILS++ `ffh_predictor_klepac`, BSD-3) | yes | cheapest image method; use an era-conditioned door-height prior or a width-based scale (36 in), not a fixed 80 in (8 ft doors are common in 2000s+ Cypress) |
-| M3 | ELEV-VISION-SAM reimplementation: Grounding DINO + SAM 2 door bottom; FFE = camera elevation + range · tan(angle); range from the wall line | yes | same-county state of the art (0.19–0.22 m on drone truth) |
+| M3 | ELEV-VISION-SAM reimplementation (its "LFE" is the front-door bottom, the same quantity as the answer key — not the FEMA lowest floor): Grounding DINO + SAM 2 door bottom; FFE = camera elevation + range · tan(angle); range from the wall line | yes | same-county state of the art (0.19–0.22 m on drone truth) |
 | M4 | Footprint ray-cast + metric depth cross-check (Depth Pro, Metric3D v2) | yes | what learned depth adds over footprint geometry |
 | M5 | Ning tacheometric (door height + depth) | yes | research comparison only (non-commercial code) |
 | M6 | Multi-view SfM: Mapillary `sfm_cluster` / `atomic_scale`, SAM 2 door tracking across a sequence, triangulate | yes | for occluded single views; heaviest; subsample |

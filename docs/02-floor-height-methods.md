@@ -14,6 +14,18 @@ houses, on both error and coverage.** That is the point of the pilot.
 
 ## Published methods
 
+**What "LFE" means in these papers.** The street-view papers call their output "lowest floor
+elevation" (LFE), but they measure the **bottom of the front door**: ELEV-VISION-SAM takes "the
+median of the front door bottom elevations", quotes FEMA's definition ("the lowest floor of the
+lowest enclosed area, including a basement but excluding enclosures used for parking, building
+access, storage, or flood-resistance") and notes its drone truth "align[s] with the LFE definition
+used in street view image-based methods, compared to the definition provided in Elevation
+Certificates" ([arXiv 2404.12606](https://arxiv.org/html/2404.12606v1), V). That is the same
+quantity as the HCFCD answer key (Z at the base of the front door), so the pilot comparison is
+like-for-like — and neither is the FEMA lowest floor, which on a house raised over a ground-level
+garage or enclosure can be several feet lower. Read every published "LFE" error in this file as a
+front-door-floor error.
+
 | Method | Input | Output | Reported error | Test set | Code / weights | Licence |
 |---|---|---|---|---|---|---|
 | ELEV-VISION (Ho et al., ACM J. Comput. Sustain. Soc. 2(2), 2024) [V](https://arxiv.org/abs/2306.03050) | GSV panorama + depth map; OneFormer finds door bottom and road edge | LFE, height above street | MAE 0.190 m | Meyerland (Harris Co.): 483 houses → 136 with a door found; drone truth | on request | n/a |
