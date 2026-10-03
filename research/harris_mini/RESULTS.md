@@ -2,7 +2,7 @@
 
 A quick, non-image check run before the full pilot (`docs/01-plan-harris-pilot.md`), on two of its
 three areas. Every number below is from `evaluate.py` (output in `eval_v2_output.txt`) or the
-diagnostics noted. **The image step (Mapillary) is not in these numbers yet**; rows marked
+diagnostics noted. **The image step is in its own section at the end**; rows marked
 SIMULATED add a noisy copy of the true height, as in the Florida backtest.
 
 ## Setup
@@ -67,4 +67,159 @@ python fetch_hcfcd.py B -95.580 29.950 -95.530 29.990   # and C -95.130 29.530 -
 # download the 1 m DEM tiles listed by the TNM API for each bbox into data/harris_mini/<area>/
 python ground.py B ; python ground.py C
 python evaluate.py B C
+```
+
+## Image step (Mapillary + VLM), 2026-10-03
+
+Every number below is from `eval_image.py B C` (full output in `eval_image_output.txt`) or the
+script named next to it. Imagery is Mapillary only; no Google Street View, no Bee Maps.
+
+### Setup
+
+- **Reproduction first.** Data re-fetched (`fetch_hcfcd.py`), 1 m DEM tiles from the TNM API, `ground.py`;
+  `evaluate.py B C` output is byte-identical to `eval_v2_output.txt`.
+- **Index (`mapillary_index.py`).** Graph API `images`, fields as specified. The endpoint returns a
+  *partial* set for large boxes, well under its 2000 cap: one 0.01° tile in C gave 1,839 images and
+  the same area in 0.005° tiles 3,205. The index is the union of 0.005° and 0.0025° tilings:
+  **C 16,005 images** (7,799 pano), **B 67,226** (13,373 pano). Even so, 30 random 0.002° spot checks in
+  C found 410 images of which 330 were indexed, so `mapillary_views.py` also queries a small box
+  (footprint + 50 m) around every sampled house; that added 605 (C) and 446 (B) images.
+- **Capture years in the index**: C: 2012 7,130 (all pano, Microsoft Streetside imported into
+  Mapillary), 2018 5,816, 2020 801, 2024 1,067, 2025 669 pano, others < 250. B: 2012 8,930 pano,
+  2018 7,874, 2024 1,674, 2025 1,685, **2026 44,064** (dashcam), others < 1,000.
+- **Sample (`mapillary_views.py`).** A seeded random permutation (seed 20261003) of headline houses
+  (front door, precision tier A+B, lidar ground): the first 800 (C) / 300 (B) are the **core
+  sample** for coverage. Because coverage turned out to be 6–18%, the same random order was
+  **extended to all headline houses** (C 2,539, B 5,127) to get enough reads for accuracy — a
+  deviation from the brief, still random, never chosen on the answer key.
+- **Views.** Camera 8–45 m from the HCAD/lidar footprint, the camera→centroid line crossing no other
+  building footprint, house in field of view (perspective: within the half-FOV from Mapillary's
+  `camera_parameters` focal, −3°; panorama: rectilinear crop ≥ 70° centred on the bearing). Ranked by
+  capture date nearest 2019-07-01, then distance nearest 20 m; up to 2 views per house. Crops in
+  `data/` only. Selected: **C 336 views** for 171 houses (264 pano; 187 from 2012, 6 from 2018,
+  65 from 2024, 77 from 2025), **B 1,549 views** for 838 houses (611 pano; 79 from 2012, 167 from 2015,
+  341 from 2021, 962 from 2026). Images near 2019 barely exist where the houses are.
+- **VLM (`vlm_read.py`).** `gemini-2.5-flash` (from `GEMINI_MODEL`), REST, temperature 0, JSON schema
+  with the requested fields plus a ≤ 20-word `notes`, `mediaResolution` HIGH (1,290 image tokens vs
+  258), thinking budget 1,024. The model sees the crop, the camera type and the camera distance; never
+  the answer key. Every response cached in `data/`.
+- **Scoring (`eval_image.py`)**: evaluate.py's design, 10% certificate pool (seed 0, per area),
+  neighbours from the pool only, GBMs trained on pool houses in other 1 km blocks, scored on sampled
+  non-pool houses. Per house, the reading is the highest-confidence view that saw the door and gave a
+  height.
+
+### Coverage (share of sampled houses)
+
+| Area | sample | ≥ 1 view in FOV | house visible (VLM) | front door visible | height read |
+|---|---|---|---|---|---|
+| B core | 300 | 55 (18.3%) | 44 (14.7%) | 11 (3.7%) | 11 (3.7%) |
+| C core | 800 | 49 (6.1%) | 49 (6.1%) | 20 (2.5%) | 19 (2.4%) |
+| B all headline | 5,127 | 838 (16.3%) | 762 (14.9%) | 226 (4.4%) | 215 (4.2%) |
+| C all headline | 2,539 | 171 (6.7%) | 169 (6.7%) | 62 (2.4%) | 61 (2.4%) |
+
+Many in-FOV views show the back or side of the lot from an arterial road (rear fences, sound walls),
+so the door faces another street. Raised houses are almost absent from the covered set: of 198 raised
+sampled houses in C (front door > 3 ft above LAG), 5 had a visible house; in B 5 of 49.
+
+### Accuracy (MAE ft; scored = sampled, non-pool, precision A+B)
+
+| Method | B all (n 4,591) | B with VLM height (n 188) | C all (n 2,277) | C with VLM height (n 59) |
+|---|---|---|---|---|
+| G1 lidar LAG + neighbour height | 0.344 | 0.351 | 0.805 | 0.485 |
+| GBM + lidar ground (existing) | **0.269** | **0.266** | **0.765** | 0.614 |
+| Direct: lidar LAG + VLM height | — (n 188: 1.000) | 1.000 | — (n 59: 1.089) | 1.089 |
+| Direct, fallback GBM + lidar | 0.299 | 1.000 | 0.777 | 1.089 |
+| GBM + lidar + VLM features (n 442 B / 100 C with any VLM field) | 0.290 | 0.267 | 0.522 | 0.614 |
+| GBM + lidar + VLM, fallback GBM + lidar | 0.269 | 0.267 | 0.765 | 0.614 |
+| GBM + lidar, take VLM height only if VLM says raised | 0.295 | 0.905 | 0.771 | 0.875 |
+
+Within 1 ft on houses with a VLM height: direct VLM 61% (B), 73% (C); GBM + lidar 97% (B), 93% (C).
+Bias of direct VLM: +0.61 ft (B), −0.31 ft (C). The C "all" row of GBM + lidar + VLM features (0.522)
+is on a different, easier subset (n 100), not an improvement: on the same houses it equals GBM + lidar.
+The image features barely enter the GBM because training rows with a VLM height are 16–27 per fold
+in B and 1–2 in C.
+
+**Houses whose true front door is > 3 ft above LAG** (scoring only): B n 41, GBM + lidar 1.62 ft,
+none of them had a VLM height; C n 175, GBM + lidar 5.73 ft (G1 4.43), 4 had a VLM height and on
+those the direct reading was 5.31 ft off (bias −5.31).
+
+### Raised-house detection (VLM foundation raised or height > 3 ft, vs truth > 3 ft)
+
+| Area | houses visible | true raised among them | TP | FP | FN | precision | recall | recall vs all sampled raised |
+|---|---|---|---|---|---|---|---|---|
+| B | 762 | 5 | 3 | 281 | 2 | 0.01 | 0.60 | 0.06 (of 49) |
+| C | 169 | 5 | 3 | 42 | 2 | 0.07 | 0.60 | 0.02 (of 198) |
+
+The VLM over-calls raised foundations: among visible houses it answered `raised_crawlspace` 455
+times in B (slab subdivision, 1.0% raised) and 73 times in C.
+
+### Measured VLM height error vs the simulations
+
+VLM height − (true FFE − LAG), all 276 sampled houses with a height: **MAE 1.03 ft, bias +0.41, SD
+1.49, median |e| 0.72, within 1 ft 64%** (B: MAE 1.01, bias +0.60; C: MAE 1.08, bias −0.28). True ≤ 3 ft
+(n 271): MAE 0.96, bias +0.50. True > 3 ft (n 5): MAE 4.53, bias −4.53. A normal error with σ 0.72 ft
+gives MAE 0.58 / 84% within 1 ft; σ 1.5 gives 1.20 / 49%. **The real reading sits close to the σ 1.5
+case, not σ 0.72**, and it is biased high on slab houses and badly low on the few raised ones.
+MAE by capture year: 2012 1.02 (n 46), 2021 1.12 (n 105), 2026 0.90 (n 102); panorama 1.07 (n 167),
+perspective 0.96 (n 109). (The answer key's `RecordedAt` is present for only 57 of the 276, so image
+age vs truth is not reported.)
+
+### Cost
+
+1,891 Gemini calls (all HTTP 200; 10 were prompt tests, 6 of them at the low media resolution and not
+used): 3,291,551 prompt tokens, 178,828 output tokens, 1,371,318 thinking tokens (from
+`data/harris_mini/vlm_calls.jsonl`). At Gemini 2.5 Flash list prices assumed as $0.30/M input and
+$2.50/M output incl. thinking (not measured here), ≈ **$4.86**. Mapillary API: free.
+
+### Ten worst VLM heights (image id, capture date, truth vs read, what went wrong)
+
+| # | Area | Mapillary image | captured | true ft | read ft | what went wrong |
+|---|---|---|---|---|---|---|
+| 1 | C | 778331683049568 | 2012-02-29 pano | 12.2 | 0.5 | 3-storey condo block ("SFR" in HCFCD); the key's door is an upper unit; model read the ground entry (checked by eye) |
+| 2 | C | 186605039984429 | 2012-02-29 pano | 1.0 | 8.0 | 2-storey apartment block; model took a 2nd-floor landing as the door (checked by eye) |
+| 3 | C | 965968074208068 | 2012-02-29 pano | 12.7 | 7.2 | condo with external stair; right kind of reading, step count too low (checked by eye) |
+| 4 | B | 4276312142474940 | 2021-12-24 pano | 0.6 | 6.0 | dusk image with holiday lights; called an enclosed lower level (checked by eye) |
+| 5 | C | 306621509052354 | 2024-05-20 | 1.5 | 5.5 | "5 steps", foundation called raised |
+| 6 | B | 118335260699544 | 2021-12-24 pano | 0.8 | 4.5 | small windows taken as crawlspace vents |
+| 7 | B | 2456142598236320 | 2026-05-10 | −1.2 | 2.5 | very dark, blurry; door "assumed" (model's note) |
+| 8 | B | 702664187372868 | 2021-12-24 pano | 0.5 | 4.0 | night; stone-clad base read as a lower level |
+| 9 | B | 1451854850304698 | 2026-06-06 | 0.6 | 4.0 | sloped lot read as raised crawlspace |
+| 10 | B | 260276042712595 | 2021-12-24 pano | 0.8 | 4.0 | dark; brick base read as raised foundation |
+
+Systematic issues: multi-unit buildings inside the SFR set; the 2021-12-24 B panorama sequence is
+dark (285 of 1,549 B reads mention dark/night; 187 of them from that date) although its
+`captured_at` is late morning local time, so those timestamps look wrong; brick skirting and slopes
+read as raised foundations.
+
+### Verdict
+
+**No: in this test the Mapillary + VLM reading does not improve on lidar + neighbours, for any group
+of houses.**
+
+1. **Coverage is the binding limit**: a front-door height for 2.4% (C) to 4.2% (B) of houses, and
+   almost none of the raised houses that carry C's error (5 of 198 raised sampled houses had a visible
+   house).
+2. **Where it reads, it is worse**: direct LAG + VLM is 1.00 ft MAE vs 0.27 (B) and 1.09 vs 0.61 (C)
+   for GBM + lidar on the same houses; adding the reading as features or as a fallback leaves the
+   GBM unchanged or worse.
+3. **The reading's error is ~σ 1.5 ft, not the 0.72 ft the earlier simulation hoped for**, with a
+   +0.5 ft bias on slab houses, and raised-house flags are mostly false (precision 0.01–0.07).
+4. What would have to change: imagery from the street the door faces, near the truth epoch (Bee Maps
+   is being tested next, see below), a filter for multi-unit buildings, rejecting dark images, and a
+   calibration of the VLM height on certified houses before it is used.
+
+**Bee Maps status**: the owner asked to try it and supplied a key (stored in the gitignored `.env`).
+It authenticates, but `GET /balance` returned 0, so no Bee Maps imagery has been queried.
+
+**Attribution.** Values derived from Mapillary imagery (the VLM reads and anything computed from them)
+are © Mapillary contributors, CC BY-SA 4.0 (https://www.mapillary.com); any published table using
+them must carry the Mapillary logo and link, and is shared alike.
+
+### Reproduce (image step)
+
+```
+python mapillary_index.py C -95.130 29.530 -95.080 29.570 ; python mapillary_index.py B -95.580 29.950 -95.530 29.990
+python mapillary_views.py C 800 2539 ; python mapillary_views.py B 300 5127   # MAPILLARY_ACCESS_TOKEN
+python vlm_read.py C B                                                          # GEMINI_API_KEY; cached
+python eval_image.py B C
 ```

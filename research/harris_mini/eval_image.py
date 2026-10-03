@@ -132,7 +132,7 @@ if __name__ == "__main__":
                                         found=hv.vlm_found[e.index], conf=hv.vlm_conf[e.index],
                                         notes=hv.vlm_notes[e.index],
                                         truth_rec=pd.to_datetime(h.rec[e.index], unit="ms", utc=True))))
-    E = pd.concat(allerr)
+    E = pd.concat(allerr, ignore_index=True)
     rng = np.random.default_rng(0)
     print("\n## VLM height error (VLM height - true FFE + LAG), all sampled houses with a height")
     for lab, g in [("all", E)] + list(E.groupby("area")) + [("true > 3 ft", E[E.ffh > 3]), ("true <= 3 ft", E[E.ffh <= 3])]:
@@ -142,7 +142,9 @@ if __name__ == "__main__":
         z = rng.normal(0, sg, 200_000)
         print(f"simulated sigma {sg}: MAE {np.abs(z).mean():.2f}, within 1 ft {(np.abs(z) <= 1).mean():.0%}")
     E["age_years"] = (E.captured - E.truth_rec).dt.days / 365.25
-    print("image capture minus answer-key capture (years), quartiles:", E.age_years.quantile([.25, .5, .75]).round(1).tolist())
+    a = E.age_years.dropna()
+    print(f"image capture minus answer-key RecordedAt (years; RecordedAt present for {len(a)} of {len(E)}): "
+          f"quartiles {a.quantile([.25, .5, .75]).round(1).tolist()}")
     print("MAE by image capture year:", E.groupby(E.captured.dt.year).err.agg(lambda x: f"{x.abs().mean():.2f} (n {len(x)})").to_dict())
     print("MAE pano vs perspective:", E.groupby("pano").err.agg(lambda x: f"{x.abs().mean():.2f} (n {len(x)})").to_dict())
     print("\n## 10 worst VLM heights")
