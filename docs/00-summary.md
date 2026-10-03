@@ -158,3 +158,6 @@ lidar ground turns that into an elevation.
    **No Google Street View** (owner, 2026-10-03; its terms forbid testing ML models on it).
 4. Benchmark **many** floor-height methods side by side (see `docs/02-floor-height-methods.md`).
 5. Plan only here; a separate session implements.
+6. **The product is B2B** (owner, 2026-10-03): a data licence (self-hosted), an API and a flood
+   portal over one per-building table. Florida first, core tier (no imagery) first. See
+   `docs/03-product-b2b.md`.

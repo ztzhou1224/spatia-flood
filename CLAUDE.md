@@ -11,6 +11,9 @@ compared with the FEMA base flood elevation (BFE). It is a sibling of
 [`spatia-report`](https://github.com/ztzhou1224/spatia-report) (the cited report engine). Read
 `docs/00-summary.md` first, then the active plan in `docs/`.
 
+The product is B2B (data licence, API, flood portal over one per-building table):
+`docs/03-product-b2b.md`. Anything that will be sold must use licence-clean inputs (its §5).
+
 Current work: the Harris County pilot, `docs/01-plan-harris-pilot.md`. Implement it phase by phase;
 each phase has acceptance criteria. Do not widen scope beyond the plan without asking the owner.
 

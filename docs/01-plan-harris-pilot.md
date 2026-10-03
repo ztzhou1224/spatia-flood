@@ -286,7 +286,7 @@ with no public commercial licence; Ning code is non-commercial.
 | P2 Imagery | §4.7 selection, camera refinement, download | per-house view table with camera-elevation method and its error estimate |
 | P3 Non-image methods | M0, M0b, M1a, M1b | scored per §6 |
 | P4 Image methods | M2–M7 | each scored, with abstention reasons and fallback results |
-| P5 Fusion and report | MF with conformal intervals; triage; stale-truth analysis; `docs/03-pilot-results.md` | ranked table, slices, triage buckets with false-"above" rate, cost per 1,000, failure gallery, recommendation |
+| P5 Fusion and report | MF with conformal intervals; triage; stale-truth analysis; `docs/04-pilot-results.md` | ranked table, slices, triage buckets with false-"above" rate, cost per 1,000, failure gallery, recommendation |
 
 If imagery cost is a constraint: all scoring-set houses for M0/M1; a stratified sample of 1,500
 houses per area (by precision tier and year-built era) for paid or GPU-heavy image methods; the full
@@ -335,8 +335,23 @@ src/spatia_flood/
                 # m5_ning, m6_sfm, m7_vlm, fusion
   eval/         # scorer, paired/fallback tables, spatial CV, conformal, triage, gallery
 results/        # small CSVs committed
-docs/03-pilot-results.md
+docs/04-pilot-results.md
 ```
+
+## 11. B2B amendments (owner direction 2026-10-03)
+
+The product is B2B (data licence, API, flood portal); see `docs/03-product-b2b.md`. These change
+outputs and bookkeeping only, not any spatial method, so the GIS review above still stands.
+
+1. P5 also writes the per-house outputs in the record shape of `docs/03-product-b2b.md` §6, as a
+   sample deliverable (scoring-set houses only; the answer key never appears in it).
+2. Every ingested row carries `provider` and `input_licences`, so any output can be rebuilt from the
+   licence-clean inputs only.
+3. Results are reported twice: the **core tier** (M0, M0b, M1a, M1b: no imagery) and the **image
+   tier** (M2–M7, MF). The core tier is what can ship first.
+4. `docs/04-pilot-results.md` is written for a buyer to read (methods, coverage, errors with
+   intervals, failure gallery). It is the sales benchmark, so the evidence rule applies to every
+   number in it.
 
 ## GIS Expert Review
 

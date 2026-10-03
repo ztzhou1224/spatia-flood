@@ -14,6 +14,9 @@ This repo starts with research and one pilot:
   measured first-floor elevations.
 - [`docs/02-floor-height-methods.md`](docs/02-floor-height-methods.md) — the literature and model
   survey the benchmark shortlist comes from.
+- [`docs/03-product-b2b.md`](docs/03-product-b2b.md) — the product direction: B2B only, sold as a
+  data licence, an API or a flood portal; buyers, licence limits on what we may resell, the record
+  schema, Florida first.
 - [`research/`](research/) — the scripts behind the Florida Elevation Certificate backtest and the
   public-source survey (reproducible; they download public data, no data is committed).
 
