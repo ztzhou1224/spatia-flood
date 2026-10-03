@@ -1,7 +1,8 @@
 """Pick and crop Mapillary views of a random sample of headline houses.
 
-Sample: a fixed-seed random draw among headline houses (front door, precision tier A+B, lidar ground
-present) in houses.parquet. The answer-key value (ffe) is never read here; the sample and the view
+Sample: a fixed-seed random permutation of headline houses (front door, precision tier A+B, lidar
+ground present) in houses.parquet; the first N_CORE are the core sample (coverage), the first N are
+processed (N > N_CORE extends the same random order to gain houses with views for accuracy). The answer-key value (ffe) is never read here; the sample and the view
 choice use only the footprint, the image index and the image metadata.
 
 A view qualifies when the camera is 8-45 m from the footprint, is not inside a building, the line from
@@ -13,7 +14,7 @@ outlines), and the house is in the field of view:
 Ranking: capture date nearest 2019-07-01 (answer key captured 2018-03..2020-01), then distance
 nearest 20 m. Up to 2 views per house. Crops are centred on the house, written to
 data/harris_mini/<AREA>/views/, and listed in views.parquet.
-Usage: python mapillary_views.py AREA N_HOUSES
+Usage: python mapillary_views.py AREA N_CORE [N]
 """
 import io, json, os, sys, time
 from concurrent.futures import ThreadPoolExecutor
@@ -60,14 +61,15 @@ def sample(area: str, n: int) -> pd.DataFrame:
     h = pd.read_parquet(D / area / "houses.parquet",
                         columns=["oid", "loc", "prec", "e2018_lag", "fp_wkt", "x", "y"])
     h = h[(h["loc"] == "Front Door") & (h.prec <= 6) & h.e2018_lag.notna()].sort_values("oid")
-    rng = np.random.default_rng(20261003)
-    return h.iloc[np.sort(rng.choice(len(h), size=min(n, len(h)), replace=False))].reset_index(drop=True)
+    order = np.random.default_rng(20261003).permutation(len(h))
+    h = h.iloc[order].assign(rank=np.arange(len(h)))
+    return h.head(n).reset_index(drop=True)
 
 
 def local_images(area: str, hs: pd.DataFrame) -> pd.DataFrame:
     """The area index misses images (about 20% in 0.002 deg spot checks), so also query a small box
     (footprint + 50 m) around every sampled house. Cached in mapillary_local.parquet."""
-    cache = D / area / "mapillary_local.parquet"
+    cache = D / area / f"mapillary_local_{len(hs)}.parquet"
     if cache.exists(): return pd.read_parquet(cache)
     from mapillary_index import FIELDS, get
     to_ll = Transformer.from_crs("EPSG:6344", "EPSG:4326", always_xy=True)
@@ -163,9 +165,9 @@ def fetch_img(url: str) -> Image.Image:
     raise RuntimeError("image download failed")
 
 
-def main(area: str, n: int):
+def main(area: str, n_core: int, n: int):
     hs = sample(area, n)
-    hs[["oid"]].to_csv(D / area / "image_sample.csv", index=False)
+    hs.assign(core=hs["rank"] < n_core)[["oid", "rank", "core"]].to_csv(D / area / "image_sample.csv", index=False)
     cand = candidates(area, hs)
     print(f"{area}: {len(hs)} sampled houses; {len(cand)} candidate views for {cand.oid.nunique()} houses "
           f"(geometry + occlusion filter, before FOV)")
@@ -217,4 +219,4 @@ def main(area: str, n: int):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], int(sys.argv[2]))
+    main(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]) if len(sys.argv) > 3 else int(sys.argv[2]))
