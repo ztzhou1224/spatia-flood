@@ -16,7 +16,7 @@ from PIL import Image
 
 D = Path(__file__).resolve().parents[2] / "data" / "harris_mini"
 MODEL = os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash"
-PROMPT_V = "v1"
+PROMPT_V = "v2"  # v2 = v1 prompt + mediaResolution HIGH (1290 image tokens vs 258)
 BUDGET = 2500
 LOG = D / "vlm_calls.jsonl"
 LOCK = Lock()
@@ -73,7 +73,8 @@ def call(path: str, dist: float, is_pano: bool) -> dict:
             {"text": PROMPT.format(dist=dist, kind="crop of a 360 panorama" if is_pano else "phone/dashcam photo")},
         ]}],
         "generationConfig": {"temperature": 0, "responseMimeType": "application/json",
-                             "responseSchema": SCHEMA, "thinkingConfig": {"thinkingBudget": 1024}},
+                             "responseSchema": SCHEMA, "mediaResolution": "MEDIA_RESOLUTION_HIGH",
+                             "thinkingConfig": {"thinkingBudget": 1024}},
     }
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
     for attempt in range(6):
