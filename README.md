@@ -9,8 +9,8 @@ This repo starts with research and one pilot:
 - [`docs/00-summary.md`](docs/00-summary.md) — what was learned so far (from the spatia-report /
   spatia-data investigation that led here), with the measured numbers.
 - [`docs/01-plan-harris-pilot.md`](docs/01-plan-harris-pilot.md) — the Harris County, TX pilot
-  plan: 1 m lidar ground for the pilot area, Mapillary street imagery (Google Street View as a
-  pilot-only fallback), and a head-to-head benchmark of floor-height methods against Harris County's
+  plan: 1 m lidar ground for the pilot area, Mapillary street imagery (Bee Maps as a
+  paid fallback; no Google Street View), and a head-to-head benchmark of floor-height methods against Harris County's
   measured first-floor elevations.
 - [`docs/02-floor-height-methods.md`](docs/02-floor-height-methods.md) — the literature and model
   survey the benchmark shortlist comes from.

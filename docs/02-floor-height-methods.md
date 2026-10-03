@@ -114,7 +114,15 @@ figures above.
 | Source | Price | Limitation |
 |---|---|---|
 | Mapillary API v4 | free with a token | 60 k entity / 10 k search requests per minute, 50 k tiles per day; CC BY-SA attribution + logo/link on extracted data; crowd-sourced coverage |
-| Google Street View Static | 10 k free / month, then $7.00 per 1 k (to 100 k), lower tiers above | **terms forbid testing / validating ML models on it and storing images** — price is not the blocker |
+| Bee Maps (Hivemapper) Data API | **$0.005 per image**, self-serve ([pricing](https://beemaps.com/pricing)) | forward-facing dashcam frames (façades oblique); terms ([map products](https://beemaps.com/tos/map-products)): use "solely in connection with" our implementation, no redistribution, Hivemapper owns the data and derivatives — owner must accept before use |
+| EagleView Imagery API (oblique aerial) | 30-day free trial for a 2 sq mi area ([announcement](https://www.eagleview.com/blog/eagleview/eagleview-launches-an-early-access-free-imagery-api-trial-to-power-the-next-generation-of-geospatial-applications/)); then quote | aerial obliques, not street level; door visibility under eaves/porches untested |
+| Cyclomedia Street Smart (imagery + mobile lidar) | quote only ([developer portal](https://developer.cyclomedia.com/)) | the same vendor and capture that produced the Harris answer key — a gold standard, not an independent method; cm-level measurement tools |
+| Nexar Streets / CityStream (dashcam) | quote only ([product](https://data.getnexar.com/product/streets/)) | US property images incl. history; licensed datasets |
+| Nearmap (aerial + oblique) | enterprise subscription, quote only | aerial, not street |
+| Bing Streetside | retired Oct 2025 (enterprise API access only to 2028-06-30) | not an option |
+| Apple Look Around | MapKit only; no bulk/derived-data licence found | not an option (U) |
+| KartaView, Panoramax (open, CC BY-SA) | free | small US coverage — check in P0 alongside Mapillary |
+| ~~Google Street View~~ | — | **not used (owner, 2026-10-03)**: terms forbid testing/validating ML models on it and storing images |
 
 ### Compute
 
@@ -154,7 +162,7 @@ clouds (estimate — price it in P0). Storage for the pilot is ~25–50 GB (plan
   question (U).
 - **Coverage in Harris County is unchecked** — the first thing Phase 0 measures.
 
-### Google Street View [V] — legal blocker, not just a fallback
+### Google Street View [V] — not used (owner decision 2026-10-03); kept for the record
 
 - Price (list updated 2026-09-28): Static Street View 10 k free / month, then $7.00 per 1 k (to
   100 k) … $0.53 per 1 k above 5 M. **Metadata is free** (pano id, location, date, copyright,

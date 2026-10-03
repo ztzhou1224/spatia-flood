@@ -31,12 +31,13 @@ each phase has acceptance criteria. Do not widen scope beyond the plan without a
   published lon/lat to a projected CRS.
 - **Vertical datum:** all elevations in feet NAVD88. Record the geoid model per value
   (GEOID12B vs GEOID18); never mix silently. US survey feet vs international feet must be explicit.
-- **Imagery terms:** Mapillary images are CC BY-SA 4.0 (attribute). Google Street View is a
-  **pilot-only fallback** under the Google Maps Platform terms: no bulk download, no caching beyond
-  what the terms allow, and nothing derived from Google imagery is published or shipped as a
-  dataset. Keep Google-derived results tagged so they can be dropped.
+- **Imagery terms:** **Never use Google Street View** (owner decision 2026-10-03; its terms forbid
+  testing ML models on it). Mapillary images are CC BY-SA 4.0 (attribute, logo + link on extracted
+  data). Bee Maps (Hivemapper) imagery is paid and licensed only for use within our implementation,
+  no redistribution; use it only after the owner accepts its terms, and tag its rows
+  `provider=beemaps` so they can be dropped.
 - **No secrets in git.** Keys live in `.env` (gitignored): `MAPILLARY_ACCESS_TOKEN`,
-  `GOOGLE_MAPS_API_KEY`, and the R2 read credentials if reading spatia-data layers.
+  `BEEMAPS_API_KEY`, and the R2 read credentials if reading spatia-data layers.
 - **No data in git.** Raw downloads, rasters, images and parquet go under `data/` (gitignored).
   Commit code, configs, small result tables and docs.
 - **No personal data in committed outputs.** Some public sources carry owner names; drop owner,

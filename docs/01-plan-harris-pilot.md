@@ -26,7 +26,7 @@ Questions the pilot must answer:
    Elevation Certificate for the survey-needed bucket).
 
 Non-goals: building any of this for production; areas outside the three pilot areas; data-sharing
-deals (owner decision 2026-10-03); publishing anything derived from Google imagery.
+deals (owner decision 2026-10-03); Google Street View in any form (owner decision 2026-10-03).
 
 ## 2. Pilot areas
 
@@ -192,7 +192,7 @@ are pavement (older TIGER can sit metres off; crown vs gutter differs ~0.1–0.2
 
 ### 4.7 Street imagery index
 
-Mapillary first; Google Street View as an owner-gated fallback.
+Mapillary first; Bee Maps (paid, per image) where Mapillary has no usable view. No Google Street View.
 
 - **Mapillary (API v4, `MAPILLARY_ACCESS_TOKEN`)**: images within 40 m of each footprint; pull
   `computed_geometry`, `computed_compass_angle`, **`computed_rotation`**, `computed_altitude`,
@@ -203,19 +203,20 @@ Mapillary first; Google Street View as an owner-gated fallback.
 - **Camera position `[GIS 10]`**: `computed_geometry` can be metres off (plus a ~1 m WGS84 vs
   NAD83(2011) bias). Refine each camera position against the street centreline / footprints before
   use.
-- **Google fallback (`GOOGLE_MAPS_API_KEY`) — built, OFF until the owner signs off.** Its terms
-  (§3.2.3(c), example vii) forbid using Google Maps content to "train, test, validate or fine-tune"
-  ML models, and §3.2.3(a) forbids storing or bulk-downloading imagery (see docs/02). Benchmarking on
-  Street View is "testing / validating", so this is a legal-review item.
-  - The free **metadata** endpoint (pano id, date, location; no quota) may be used in P0 to *count*
-    what Google could cover; only pano ids are cached.
-  - Image fetch and scoring stay behind `imagery.google_fallback: false`. Enabling it needs the
-    owner's explicit confirmation after reviewing the terms, recorded with its date in
-    `docs/03-pilot-results.md`.
-  - If enabled: Static images on the fly (heading toward the façade, fov 60–90, ≤ 640 px), not
-    stored; every result tagged `provider=google`; nothing Google-derived leaves the pilot or feeds a
-    model that does.
-  - Never use the undocumented `photometa` depth endpoint that some research code uses.
+- **No Google Street View (owner decision 2026-10-03).** Its terms forbid using its imagery to
+  test or validate ML models and forbid storing it. Do not call any Google Street View endpoint,
+  including metadata, and never the undocumented `photometa` depth endpoint some research code uses.
+- **Paid fallback where Mapillary has no usable view: Bee Maps (Hivemapper) street-level imagery
+  API**, $0.005 per image, self-serve, `BEEMAPS_API_KEY`. Limitations: forward-facing dashcam
+  frames (façades are seen obliquely, not square-on — check how many houses get a usable view);
+  their terms grant use "solely in connection with" our implementation, forbid redistribution, and
+  claim ownership of Hivemapper data and derivatives — **the owner reads and accepts the Map Products
+  terms before P2 uses it**; tag every row `provider=beemaps`.
+- **Optional oblique-aerial test**: EagleView's Imagery API free trial (30 days, a 2 sq mi area of
+  interest) on part of Area A, as a non-street comparison of door/threshold visibility. Only if P0
+  shows a large street-imagery gap.
+- Other commercial street imagery (Cyclomedia, Nexar, Nearmap) is quote-only and out of scope for
+  the pilot (no deals); see docs/02.
 
 ## 5. Methods to benchmark
 
@@ -280,7 +281,7 @@ with no public commercial licence; Ning code is non-commercial.
 
 | Phase | Work | Done when |
 |---|---|---|
-| P0 Setup and census | repo scaffold (uv, ruff, mypy), `.env` keys, pull answer key + layer 24 (`outSR=6344`, coordinate round-trip check), Mapillary coverage census, Google **metadata-only** census for the gaps | a table: scoring-set houses per area / with ≥ 1 usable Mapillary view (by image age) / Google-metadata-only / no imagery. **Gate**: the owner decides (a) whether Google image fetch is enabled after reviewing its terms and (b) whether an area with < 20% Mapillary coverage stays in |
+| P0 Setup and census | repo scaffold (uv, ruff, mypy), `.env` keys, pull answer key + layer 24 (`outSR=6344`, coordinate round-trip check), Mapillary coverage census; Bee Maps coverage census for the gaps (search only, no paid image pulls) | a table: scoring-set houses per area / with ≥ 1 usable Mapillary view (by image age) / Bee Maps only / no imagery, plus the Bee Maps cost to fill the gap. **Gate**: the owner decides (a) whether to buy Bee Maps images after accepting its terms and (b) whether an area with < 20% coverage stays in |
 | P1 Data layers | §4.1–4.6 for both epochs; datum sentinel; geoid and 2001-adjustment offsets measured; subsidence recorded | sidecars written; LPC ground present for ≥ 95% of matched footprints (DEM fallback counted); datum sentinel inside its band for every delivery kept; a 20-house hand check of matching, wall line and door ground |
 | P2 Imagery | §4.7 selection, camera refinement, download | per-house view table with camera-elevation method and its error estimate |
 | P3 Non-image methods | M0, M0b, M1a, M1b | scored per §6 |
@@ -306,8 +307,8 @@ set only for the winners.
 2. **Answer-key precision** varies (~1–10 in, stated not validated); tier C kept out of headlines.
 3. **Door ≠ FEMA lowest floor**: worded as front-door floor throughout; enclosures and garages
    below the door go to survey-needed.
-4. **Imagery coverage and age** (Mapillary is crowd-sourced). Google fallback very likely outside
-   its terms for benchmarking: off by default, owner decision.
+4. **Imagery coverage and age** (Mapillary is crowd-sourced; Bee Maps dashcams face forward, so
+   façade views are oblique). No Google Street View.
 5. **Vertical reference**: GEOID12B vs GEOID18 (a few cm, measured per area), subsidence between
    epochs (B), and NAVD88 2001-adj vs GEOID12B under the BFE — all measured and disclosed, none
    assumed zero.
@@ -319,14 +320,14 @@ set only for the winners.
 ## 10. Repository layout (proposed)
 
 ```
-configs/pilot_areas.yaml          # bboxes, CRS, lidar projects, flags (imagery.google_fallback)
+configs/pilot_areas.yaml          # bboxes, CRS, lidar projects, imagery providers enabled
 src/spatia_flood/
   truth/        # HCFCD pulls; scorer-only access; datum sentinel
   lidar/        # TNM lists, DEM + LPC download, ground points, rings, DSM, change flags, geoid
   footprints/   # layers 25/26 + Overture, wall line, truth matching
   streets/      # frontage street match, street elevation
   context/      # flood zones, BFE derivation (static / S_XS / S_BFE), datum offset, year built
-  imagery/      # Mapillary + Google index, view selection, camera refinement
+  imagery/      # Mapillary + Bee Maps index, view selection, camera refinement
   methods/      # m0_prior, m0b_nsi, m1_tabular, m2_klepac, m3_elevvision_sam, m4_depth,
                 # m5_ning, m6_sfm, m7_vlm, fusion
   eval/         # scorer, paired/fallback tables, spatial CV, conformal, triage, gallery
@@ -359,7 +360,7 @@ docs/03-pilot-results.md
   `HCAD_NUM`; 80-inch door prior wrong for 8 ft entries; truth older than imagery in Meyerland;
   unit drift (metres vs ftUS ≈ 8 m horizontally).
 - **Advisories (non-blocking)**: NSI/Hazus baseline (added as M0b); quoted local EC price in the
-  cost table (added); Mapillary CC BY-SA fine for research, Google gating correct; if productized,
+  cost table (added); Mapillary CC BY-SA fine for research, Google gating correct (since superseded: Google removed entirely by the owner, 2026-10-03); if productized,
   any image/lidar FFE is SCREENING-grade — only a surveyed EC is a DETERMINATION.
 - **Not verified by the expert** (to be measured in P1): GEOID12B−GEOID18 per area, HGSD rates for
   A and C, the 2001-adj vs GEOID12B offset near each area.

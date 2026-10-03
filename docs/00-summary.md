@@ -154,7 +154,7 @@ lidar ground turns that into an elevation.
 1. Pilot in **Harris County**, because its measured door elevations are a free, dense answer key and
    ELEV-VISION was tested there.
 2. Build **1 m lidar ground only for the pilot area**.
-3. Imagery: **Mapillary first**; **Google Street View as a pilot-only fallback** where Mapillary has
-   nothing (internal evaluation only; see CLAUDE.md).
+3. Imagery: **Mapillary first**; **Bee Maps** (paid, $0.005/image) where Mapillary has nothing.
+   **No Google Street View** (owner, 2026-10-03; its terms forbid testing ML models on it).
 4. Benchmark **many** floor-height methods side by side (see `docs/02-floor-height-methods.md`).
 5. Plan only here; a separate session implements.
