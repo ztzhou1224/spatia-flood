@@ -312,6 +312,9 @@ set only for the winners.
 5. **Vertical reference**: GEOID12B vs GEOID18 (a few cm, measured per area), subsidence between
    epochs (B), and NAVD88 2001-adj vs GEOID12B under the BFE — all measured and disclosed, none
    assumed zero.
+5b. **Patents**: three active US patents (True Flood Risk/Klose, CoreLogic, Intermap; to 2041) cover
+   parts of image-based floor height (docs/02 § Patents). Fine to benchmark internally only after
+   the owner is aware; a freedom-to-operate opinion is required before any image method ships.
 6. **Published accuracies are not comparable** (different truth, metrics, coverage — ELEV-VISION
    scored 136 of 483 houses). Never quote an error without its coverage.
 7. **Licences**: HCFCD data has no explicit licence (confirm before anything leaves the pilot);

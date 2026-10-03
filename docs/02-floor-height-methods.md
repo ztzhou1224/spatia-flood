@@ -143,6 +143,24 @@ clouds (estimate — price it in P0). Storage for the pilot is ~25–50 GB (plan
 | M7 | Zero-shot VLM: step count × riser height + foundation class | cheap recovery when no door bottom is visible; reported as screening |
 | MF | Learned fusion: gradient boosting over M1a features + M2–M7 outputs (optionally a Chen-style multi-task net), kriging gap-fill (Raja 2026), conformal intervals, spatially held-out | expected best |
 
+## Patents to clear before productizing (found 2026-10-03; not legal advice)
+
+Three granted US patents cover parts of image-based floor-height estimation. Each covers a specific
+claimed combination, not the general idea. The pilot is internal research, but the US experimental-
+use exception is narrow, so get a freedom-to-operate opinion from a patent attorney **before** any
+image-based method ships.
+
+| Patent | Holder | Priority / expiry | What claim 1 requires (all elements) | Our methods closest to it |
+|---|---|---|---|---|
+| [US11120557B1](https://patents.google.com/patent/US11120557B1/en) "System and method for detecting objects in images" | Shelly Klose (announced by True Flood Risk) | 2020-10-02 / 2041-02-10 | test image quality; divide into regions; a bounding box for the stairs **and a bounding box for each riser**; count the riser boxes; estimate first-floor elevation or stair height from the count; store it | M7 if it boxes each riser (a VLM giving a step count without riser boxes does not obviously match — attorney question) |
+| [US11555701B2](https://patents.google.com/patent/US11555701B2/en) "Use of a convolutional neural network to auto-determine a floor height and floor height elevation of a building" | CoreLogic | 2019-05-02 / 2041-03-09 | building footprint; image into a CNN trained to find the first floor; first-floor height; DEM for the parcel; FFE = FFH + DEM; lowest adjacent grade along the footprint perimeter | **closest to M3, M4 and MF** (footprint + image model + DEM + ring ground) |
+| [US11532093B2](https://patents.google.com/patent/US11532093B2/en) "First floor height estimation from optical images" | Intermap Technologies | 2019-10-10 / 2041-03-22 | a system **comprising an aerial sensor** collecting terrain; segment the image into layout elements; pixel locations of first floor and grade; first-floor height from the pixel difference | M3 (door-bottom vs grade pixels); whether using public lidar satisfies "comprising an aerial sensor" is an attorney question |
+
+Not covered by any of the three: the non-image methods (M0, M0b, M1a/M1b — lidar ground, parcel
+data, neighbour certificates or measured inventories). Possible routes if an image method wins:
+design around the claim elements, license, or challenge validity with earlier published work
+(several academic methods are listed above; their dates versus each priority date need checking).
+
 ## Imagery: practical and legal notes
 
 ### Mapillary [V]
