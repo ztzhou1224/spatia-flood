@@ -1,0 +1,28 @@
+## Area B
+sampled 1200; houses with a v2 view 152; views 423 by status {'no_door_on_target': 211, 'ok': 143, 'dark': 69}; views kept 34; **houses measured (A+B) 24 = 2.0% of sampled**
+|                                       |   n |   MAE |   within_05 |   within_1 |    p90 |   bias |
+|:--------------------------------------|----:|------:|------------:|-----------:|-------:|-------:|
+| lidar + neighbours (GBM)              |  24 | 0.234 |       1     |      1     |  0.443 |  0.008 |
+| M3 v2 (house ground, garage fallback) |  24 | 2.233 |       0.417 |      0.542 |  6.92  |  1.683 |
+| house-mask ground only                |  15 | 1.939 |       0.4   |      0.6   |  5.849 |  1.734 |
+| garage-door ground only               |  21 | 9.381 |       0.333 |      0.429 | 21.674 |  8.464 |
+| door-scale distance                   |  15 | 2.002 |       0.4   |      0.533 |  4.801 |  1.808 |
+| blend (CV)                            |  24 | 0.26  |       0.958 |      1     |  0.465 | -0.003 |
+Raised houses (true door > 3 ft above LAG): 9 in the sample, 0 measured
+## Area C
+sampled 2000; houses with a v2 view 86; views 314 by status {'ok': 179, 'no_door_on_target': 132, 'view_out_of_frame': 3}; views kept 77; **houses measured (A+B) 42 = 2.1% of sampled**
+|                                       |   n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:--------------------------------------|----:|------:|------------:|-----------:|------:|-------:|
+| lidar + neighbours (GBM)              |  42 | 0.24  |       0.857 |      1     | 0.586 | -0.01  |
+| M3 v2 (house ground, garage fallback) |  42 | 0.852 |       0.548 |      0.786 | 1.364 |  0.4   |
+| house-mask ground only                |  27 | 0.412 |       0.667 |      0.926 | 0.8   |  0.06  |
+| garage-door ground only               |  40 | 3.866 |       0.35  |      0.525 | 4.609 |  2.72  |
+| door-scale distance                   |  27 | 0.465 |       0.63  |      0.889 | 1.025 |  0.12  |
+| blend (CV)                            |  42 | 0.244 |       0.905 |      0.976 | 0.436 | -0.007 |
+Raised houses (true door > 3 ft above LAG): 164 in the sample, 1 measured
+|                    |   n |   MAE |   within_05 |   within_1 |   p90 |   bias |
+|:-------------------|----:|------:|------------:|-----------:|------:|-------:|
+| lidar + neighbours |   1 | 0.835 |           0 |          1 | 0.835 | -0.835 |
+| M3 v2              |   1 | 2.207 |           0 |          0 | 2.207 | -2.207 |
+| blend              |   1 | 1.159 |           0 |          0 | 1.159 | -1.159 |
+M3 'raised' call (> 3 ft): TP 0, FP 3, FN 1

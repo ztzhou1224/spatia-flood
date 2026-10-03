@@ -44,11 +44,11 @@ def main(area):
     k = k[k.ffh_view.between(-1, 20)]
     k = k.merge(cov, on="oid", how="left")
     k = k[k.nsi_occ.fillna("RES1").str.startswith("RES1")]
-    per = k.groupby("oid").agg(ffh=("ffh_view", "median"), ffh_house=("ffh_house_ft", "median"),
+    per = k.groupby("oid").agg(img_ffh=("ffh_view", "median"), ffh_house=("ffh_house_ft", "median"),
                                ffh_garage=("ffh_garage_ft", "median"), ffh_ds=("ffh_doorscale_ft", "median"),
                                g_wall=("g_wall_ft", "median"), n_views=("image_id", "size"))
-    for c in ("ffh", "ffh_house", "ffh_garage", "ffh_ds"):
-        per[c.replace("ffh", "m3")] = per.g_wall + per[c]
+    for c, o in (("img_ffh", "m3"), ("ffh_house", "m3_house"), ("ffh_garage", "m3_garage"), ("ffh_ds", "m3_ds")):
+        per[o] = per.g_wall + per[c]
     # baseline: 10% pool of houses not in the v2 image sample
     rng = np.random.default_rng(0)
     cand = h[~h.oid.isin(set(views.oid))]
