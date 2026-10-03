@@ -96,6 +96,17 @@ Next test suggested: run an open rain-on-grid model on Cypress Creek's 1 m lidar
 100-year storm and with Harvey rainfall, and check whether it reproduces the hindcast's ranking
 (AUC 0.89). If it does, water becomes buildable anywhere 3DEP lidar exists (~ the whole CONUS).
 
+## Addendum: NOAA Sea Level Rise Viewer inundation (already in spatia-data)
+
+spatia-data publishes `noaa_slr_inundation_h3` (stable; NOAA OCM Sea Level Rise Viewer, ocean-connected
+land at 0–10 ft above MHHW in 0.5 ft steps, per H3 r10 cell, Texas partition present). Joined to the
+Clear Lake houses by r10 cell (one-off script run 2026-10-03; cells read from R2 over the S3 API):
+756 of 3,259 houses sit in a cell connected at ≤ 10 ft above MHHW. Ranking skill on the recorded floods
+is low (AUC 0.55, any event and Harvey), but as a flag it separates: houses in cells connected at
+≤ 5 ft flooded at 41% (any event) vs 18% elsewhere. It is a coastal still-water screen (no rain, waves
+or surge), so it complements the NOAA surge maps on the coast; it does not cover inland rain flooding,
+which drove the recorded events here. It is not NOAA OWP's riverine flood-inundation (HAND/FIM) data.
+
 ## Limits
 
 Two areas, one county; the flood list is incomplete and event-dominated (Harvey); the floor truth
