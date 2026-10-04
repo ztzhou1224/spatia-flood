@@ -77,3 +77,17 @@ prior or none (B: 1,215 of 5,127 at block-group level; C: 868 of 2,539).
   national estimate was already good (0.36 ft in B).
 - Coverage is uneven: dense in Florida, thin in Staten Island and in Harris neighbourhoods outside the
   flood zone.
+
+## Terms of use (read 2026-10-04, https://www.fema.gov/about/openfema/terms-conditions)
+
+> "you agree that the data will be used solely for statistical research or as a reporting record. Further you
+> agree not to reidentify nor attempt to reidentify the individuals whose data is aggregated."
+> "You also agree not to publish or release any facts that may lead to the identification of individuals who
+> are the subject of the data."
+> "you agree that the data cannot be used to make determinations that might affect an individual's rights or
+> eligibility for benefits."
+
+So matching a policy record to a specific house (by lidar ground, BFE, year built) is not allowed, and was
+not done. Block-group statistics, as above, are aggregates. Whether a sold product may use even the
+aggregates ("solely for statistical research", "determinations that might affect an individual's rights")
+needs a legal read before anything built on NFIP data is sold.

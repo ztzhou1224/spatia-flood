@@ -43,6 +43,9 @@ each phase has acceptance criteria. Do not widen scope beyond the plan without a
   `BEEMAPS_API_KEY`, and the R2 read credentials if reading spatia-data layers.
 - **No data in git.** Raw downloads, rasters, images and parquet go under `data/` (gitignored).
   Commit code, configs, small result tables and docs.
+- **OpenFEMA NFIP policies/claims: aggregates only.** Its terms forbid re-identification: never match a
+  policy or claim record to a specific building or person. Commercial use needs a legal read
+  (`research/coverage/NFIP.md`).
 - **No personal data in committed outputs.** Some public sources carry owner names; drop owner,
   taxpayer and contact columns at ingest.
 
