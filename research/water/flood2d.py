@@ -29,7 +29,7 @@ D = ROOT / "data"
 G = 9.81
 USFT = 1200 / 3937
 CFS = 0.0283168
-LON0, LAT0, LON1, LAT1 = -95.605, 29.935, -95.505, 30.015
+LON0, LAT0, LON1, LAT1 = -95.610, 29.930, -95.465, 30.035  # check gauge >= 4 km from the east edge
 T0, T1 = pd.Timestamp("2017-08-25T18:00Z"), pd.Timestamp("2017-08-30T00:00Z")
 GAUGES = {"in_08068800": (-95.5985545, 29.9735557), "chk_08068900": (-95.511885, 30.00660994)}
 
@@ -82,13 +82,16 @@ def step(z, h, qx, qy, dt, dx, n2):
 
 
 @nb.njit(parallel=True, cache=True)
-def edges_and_max(z, h, wse_max, rain_m):
+def edges_and_max(z, h, wse_max, rain_m, dt, dx, n):
     ny, nx = h.shape
     for i in nb.prange(ny):
         for j in range(nx):
             h[i, j] += rain_m
             if i == 0 or j == 0 or i == ny - 1 or j == nx - 1:
-                h[i, j] = 0.0  # open boundary: water reaching the edge leaves
+                # open boundary at normal depth: q = h^(5/3) sqrt(S0) / n with S0 = 0.0005 (Cypress Creek
+                # valley slope order), leaving through the outer face
+                qo = h[i, j] ** (5.0 / 3.0) * 0.02236 / n
+                h[i, j] = max(h[i, j] - min(qo * dt / dx, h[i, j]), 0.0)
             e = z[i, j] + h[i, j]
             if h[i, j] > 0.01 and e > wse_max[i, j]:
                 wse_max[i, j] = e
@@ -144,7 +147,7 @@ def main(run, dx, n, loss_in_h, ia_in=0.5, hours=None):
         step(z, h, qx, qy, dt, dx, n * n)
         q = float(np.interp(now.value, qin.index.view("int64"), qin.values)) * CFS
         h[gin] += q * dt / (dx * dx)
-        edges_and_max(z, h, wse_max, p)
+        edges_and_max(z, h, wse_max, p, dt, dx, n)
         t += dt
         if t >= next_log:
             log.append(dict(t=now.isoformat(), wse_chk_ft=float((z[gchk] + h[gchk]) / USFT), wet_cells=int((h > 0.05).sum()),
