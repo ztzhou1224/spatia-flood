@@ -1,0 +1,156 @@
+group size K >= 10 records; NFIP rows 1003491
+Florida: NFIP single-family policies with floor + ground effective in 2025: 333173; NSI RES1 buildings: 6363455
+Florida certificates 49102; group level used {0.0: 31028, 1.0: 13484, 2.0: 1316, 3.0: 1659, 4.0: 232, 5.0: 381, 6.0: 432, nan: 570} (0 = block group x era x band ... 6 = tract)
+
+## Florida 1 m lidar subset: lowest floor elevation error (ft), ground = lidar ring median
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |   above_below_BFE_right |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|------------------------:|
+| model, no prior                                              | 8800 | 0.646 |      0.835 | 1.311 |  0.068 |                   0.852 |
+| model + block-group prior                                    | 8800 | 0.625 |      0.845 | 1.324 |  0.028 |                   0.861 |
+| model + grouped prior                                        | 8800 | 0.61  |      0.852 | 1.275 |  0.019 |                   0.863 |
+| rule: ground + block-group median height                     | 8770 | 1.431 |      0.729 | 4.336 |  0.917 |                   0.763 |
+| rule: ground + group median height                           | 8765 | 0.968 |      0.796 | 1.799 |  0.483 |                   0.812 |
+| rule: BFE + group median (floor - BFE), else ground + height | 8765 | 5.746 |      0.694 | 2.6   | -3.953 |                   0.769 |
+
+## Florida 1 m lidar subset, houses whose group has >= 30 records
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |   above_below_BFE_right |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|------------------------:|
+| model, no prior                                              | 5757 | 0.636 |      0.844 | 1.257 |  0.076 |                   0.84  |
+| model + block-group prior                                    | 5757 | 0.604 |      0.862 | 1.216 |  0.037 |                   0.853 |
+| model + grouped prior                                        | 5757 | 0.592 |      0.866 | 1.204 |  0.034 |                   0.856 |
+| rule: ground + block-group median height                     | 5757 | 1.103 |      0.781 | 2.221 |  0.602 |                   0.792 |
+| rule: ground + group median height                           | 5757 | 0.841 |      0.817 | 1.581 |  0.338 |                   0.816 |
+| rule: BFE + group median (floor - BFE), else ground + height | 5757 | 1.039 |      0.724 | 2.1   |  0.477 |                   0.773 |
+
+## Florida 1 m lidar subset: 1A slab
+
+|                                                              |    n |   MAE |   within_1 |   above_below_BFE_right |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------------------------:|
+| model, no prior                                              | 5917 | 0.528 |      0.9   |                   0.876 |
+| model + block-group prior                                    | 5917 | 0.5   |      0.914 |                   0.885 |
+| model + grouped prior                                        | 5917 | 0.488 |      0.918 |                   0.886 |
+| rule: ground + block-group median height                     | 5909 | 1.317 |      0.792 |                   0.79  |
+| rule: ground + group median height                           | 5908 | 0.683 |      0.868 |                   0.849 |
+| rule: BFE + group median (floor - BFE), else ground + height | 5908 | 4.358 |      0.726 |                   0.79  |
+
+## Florida 1 m lidar subset: 1B raised slab
+
+|                                                              |    n |    MAE |   within_1 |   above_below_BFE_right |
+|:-------------------------------------------------------------|-----:|-------:|-----------:|------------------------:|
+| model, no prior                                              | 2158 |  0.746 |      0.772 |                   0.795 |
+| model + block-group prior                                    | 2158 |  0.719 |      0.779 |                   0.819 |
+| model + grouped prior                                        | 2158 |  0.693 |      0.791 |                   0.828 |
+| rule: ground + block-group median height                     | 2155 |  0.908 |      0.735 |                   0.795 |
+| rule: ground + group median height                           | 2155 |  0.757 |      0.779 |                   0.822 |
+| rule: BFE + group median (floor - BFE), else ground + height | 2155 | 10.088 |      0.75  |                   0.815 |
+
+## Florida 1 m lidar subset: 5-7 elevated
+
+|                                                              |   n |   MAE |   within_1 |   above_below_BFE_right |
+|:-------------------------------------------------------------|----:|------:|-----------:|------------------------:|
+| model, no prior                                              | 509 | 1.39  |      0.499 |                   0.835 |
+| model + block-group prior                                    | 509 | 1.444 |      0.485 |                   0.796 |
+| model + grouped prior                                        | 509 | 1.437 |      0.505 |                   0.788 |
+| rule: ground + block-group median height                     | 493 | 4.512 |      0.168 |                   0.41  |
+| rule: ground + group median height                           | 491 | 4.95  |      0.226 |                   0.389 |
+| rule: BFE + group median (floor - BFE), else ground + height | 491 | 4.903 |      0.24  |                   0.442 |
+
+## Florida 1 m lidar subset: 8 crawlspace
+
+|                                                              |   n |   MAE |   within_1 |   above_below_BFE_right |
+|:-------------------------------------------------------------|----:|------:|-----------:|------------------------:|
+| model, no prior                                              | 216 | 1.111 |      0.477 |                   0.796 |
+| model + block-group prior                                    | 216 | 1.192 |      0.444 |                   0.782 |
+| model + grouped prior                                        | 216 | 1.185 |      0.449 |                   0.769 |
+| rule: ground + block-group median height                     | 213 | 2.727 |      0.225 |                   0.512 |
+| rule: ground + group median height                           | 211 | 1.83  |      0.284 |                   0.64  |
+| rule: BFE + group median (floor - BFE), else ground + height | 211 | 2.213 |      0.284 |                   0.474 |
+NYC NFHL zones: 47; datums {'': 36, 'NGVD29': 11}
+
+NYC houses 6190; with a map BFE 1963; group level {0.0: 1341, 1.0: 2102, 2.0: 7, 3.0: 348, 5.0: 382, 6.0: 174, nan: 1836}
+
+## NYC (Staten Island east shore), first floor elevation error (ft)
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 6190 | 2.275 |      0.296 | 5.06  | -1.501 |
+| rule: ground + block-group median height                     | 4354 | 2.981 |      0.252 | 6.257 |  1.718 |
+| rule: ground + group median height                           | 4354 | 2.421 |      0.345 | 6.079 |  0.717 |
+| rule: BFE + group median (floor - BFE), else ground + height | 4354 | 2.536 |      0.32  | 6.18  |  1.063 |
+| FL model + grouped prior                                     | 6190 | 2.699 |      0.235 | 6.639 | -2.508 |
+
+## NYC, same houses with a group prior only
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 4354 | 2.512 |      0.274 | 5.64  | -1.529 |
+| rule: ground + block-group median height                     | 4354 | 2.981 |      0.252 | 6.257 |  1.718 |
+| rule: ground + group median height                           | 4354 | 2.421 |      0.345 | 6.079 |  0.717 |
+| rule: BFE + group median (floor - BFE), else ground + height | 4354 | 2.536 |      0.32  | 6.18  |  1.063 |
+| FL model + grouped prior                                     | 4354 | 2.862 |      0.282 | 7.334 | -2.655 |
+
+## NYC, raised houses (floor > 6 ft above ground)
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 1636 | 4.458 |      0.084 | 8.329 | -4.432 |
+| rule: ground + block-group median height                     | 1277 | 2.454 |      0.284 | 5.28  | -0.96  |
+| rule: ground + group median height                           | 1277 | 3.064 |      0.226 | 6.726 | -1.521 |
+| rule: BFE + group median (floor - BFE), else ground + height | 1277 | 2.892 |      0.245 | 6.449 | -1.079 |
+| FL model + grouped prior                                     | 1636 | 5.794 |      0.019 | 9.273 | -5.79  |
+
+## NYC, not raised
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 4554 | 1.491 |      0.372 | 2.927 | -0.448 |
+| rule: ground + block-group median height                     | 3077 | 3.199 |      0.238 | 6.515 |  2.829 |
+| rule: ground + group median height                           | 3077 | 2.154 |      0.395 | 5.019 |  1.646 |
+| rule: BFE + group median (floor - BFE), else ground + height | 3077 | 2.389 |      0.352 | 5.738 |  1.952 |
+| FL model + grouped prior                                     | 4554 | 1.587 |      0.312 | 2.973 | -1.329 |
+
+Harris B: houses 5127; group level {0.0: 362, 1.0: 366, 2.0: 314, 3.0: 173, 4.0: 310, 5.0: 1206, 6.0: 1172, nan: 1224}
+
+## Harris area B, front-door floor elevation error (ft)
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 5026 | 0.355 |      0.963 | 0.71  | -0.058 |
+| rule: ground + block-group median height                     | 3906 | 0.511 |      0.847 | 1.196 |  0.405 |
+| rule: ground + group median height                           | 3903 | 0.609 |      0.796 | 1.447 |  0.501 |
+| rule: BFE + group median (floor - BFE), else ground + height | 3903 | 3.542 |      0.3   | 8.38  | -1.718 |
+| FL model + grouped prior                                     | 5127 | 0.403 |      0.946 | 0.833 |  0.262 |
+
+## Harris area B, houses with a group prior
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 3820 | 0.356 |      0.959 | 0.718 | -0.02  |
+| rule: ground + block-group median height                     | 3903 | 0.511 |      0.847 | 1.196 |  0.406 |
+| rule: ground + group median height                           | 3903 | 0.609 |      0.796 | 1.447 |  0.501 |
+| rule: BFE + group median (floor - BFE), else ground + height | 3903 | 3.542 |      0.3   | 8.38  | -1.718 |
+| FL model + grouped prior                                     | 3903 | 0.425 |      0.935 | 0.883 |  0.34  |
+
+Harris C: houses 2539; group level {0.0: 452, 1.0: 393, 2.0: 1, 3.0: 22, 5.0: 7, 6.0: 138, nan: 1526}
+
+## Harris area C, front-door floor elevation error (ft)
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 2450 | 0.804 |      0.881 | 1.1   |  0.021 |
+| rule: ground + block-group median height                     | 1013 | 1.878 |      0.59  | 5.905 |  1.08  |
+| rule: ground + group median height                           | 1013 | 1.525 |      0.682 | 2.807 |  0.709 |
+| rule: BFE + group median (floor - BFE), else ground + height | 1013 | 1.663 |      0.576 | 4.488 |  1.162 |
+| FL model + grouped prior                                     | 2539 | 1.007 |      0.818 | 1.24  |  0.207 |
+
+## Harris area C, houses with a group prior
+
+|                                                              |    n |   MAE |   within_1 |   p90 |   bias |
+|:-------------------------------------------------------------|-----:|------:|-----------:|------:|-------:|
+| national: NSI height + lidar median grade (before)           | 1003 | 1.195 |      0.839 | 1.931 | -0.412 |
+| rule: ground + block-group median height                     | 1013 | 1.878 |      0.59  | 5.905 |  1.08  |
+| rule: ground + group median height                           | 1013 | 1.525 |      0.682 | 2.807 |  0.709 |
+| rule: BFE + group median (floor - BFE), else ground + height | 1013 | 1.663 |      0.576 | 4.488 |  1.162 |
+| FL model + grouped prior                                     | 1013 | 1.483 |      0.754 | 2.439 | -0.286 |

@@ -91,3 +91,38 @@ So matching a policy record to a specific house (by lidar ground, BFE, year buil
 not done. Block-group statistics, as above, are aggregates. Whether a sold product may use even the
 aggregates ("solely for statistical research", "determinations that might affect an individual's rights")
 needs a legal read before anything built on NFIP data is sold.
+
+## Part 2: prior narrowed by build era and BFE band (still aggregates)
+
+`nfip_group_test.py K`; outputs `nfip_group_k30_output.txt`, `nfip_group_k10_output.txt`. The prior is the
+median over the most specific group with >= K policy rows: block group x build era x (BFE - ground) band,
+then coarser groups down to the tract. No record is matched to a house (OpenFEMA terms, above). Renewals
+repeat rows, so K = 10 rows is only about 4 buildings; K = 30 is the safer aggregate.
+
+Florida, 1 m lidar subset (8,800 certificates), lowest floor error:
+
+| | MAE | above/below BFE right |
+|---|---|---|
+| model, no prior | 0.646 | 85.2% |
+| model + block-group prior | 0.625 | 86.1% |
+| model + grouped prior, K 30 | 0.619 | 86.2% |
+| model + grouped prior, K 10 | 0.610 | 86.3% |
+| ground + block-group median (no model) | 1.431 | 76.3% |
+| ground + grouped median, K 30 / K 10 | 1.112 / 0.968 | 79.6% / 81.2% |
+
+NYC (all 6,190 houses; national NSI + lidar 2.28): ground + grouped median 2.48 (K 30, 4,087 houses with
+a prior) / 2.42 (K 10, 4,354). Raised houses: block-group median 2.45, grouped 3.08 / 3.06. Not raised:
+national 1.49, grouped 2.22 / 2.15.
+Harris B (national 0.355): grouped rule 0.388 (K 30) / 0.609 (K 10); Florida model + grouped prior 0.41.
+Harris C (national 0.804): grouped rule 1.51 / 1.53 on the 1,013 houses with a prior; Florida model 0.99 / 1.01.
+
+The 'BFE + group median (floor - BFE)' rule is not usable: NFIP BFE values include outliers (Florida K 10:
+MAE 5.7, bias -4.0, p90 2.6), and 11 of the 47 NFHL zones over the NYC houses are tagged NGVD29.
+
+Reading: narrowing the group helps only as a model feature in Florida, and only a little (0.625 to 0.61-0.62).
+Used directly it beats the plain block-group median but still loses to the model, and in NYC and Harris it
+does not beat the national estimate.
+
+What one-to-one matching could add at most (not done; forbidden): in Florida 333,173 single-family policies
+with floor and ground were effective in 2025, against 6,363,455 NSI RES1 buildings, so at most about 5.2% of
+houses have a policy record that matching could find. All other houses would get nothing from it.

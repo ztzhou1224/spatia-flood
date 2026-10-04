@@ -16,6 +16,7 @@ Estimates compared with nfip_test.py's block-group prior:
 Usage: python nfip_group_test.py [K]
 """
 import sys
+import time
 from pathlib import Path
 
 import duckdb
@@ -103,9 +104,17 @@ def nyc_bfe(h):
     x0, y0, x1, y1 = h.longitude.min() - 0.002, h.latitude.min() - 0.002, h.longitude.max() + 0.002, h.latitude.max() + 0.002
     feats, off = [], 0
     while True:
-        r = requests.get(url, params=dict(f="geojson", where="1=1", outFields="FLD_ZONE,STATIC_BFE,V_DATUM", returnGeometry="true",
-                                          geometry=f"{x0},{y0},{x1},{y1}", geometryType="esriGeometryEnvelope", inSR=4326, outSR=4326,
-                                          spatialRel="esriSpatialRelIntersects", resultOffset=off, resultRecordCount=500), timeout=300).json()
+        for attempt in range(6):
+            try:
+                r = requests.get(url, params=dict(f="geojson", where="1=1", outFields="FLD_ZONE,STATIC_BFE,V_DATUM", returnGeometry="true",
+                                                  geometry=f"{x0},{y0},{x1},{y1}", geometryType="esriGeometryEnvelope", inSR=4326, outSR=4326,
+                                                  spatialRel="esriSpatialRelIntersects", resultOffset=off, resultRecordCount=500),
+                                 timeout=300).json()
+                if "features" in r:
+                    break
+            except Exception:  # noqa: BLE001
+                pass
+            time.sleep(2 ** attempt)
         feats += r["features"]
         if len(r["features"]) < 500:
             break
@@ -120,7 +129,7 @@ def nyc_bfe(h):
     j = con.execute("""select pts.i, max(case when z.bfe > -9000 then z.bfe end) bfe from pts join z
                        on ST_Intersects(ST_GeomFromGeoJSON(z.gj), ST_Point(pts.lon, pts.lat)) group by pts.i""").df()
     out = pd.Series(np.nan, index=range(len(h)))
-    out.loc[j.i.values] = j.bfe.values
+    out.loc[j.i.values] = j.bfe.astype(float).values
     return out.values
 
 
