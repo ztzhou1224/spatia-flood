@@ -1,0 +1,51 @@
+certificates in the 8 lidar tiles with a footprint and lidar ring: 8800; projects {'USGS_one_meter_x40y294_FL_Southwest_A_2018': 1873, 'USGS_one_meter_x58y290_FL_Southeast_B1_2018': 1696, 'USGS_one_meter_x58y289_FL_Southeast_B1_2018': 1154, 'USGS_1M_17_x32y308_FL_Peninsular_2018_D18': 1010, 'USGS_one_meter_x39y295_FL_Southwest_A_2018': 896, 'USGS_one_meter_x42y289_FL_Southwest_B_2018': 770, 'USGS_one_meter_x42y290_FL_Southwest_B_2018': 754, 'USGS_1M_17_x33y313_FL_2018PascoCounty_C22': 647}
+ground check l_min - certificate LAG: median -0.49 ft, MAE 0.83
+ground check l_p10 - certificate LAG: median -0.22 ft, MAE 0.57
+ground check l_med - certificate LAG: median +0.15 ft, MAE 0.43
+ground check NSI 10 m - certificate LAG: median +0.07 ft, MAE 0.84
+
+## Lowest floor error (ft) on these certificates; model height trained in other counties
+
+|                                                 |    n |   MAE |   within_05 |   within_1 |   p90 |   bias |   above_below_right |
+|:------------------------------------------------|-----:|------:|------------:|-----------:|------:|-------:|--------------------:|
+| NSI 10 m ground + model height                  | 8800 | 0.914 |       0.476 |      0.734 | 2.277 | -0.292 |               0.845 |
+| lidar ring lowest + model height                | 8800 | 0.964 |       0.447 |      0.696 | 2.221 | -0.748 |               0.734 |
+| lidar ring 10th pct + model height              | 8800 | 0.756 |       0.541 |      0.779 | 1.735 | -0.396 |               0.796 |
+| lidar ring median + model height                | 8800 | 0.659 |       0.534 |      0.826 | 1.339 |  0.103 |               0.851 |
+| certificate LAG (perfect ground) + model height | 8800 | 0.538 |       0.656 |      0.863 | 1.228 |  0.001 |               0.877 |
+
+### 1A slab: n 5917
+|                                                 |    n |   MAE |   within_1 |   bias |   above_below_right |
+|:------------------------------------------------|-----:|------:|-----------:|-------:|--------------------:|
+| NSI 10 m ground + model height                  | 5917 | 0.831 |      0.787 | -0.204 |               0.869 |
+| lidar ring lowest + model height                | 5917 | 0.779 |      0.774 | -0.581 |               0.773 |
+| lidar ring 10th pct + model height              | 5917 | 0.596 |      0.857 | -0.253 |               0.828 |
+| lidar ring median + model height                | 5917 | 0.543 |      0.89  |  0.211 |               0.877 |
+| certificate LAG (perfect ground) + model height | 5917 | 0.375 |      0.942 |  0.111 |               0.912 |
+
+### 1B raised slab: n 2158
+|                                                 |    n |   MAE |   within_1 |   bias |   above_below_right |
+|:------------------------------------------------|-----:|------:|-----------:|-------:|--------------------:|
+| NSI 10 m ground + model height                  | 2158 | 0.878 |      0.717 | -0.407 |               0.79  |
+| lidar ring lowest + model height                | 2158 | 1.311 |      0.537 | -1.192 |               0.599 |
+| lidar ring 10th pct + model height              | 2158 | 1.013 |      0.638 | -0.781 |               0.696 |
+| lidar ring median + model height                | 2158 | 0.761 |      0.76  | -0.188 |               0.795 |
+| certificate LAG (perfect ground) + model height | 2158 | 0.737 |      0.758 | -0.308 |               0.799 |
+
+### 5-7 elevated: n 509
+|                                                 |   n |   MAE |   within_1 |   bias |   above_below_right |
+|:------------------------------------------------|----:|------:|-----------:|-------:|--------------------:|
+| NSI 10 m ground + model height                  | 509 | 1.884 |      0.322 | -1.204 |               0.837 |
+| lidar ring lowest + model height                | 509 | 1.72  |      0.434 | -1.197 |               0.794 |
+| lidar ring 10th pct + model height              | 509 | 1.486 |      0.497 | -0.764 |               0.815 |
+| lidar ring median + model height                | 509 | 1.392 |      0.497 | -0.239 |               0.825 |
+| certificate LAG (perfect ground) + model height | 509 | 1.451 |      0.458 | -0.218 |               0.829 |
+
+### 8 crawlspace: n 216
+|                                                 |   n |   MAE |   within_1 |   bias |   above_below_right |
+|:------------------------------------------------|----:|------:|-----------:|-------:|--------------------:|
+| NSI 10 m ground + model height                  | 216 | 1.262 |      0.449 |  0.58  |               0.75  |
+| lidar ring lowest + model height                | 216 | 0.812 |      0.787 |  0.148 |               0.884 |
+| lidar ring 10th pct + model height              | 216 | 0.858 |      0.727 |  0.406 |               0.843 |
+| lidar ring median + model height                | 216 | 1.107 |      0.491 |  0.844 |               0.787 |
+| certificate LAG (perfect ground) + model height | 216 | 0.879 |      0.718 |  0.613 |               0.824 |

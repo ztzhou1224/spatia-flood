@@ -25,3 +25,26 @@ Findings:
    next to each house.
 3. Ground is now the biggest single error (1.16 ft from the 10 m DEM). 1 m lidar covers 91.5% of
    coastal Florida residents (`COAST.md`); the next test is the same model with 1 m lidar ground.
+
+## Part 2: with 1 m lidar ground (`fl_lidar.py`, `fl_lidar_output.txt`)
+
+8,800 certificates in the 8 USGS 1 m DEM tiles holding the most certificates (Lee, Collier, Broward,
+Pinellas, Pasco; 2018 lidar), each with an Overture footprint (release 2026-08-19.0) and a lidar ring
+0.5–2.5 m outside it. Floor height above ground from a model trained on certificates in OTHER counties
+(national features only). The ring **median** is the reference chosen beforehand in Harris County.
+
+Ground check vs the certificate's lowest adjacent grade: lidar ring median +0.15 ft median, MAE 0.43 ft;
+NSI 10 m DEM MAE 0.84 ft (these tiles; 1.16 ft statewide).
+
+| Ground used + model height | MAE ft | within 1 ft | above/below BFE right |
+|---|---|---|---|
+| NSI 10 m DEM | 0.91 | 73% | 84.5% |
+| **1 m lidar ring median** | **0.66** | **83%** | **85.1%** |
+| Certificate's own measured ground (best case) | 0.54 | 86% | 87.7% |
+
+By type with lidar median: slab 0.54 ft (89% within 1 ft, 88% right), raised slab 0.76 ft, elevated
+1.39 ft, crawlspace 1.11 ft (the ring lowest point fits crawlspaces better: 0.81 ft).
+
+So with 1 m lidar and a model trained on other counties' certificates, the lowest floor is within 1 ft
+for 83% of these houses and the above/below-BFE call is right 85% of the time, close to what perfect
+ground would give. The remaining error is the floor-height part, mostly elevated houses.
