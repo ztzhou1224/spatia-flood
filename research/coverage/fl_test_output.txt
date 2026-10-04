@@ -1,0 +1,62 @@
+certificates with an NSI residential point within 30 m: 49102 (median distance 2.9 m); counties 86
+ground check: NSI ground (1/3" DEM) minus certificate LAG, median 0.03 ft, MAE 1.16 ft
+true floor above LAG: q10/50/90 [0.49 1.   2.8 ]; diagram mix {'1A slab': 29883, '1B raised slab': 11528, '5-7 elevated': 5551, '8 crawlspace': 2140}; NSI types {'S': 24455, 'C': 9974, 'B': 8450, 'I': 4201, 'P': 1545, 'W': 477}
+
+## Lowest-floor elevation error (ft), certificates not in the 10% pool
+
+|                                           |     n |   MAE |   within_1 |   within_2 |   p90 |   bias |   above/below BFE right |
+|:------------------------------------------|------:|------:|-----------:|-----------:|------:|-------:|------------------------:|
+| national (NSI ground + NSI height)        | 44093 | 2.063 |      0.452 |      0.68  | 5.966 | -0.049 |                   0.729 |
+| national + flood-code rule                | 44093 | 1.921 |      0.479 |      0.713 | 5.7   |  0.448 |                   0.77  |
+| county-out model (certificates elsewhere) | 44093 | 1.223 |      0.613 |      0.809 | 3.006 | -0.262 |                   0.827 |
+| neighbours (10% certificates)             | 23068 | 1.177 |      0.638 |      0.828 | 2.835 |  0.014 |                   0.8   |
+
+### 1A slab: n 26834
+|                                           |     n |   MAE |   within_1 |   bias |   above/below BFE right |
+|:------------------------------------------|------:|------:|-----------:|-------:|------------------------:|
+| national (NSI ground + NSI height)        | 26834 | 1.721 |      0.517 | -0.074 |                   0.776 |
+| national + flood-code rule                | 26834 | 1.601 |      0.539 |  0.163 |                   0.816 |
+| county-out model (certificates elsewhere) | 26834 | 1.012 |      0.681 | -0.277 |                   0.858 |
+| neighbours (10% certificates)             | 14244 | 0.947 |      0.712 |  0.111 |                   0.837 |
+
+### 1B raised slab: n 10343
+|                                           |     n |   MAE |   within_1 |   bias |   above/below BFE right |
+|:------------------------------------------|------:|------:|-----------:|-------:|------------------------:|
+| national (NSI ground + NSI height)        | 10343 | 2.292 |      0.389 | -0.49  |                   0.647 |
+| national + flood-code rule                | 10343 | 1.758 |      0.486 |  0.173 |                   0.826 |
+| county-out model (certificates elsewhere) | 10343 | 1.153 |      0.629 | -0.616 |                   0.798 |
+| neighbours (10% certificates)             |  5481 | 1.285 |      0.572 | -0.424 |                   0.726 |
+
+### 5-7 elevated: n 4990
+|                                           |    n |   MAE |   within_1 |   bias |   above/below BFE right |
+|:------------------------------------------|-----:|------:|-----------:|-------:|------------------------:|
+| national (NSI ground + NSI height)        | 4990 | 3.326 |      0.276 |  0.474 |                   0.659 |
+| national + flood-code rule                | 4990 | 3.744 |      0.199 |  2.026 |                   0.482 |
+| county-out model (certificates elsewhere) | 4990 | 2.365 |      0.301 |  0.128 |                   0.749 |
+| neighbours (10% certificates)             | 2363 | 2     |      0.462 | -0.125 |                   0.783 |
+
+### 8 crawlspace: n 1926
+|                                           |    n |   MAE |   within_1 |   bias |   above/below BFE right |
+|:------------------------------------------|-----:|------:|-----------:|-------:|------------------------:|
+| national (NSI ground + NSI height)        | 1926 | 2.331 |      0.356 |  1.323 |                   0.694 |
+| national + flood-code rule                | 1926 | 2.523 |      0.329 |  1.813 |                   0.579 |
+| county-out model (certificates elsewhere) | 1926 | 1.596 |      0.395 |  0.832 |                   0.749 |
+| neighbours (10% certificates)             |  980 | 1.928 |      0.354 |  1.395 |                   0.705 |
+
+### MAE by year built (national + rule / county-out model / neighbours)
+| year      |   national + flood-code rule |   county-out model (certificates elsewhere) |   neighbours (10% certificates) |
+|:----------|-----------------------------:|--------------------------------------------:|--------------------------------:|
+| <1975     |                         1.88 |                                        1.16 |                            1.12 |
+| 1975-94   |                         1.93 |                                        1.26 |                            1.2  |
+| 1995-2009 |                         1.82 |                                        1.16 |                            1.15 |
+| 2010+     |                         2.07 |                                        1.36 |                            1.28 |
+
+NSI foundation type vs certificate floor above LAG (median ft):
+| nsi_found_type   |     n |   measured |   nsi_default |   elevated_share |
+|:-----------------|------:|-----------:|--------------:|-----------------:|
+| B                |  8450 |        1   |           2   |             0.35 |
+| C                |  9974 |        1   |           1.5 |             0.43 |
+| I                |  4201 |        1.1 |           8   |             0.6  |
+| P                |  1545 |        1.4 |           8   |             0.75 |
+| S                | 24455 |        1   |           0.5 |             0.33 |
+| W                |   477 |        1.7 |           1.5 |             0.68 |
