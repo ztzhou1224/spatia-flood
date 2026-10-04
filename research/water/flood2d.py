@@ -9,7 +9,7 @@ series at check points.
 
 Inputs: data/harris_mini/B/*2018*.tif, data/water/iemre_hourly_*.csv (IEM reanalysis hourly
 precipitation, Stage IV based), data/water/usgs_08068800_00060.csv (inflow), gauge coordinates.
-Usage: python flood2d.py RUN_NAME DX N LOSS_IN_PER_H [IA_IN]
+Usage: python flood2d.py RUN_NAME DX N LOSS_IN_PER_H [IA_IN] [HOURS]  (HOURS limits the run, for tests)
 """
 import glob
 import json
@@ -104,7 +104,7 @@ def build_dem(dx):
     return z, tr, srcs[0].crs
 
 
-def main(run, dx, n, loss_in_h, ia_in=0.5):
+def main(run, dx, n, loss_in_h, ia_in=0.5, hours=None):
     z, tr, crs = build_dem(dx)
     ny, nx = z.shape
     to = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
@@ -129,7 +129,7 @@ def main(run, dx, n, loss_in_h, ia_in=0.5):
     qin = qin.set_index("t").v
     h = np.zeros_like(z); qx = np.zeros((ny, nx)); qy = np.zeros((ny, nx))
     wse_max = np.full_like(z, -1e9)
-    t, t_end = 0.0, (T1 - T0).total_seconds()
+    t, t_end = 0.0, (T1 - T0).total_seconds() if hours is None else hours * 3600.0
     ia_left = ia_in * 0.0254
     log, wall0, next_log = [], time.time(), 0.0
     while t < t_end:
@@ -168,4 +168,5 @@ def main(run, dx, n, loss_in_h, ia_in=0.5):
 
 if __name__ == "__main__":
     a = sys.argv
-    main(a[1], float(a[2]), float(a[3]), float(a[4]), float(a[5]) if len(a) > 5 else 0.5)
+    main(a[1], float(a[2]), float(a[3]), float(a[4]), float(a[5]) if len(a) > 5 else 0.5,
+         float(a[6]) if len(a) > 6 else None)
