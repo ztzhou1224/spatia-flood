@@ -72,7 +72,7 @@ def attach(df, lon, lat, nf):
     a = bg.reindex(geoid.values).reset_index(drop=True)
     b = tr.reindex(geoid.str[:11].values).reset_index(drop=True)
     use_bg = a.nf_n.fillna(0) >= 10
-    out = a.where(use_bg.values[:, None], b)
+    out = pd.DataFrame({c: np.where(use_bg, a[c], b[c]) for c in a.columns})
     out["nf_level"] = np.where(use_bg, "block group", np.where(b.nf_n.notna(), "tract", "none"))
     out.index = df.index
     return pd.concat([df, out], axis=1)
