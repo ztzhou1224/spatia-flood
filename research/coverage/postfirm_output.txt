@@ -1,0 +1,93 @@
+Florida certificates 49102; with a community FIRM year 99.0%; post-FIRM 61.5%
+
+## Florida floor height above the certificate's ground (ft), county-out
+
+|                            |     n |   MAE |   within_1 |   bias |
+|:---------------------------|------:|------:|-----------:|-------:|
+| model (as before)          | 49102 | 0.704 |      0.811 | -0.219 |
+| model + post-FIRM features | 49102 | 0.705 |      0.812 | -0.217 |
+
+## Florida floor height: 1A slab
+
+|                            |     n |   MAE |   within_1 |   bias |
+|:---------------------------|------:|------:|-----------:|-------:|
+| model (as before)          | 29883 | 0.378 |      0.939 |  0.018 |
+| model + post-FIRM features | 29883 | 0.378 |      0.942 |  0.025 |
+
+## Florida floor height: 1B raised slab
+
+|                            |     n |   MAE |   within_1 |   bias |
+|:---------------------------|------:|------:|-----------:|-------:|
+| model (as before)          | 11528 | 1.044 |      0.632 | -0.77  |
+| model + post-FIRM features | 11528 | 1.044 |      0.638 | -0.779 |
+
+## Florida floor height: 5-7 elevated
+
+|                            |    n |   MAE |   within_1 |   bias |
+|:---------------------------|-----:|------:|-----------:|-------:|
+| model (as before)          | 5551 | 1.645 |      0.542 | -0.687 |
+| model + post-FIRM features | 5551 | 1.652 |      0.533 | -0.691 |
+
+## Florida floor height: 8 crawlspace
+
+|                            |    n |   MAE |   within_1 |   bias |
+|:---------------------------|-----:|------:|-----------:|-------:|
+| model (as before)          | 2140 | 0.978 |      0.679 |  0.66  |
+| model + post-FIRM features | 2140 | 0.979 |      0.672 |  0.664 |
+
+## Florida 1 m lidar subset: lowest floor elevation error (ft)
+
+|                            |    n |   MAE |   within_1 |   bias |   above_below_BFE_right |
+|:---------------------------|-----:|------:|-----------:|-------:|------------------------:|
+| model (as before)          | 8800 | 0.659 |      0.826 |  0.103 |                   0.851 |
+| model + post-FIRM features | 8800 | 0.661 |      0.822 |  0.081 |                   0.85  |
+
+NYC houses 6190; first FIRM 1983; post-FIRM 28%; in SFHA 32%; with a NAVD88 BFE 32%; permit-flagged 6.2%
+houses the code rule applies to: 966
+where the raised houses are:
+|                                        |   houses |   raised |   raised_share |
+|:---------------------------------------|---------:|---------:|---------------:|
+| SFHA, post-FIRM                        |      820 |      437 |           0.53 |
+| SFHA, pre-FIRM or unknown year         |     1143 |      197 |           0.17 |
+| outside SFHA, post-FIRM                |      882 |      347 |           0.39 |
+| outside SFHA, pre-FIRM or unknown year |     3345 |      217 |           0.06 |
+
+## NYC first floor elevation error (ft), all houses
+
+|                                                       |    n |   MAE |   within_1 |   bias |
+|:------------------------------------------------------|-----:|------:|-----------:|-------:|
+| national (before)                                     | 6190 | 2.275 |      0.296 | -1.501 |
+| rule: post-FIRM or permit in SFHA -> floor >= BFE + 1 | 6190 | 2.147 |      0.3   | -1.217 |
+| FL-trained model, no post-FIRM                        | 6190 | 2.957 |      0.157 | -2.768 |
+| FL-trained model + post-FIRM                          | 6190 | 2.91  |      0.167 | -2.715 |
+| FL model + post-FIRM, then the code rule              | 6190 | 2.706 |      0.167 | -2.293 |
+
+## NYC raised houses (floor > 6 ft above BES grade)
+
+|                                                       |    n |   MAE |   within_1 |   bias |
+|:------------------------------------------------------|-----:|------:|-----------:|-------:|
+| national (before)                                     | 1198 | 5.096 |      0.057 | -5.059 |
+| rule: post-FIRM or permit in SFHA -> floor >= BFE + 1 | 1198 | 4.223 |      0.094 | -4.173 |
+| FL-trained model, no post-FIRM                        | 1198 | 6.421 |      0.005 | -6.405 |
+| FL-trained model + post-FIRM                          | 1198 | 6.411 |      0.005 | -6.394 |
+| FL model + post-FIRM, then the code rule              | 1198 | 5.126 |      0.046 | -5.097 |
+
+## NYC not raised
+
+|                                                       |    n |   MAE |   within_1 |   bias |
+|:------------------------------------------------------|-----:|------:|-----------:|-------:|
+| national (before)                                     | 4992 | 1.598 |      0.353 | -0.647 |
+| rule: post-FIRM or permit in SFHA -> floor >= BFE + 1 | 4992 | 1.649 |      0.35  | -0.508 |
+| FL-trained model, no post-FIRM                        | 4992 | 2.125 |      0.194 | -1.895 |
+| FL-trained model + post-FIRM                          | 4992 | 2.069 |      0.206 | -1.832 |
+| FL model + post-FIRM, then the code rule              | 4992 | 2.126 |      0.196 | -1.62  |
+
+## NYC houses the code rule applies to
+
+|                                                       |   n |   MAE |   within_1 |   bias |
+|:------------------------------------------------------|----:|------:|-----------:|-------:|
+| national (before)                                     | 966 | 4.182 |      0.124 | -3.039 |
+| rule: post-FIRM or permit in SFHA -> floor >= BFE + 1 | 966 | 3.359 |      0.152 | -1.219 |
+| FL-trained model, no post-FIRM                        | 966 | 4.868 |      0.151 | -4.481 |
+| FL-trained model + post-FIRM                          | 966 | 4.86  |      0.158 | -4.469 |
+| FL model + post-FIRM, then the code rule              | 966 | 3.556 |      0.156 | -1.762 |
