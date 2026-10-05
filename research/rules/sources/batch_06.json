@@ -1,0 +1,190 @@
+[
+ {
+  "cid": "125144",
+  "community": "SARASOTA COUNTY (UNINCORPORATED)",
+  "state": "FL",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2023,
+  "history": [
+   {
+    "year": 2002,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/fl/sarasota_county/codes/code_of_ordinances (CodeBank version Supplement 47 Update 1, 2012-05-09; Municode API jobId 180934, productId 11511)",
+    "quote": "In Zones A1 through A30, and AE, designated on the adopted Flood Insurance Rate Maps (FIRM), all new residential and non-residential construction and Substantial Improvements to existing residential and non-residential Structures shall have the Lowest Floor elevated to or above the Base Flood Elevation (B.F.E.)."
+   },
+   {
+    "year": 2016,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/fl/sarasota_county/codes/code_of_ordinances (CodeBank version Supplement 90 Update 1, 2023-11-28; Municode API jobId 435908)",
+    "quote": "all new residential and non-residential construction and Substantial Improvements to existing residential and non-residential Structures shall have the Lowest Floor elevated to or above the Base Flood Elevation (B.F.E.), the elevation required by the Florida Building Code, or the 100-year 24-hour maximum flood stage plus 1.0 foot, whichever is higher."
+   }
+  ],
+  "first_freeboard_year": 2023,
+  "history_complete": false,
+  "other_height_rules": "Local county flood-study areas (Community Flood Hazard Areas / 'Sarasota County Comprehensive Flood Study' SFHAs): lowest floor >= 100-year (24-hour max) local flood stage + 1.0 ft, in force at least since the 2002-013 article (seen in 2012 code) and still current. Unnumbered A zone (2012 text): 2 ft above highest adjacent grade or 1 ft above local 100-yr stage, whichever higher; current text: Zone A 1 ft above BFE determined per Sec. 54-519(1). Zone AO: depth number-based. Every version since 2016 also says 'or the elevation required by the Florida Building Code, whichever is higher' (FBC freeboard collected separately).",
+  "source_url": "https://library.municode.com/fl/sarasota_county/codes/code_of_ordinances?nodeId=PTIICOOR_CH54ENNARE_ARTXVIFLDAPR (current, Supplement 98 Update 2; Municode API jobId 499535)",
+  "quote": "Minimum Elevation Requirements. All new residential and non-residential construction and Substantial Improvements to existing residential and non-residential Structures shall have the Lowest Floor elevated to or above the Base Flood Elevation plus 1.0 foot, the elevation required by the Florida Building Code, or to or above the 100-year 24-hour maximum flood stage plus 1.0 foot, whichever is higher.",
+  "date_source_url": "https://library.municode.com/fl/sarasota_county/codes/code_of_ordinances?nodeId=PTIICOOR_CH54ENNARE_ARTXVIFLDAPR",
+  "date_quote": "Editor's note— Ord. No. 2023-068, §§ 2—14, adopted December 12, 2023, amended Article XVI in its entirety to read as herein set out.",
+  "confidence": "high",
+  "notes": "Compared Municode CodeBank versions via api.municode.com: Supp 90 Upd 1 (2023-11-28, pre-2023-068) has lowest floor 'to or above the Base Flood Elevation (B.F.E.)' (V zone likewise at BFE); Supp 90 Upd 2 (2024-01-10, post) has 'Base Flood Elevation plus 1.0 foot' for A and V zones. 2012 version (Ord. 2002-013 article, adopted 4-24-2002, amended 2003-085, 2008-084, 2009-024) also at BFE for FIRM AE zones. So the local BFE+1 ft rule dates from Ord. 2023-068 (12-12-2023), adopted around the new countywide FIRM (effective 2024-03-27, not verified here). The 2023 local +1 ft largely restates the Florida Building Code residential requirement (FBC-R has required BFE+1 for some editions; collected separately) — the ordinance itself references FBC 'whichever is higher'. history_complete=false only because pre-2002 text (Ord. 92-055 of 1992, 94-050) was not seen; all versions seen 2002-2023 have no BFE-relative local freeboard, so first_freeboard_year=2023 is well supported for BFE-relative freeboard. Effective date of Ord. 2023-068 (filing with FL Dept of State) not verified."
+ },
+ {
+  "cid": "120153",
+  "community": "MANATEE COUNTY (UNINCORPORATED)",
+  "state": "FL",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": null,
+  "history": [
+   {
+    "year": 1990,
+    "a_zone_freeboard_ft": 1.0,
+    "year_is_earliest_evidence_not_adoption": true,
+    "source_url": "https://library.municode.com/fl/manatee_county/codes/code_of_ordinances (CodeBank version Supplement 85, 2011-12-06; Municode API productId 10428, jobId 167825, Sec. 2-10-25 Construction standards)",
+    "quote": "(1) Residential construction. New construction or substantial improvement of any residential structure located in an A zone shall have the lowest floor, including basement, elevated no lower than one foot above the base flood elevation. This shall be the flood protection elevation (FPE). ... Structures located in a V zone or floodway shall have the lowest part of the lowest horizontal structure member elevated no lower than the FPE. ... (Ord. No. 89-10, § 1(105), 4-27-89; Ord. No. 90-01, § 5(b), 7-25-90)"
+   },
+   {
+    "year": 2014,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://library.municode.com/fl/manatee_county/codes/code_of_ordinances (CodeBank version Supplement 92, 2014-04-08; Municode API jobId 212266)",
+    "quote": "R322.2.1 Elevation requirements. 1. Buildings and structures in flood hazard areas not designated as Coastal A Zones shall have the lowest floors elevated to or above the base flood elevation plus 1 foot or the design flood elevation, whichever is higher."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "AO zones (current local FBC-R amendment): lowest floor above highest adjacent grade >= FIRM depth number + 1 ft, or >= 4 ft if no depth number. Since 2014 the freeboard is written as a local technical amendment to FBC-Residential R322.2.1/R322.3.2 ('base flood elevation plus 1 foot, or the design flood elevation, whichever is higher').",
+  "source_url": "https://library.municode.com/fl/manatee_county/codes/code_of_ordinances?nodeId=PTIIMACOCOOR_CH2-10DRFLCO_ARTIIFLMA (current; Municode API jobId 488888, Sec. 2-10-25)",
+  "quote": "R322.2.1 Elevation requirements. 1. Buildings and structures in flood hazard areas, including flood hazard areas designated as coastal A zones, shall have the lowest floors elevated to or above the base flood elevation plus 1 foot, or the design flood elevation, whichever is higher. ... R322.3.2 ... is elevated to or above the base flood elevation plus 1 foot (305 mm) or the design flood elevation, whichever is higher.",
+  "date_source_url": "https://library.municode.com/fl/manatee_county/codes/code_of_ordinances (CodeBank Supplement 85, 2011-12-06, Article II editor's note)",
+  "date_quote": "Editor's note— At the discretion of the editor, Ord. No. 89-10, § 1(101)—(105), adopted Apr. 27, 1989, not specifically amendatory of the Code, has been included as a new Art. II to Ch. 2-10, §§ 2-10-21—2-10-25, superseding former Art. II, which pertained to similar subject matter. Formerly, Art. II consisted of §§ 2-10-21—2-10-31 and 2-10-41—2-10-46 and derived from Ord. No. 77-1, Arts. I—VII and X, adopted May 24, 1977.",
+  "confidence": "medium",
+  "notes": "Local 1 ft freeboard (A and V zones) has been continuous: in the 2011 code (Art. II from Ord. 89-10 of 4-27-1989 as amended by Ord. 90-01 of 7-25-1990 — the 1 ft text is in Sec. 2-10-25 whose only history is those two ordinances, so it was adopted in 1989 or 1990, I could not tell which); restated in Ord. 13-39 (adopted 1-7-2014) as a local amendment to FBC-R, and in current code (Ord. 13-39 as amended by Ord. 20-22, 9-3-2020). current_since_year left null because the value (1 ft) has been the same since 1989/1990; the wording changed in 2014 and 2020. The 1977 ordinance (Ord. 77-1) text was not found, so whether freeboard existed before 1989 is unknown (history_complete=false; first_freeboard_year null; it is 1990 at the latest, or earlier). The current A-zone +1 ft equals the FBC-R statewide value (collected separately); in 2014 it exceeded FBC 2010 for non-coastal A zones (the local amendment added 'plus 1 foot')."
+ },
+ {
+  "cid": "120061",
+  "community": "CHARLOTTE COUNTY (UNINCORPORATED)",
+  "state": "FL",
+  "a_zone_freeboard_ft": 0.0,
+  "v_zone_freeboard_ft": 0.0,
+  "current_since_year": null,
+  "history": [
+   {
+    "year": 2003,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/fl/charlotte_county/codes/code_of_ordinances (CodeBank Supplement 79, 2012-01-10; Municode API productId 10526, jobId 167580, Ch. 3-2 Art. VIII Flood Damage Prevention)",
+    "quote": "(a) Residential construction. New construction or substantial improvement of any residential building (or manufactured/mobile home) shall have the lowest floor, including basement, elevated to a minimum of the base flood elevation."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "No local BFE-relative freeboard found in the county code: the 2016 Floodplain Management Ordinance (Ch. 3-2 Art. XI, Ord. 2016-014) defers building elevation to the Florida Building Code; its local FBC-R technical amendments (Sec. 3-2-321) cover enclosures/flood openings/breakaway walls only, not R322.2.1 elevation. A county web page (not readable from here, HTTP 403) is titled 'Twelve-Inch Elevation Change (freeboard) for One- and Two-Family Homes', and search snippets attribute Charlotte's 1 ft to FBC-Residential 6th edition R322.2.1 (statewide, collected separately). Jan 2025 county ordinance allows VOLUNTARY freeboard (up to 5 ft in A zones, 7 ft V/coastal A) to be excluded from building-height limits (search snippet only, not verified) — not a minimum.",
+  "source_url": "https://library.municode.com/fl/charlotte_county/codes/code_of_ordinances?nodeId=PTIIILADEGRMA_CH3-2BUBURE_ARTXIFLMA (current, Supplement 127, 2026-03-25; Municode API jobId 487892)",
+  "quote": "Sec. 3-2-224. - Coordination with the Florida Building Code. This article is intended to be administered and enforced in conjunction with the Florida Building Code. Where cited, ASCE 24 refers to the edition of the standard that is referenced by the Florida Building Code. (Ord. No. 2016-014, § 2, 3-8-16)",
+  "date_source_url": "https://library.municode.com/fl/charlotte_county/codes/code_of_ordinances?nodeId=PTIIILADEGRMA_CH3-2BUBURE_ARTXIFLMA",
+  "date_quote": "These regulations shall be known as the Floodplain Management Ordinance of Charlotte County, Florida hereinafter referred to as \"this article.\" (Ord. No. 2016-014, § 2, 3-8-16)",
+  "confidence": "medium",
+  "notes": "Local rule = 0 ft (NFIP minimum / FBC). 2012 code (Art. VIII, mostly Ord. 2003-020 of 4-22-2003, amended 2009-020, 2010-031) required lowest floor 'to a minimum of the base flood elevation'. Current Art. XI (Ord. 2016-014, 3-8-2016, amended 2021-019, 2022-055) has no local elevation/freeboard amendment; the 1 ft applied in practice comes from the statewide FBC-Residential (since the 6th edition per the county's own page title/snippet). Not checked: the separate Charlotte County Unified Land Development Code site (read.charlotteudo.org returned 502 to another agent) and pre-2003 ordinances (Ord. 97-007 etc.), so history_complete=false. If the downstream model treats FBC freeboard as state-level, Charlotte local adds nothing."
+ },
+ {
+  "cid": "125130",
+  "community": "NAPLES, CITY OF",
+  "state": "FL",
+  "a_zone_freeboard_ft": 0.0,
+  "v_zone_freeboard_ft": 0.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Zone X (incl. shaded X) 'flood elevation' defined as 18 inches above the average crown of the adjacent roads (Sec. 16-144, added by Ord. 20-14463, 3-4-2020). Sept 2019 staff proposal to require residential lowest floor >= 24 in above average crown of adjacent road in all zones (described as restoring an 18 in rule 'previously codified then removed during a previous recodification') — NOT found in the codified R322 amendments of the 2020, 2023 or 2026 code versions. Zoning height/yard measurement refers to crown-of-road and DEP datums (not a floor requirement).",
+  "source_url": "https://library.municode.com/fl/naples/codes/code_of_ordinances?nodeId=PTIICOOR_CH16COREPRMARE_ARTIIIBUTECO_S16-112FLBUCOADAM (current Supplement 74 Update 2, 2026-06-17; Municode API productId 13804, jobId 499311)",
+  "quote": "(c) The provisions of the Florida Building Code, Residential is hereby amended by the following technical amendments: (1) Enclosed areas below the required elevation for dwellings in flood hazard areas shall be limited as follows: ... (2) Construction documents for dwellings in flood hazard areas shall include documentation prepared and sealed by a registered design professional that the foundation design accounts for site-specific flood loads.",
+  "date_source_url": "https://library.municode.com/fl/naples/codes/code_of_ordinances?nodeId=PTIICOOR_CH16COREPRMARE_ARTIVFLMA",
+  "date_quote": "Editor's note— Ord. No. 07-11638, § 2, adopted May 16, 2007, repealed Art. IV, Floodplain Management, §§ 16-141—16-160, and enacted provisions designated as a new Art. IV to read as herein set out. Subsequently, Ord. No. 12-13139, § 3, adopted June 13, 2012, amended Art. IV, in its entirety, to read as herein set out in §§ 16-141—16-151.",
+  "confidence": "medium",
+  "notes": "No local BFE-relative freeboard in the current city code: Ch. 16 Art. IV (Floodplain Management, Ord. 12-13139 of 6-13-2012 as amended through Ord. 25-15693, 9-3-2025) defers building elevation to FBC R322 / Sec. 1612 / ASCE 24, and the local FBC-R technical amendments in Sec. 16-112(c) only cover enclosures and foundation documentation. Same in the 2012 (Supp 24) version of Sec. 16-150. So any 1 ft freeboard applied in Naples comes from the statewide FBC (collected separately). Unverified: the 2007-2012 article (Ord. 07-11638) and pre-2007 article (§§ 16-141—16-160) — Municode CodeBank only goes back to April 2012 and that version returned empty content; the 2019 presentation (https://naples.granicus.com/MetaViewer.php?view_id=&clip_id=3418&meta_id=278855) says an 18 in above-crown rule was 'previously codified then removed', date unknown. naplesgov.com pages returned 403 from this session."
+ },
+ {
+  "cid": "120426",
+  "community": "MARCO ISLAND, CITY OF",
+  "state": "FL",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": 1998,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/fl/marco_island/codes/code_of_ordinances (CodeBank Supplement 7, 2012-02-21; Municode API productId 14000, jobId 176731, Ch. 26 Art. II from Ord. 98-18 / 99-16)",
+    "quote": "603.1. All new construction or substantial improvement of residential structures and nonresidential structures within the special flood hazard areas must have the lowest floor, including basement, elevated to or above the base flood level as specified in section 600."
+   },
+   {
+    "year": 2012,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/fl/marco_island/codes/code_of_ordinances (CodeBank Supplement 16, 2020-04-06; Municode API jobId 365765)",
+    "quote": "Buildings and structures shall be designed and constructed to comply with the more restrictive applicable requirements of the Florida Building Code, Building Section 3109 and Section 1612 or Florida Building Code, Residential Section R322. ( Ord. No. 12-05, § 2(301), 6-18-2012 )"
+   }
+  ],
+  "first_freeboard_year": 2020,
+  "history_complete": true,
+  "other_height_rules": "Sec. 26-90 also sets absolute/road-relative floors, whichever is higher: Oct 2020-Jan 2024: 'Elevation nine feet, relative to the North American Vertical Datum' (9 ft NAVD88 minimum lowest floor in flood hazard areas); since Ord. 24-04 (1-22-2024): 18 in above crown of nearest paved street / 24 in above crown of unfinished road (replaced the 9 ft NAVD floor). Zone X: lowest floor >= 18 in above crown of paved road (24 in unpaved) since 2020. Coastal A zone dry floodproofing: BFE + 2 ft (2024). Projects with SFWMD 25-yr/3-day systems: also >= 100-yr zero-discharge elevation.",
+  "source_url": "https://library.municode.com/fl/marco_island/codes/code_of_ordinances?nodeId=PTIICOOR_CH26FL_ARTIIFLMA (current Supplement 26, 2026-05-04; Municode API jobId 492179, Sec. 26-90)",
+  "quote": "(b) In flood hazard areas, the lowest floor (zone A) or bottom of lowest horizontal structural member of the lowest floor (zone V and coastal A zone) shall be at or above the higher of: (1) The base flood elevation plus one foot, (2) Eighteen inches above crown of nearest paved street or interior paved roadway system. (3) Twenty-four inches above the crown of ungraded or unfinished road. (4) The elevation required by the Florida Building Code.",
+  "date_source_url": "https://library.municode.com/fl/marco_island/codes/code_of_ordinances (CodeBank Supplement 17, 2021-01-04; Municode API jobId 369812, Sec. 26-90)",
+  "date_quote": "(b) In flood hazard areas, the lowest floor (Zone A) or bottom of lowest horizontal structural member of the lowest floor (Zone V and Coastal A Zone) shall be at or above the higher of: (1) The base flood elevation plus one foot, (2) Elevation nine feet, relative to the North American Vertical Datum. (3) The elevation required by the Florida Building Code. ... (Ord. No. 20-04 , § 2(Exh. A), 10-5-2020)",
+  "confidence": "high",
+  "notes": "Version comparison via Municode CodeBank: 2012-02 code (Ord. 98-18 of 9-21-1998 / 99-16) = lowest floor at BFE (local FBC/standard building code amendments 601.1/603.1/801.2); 2012-06 to 2020 (Ord. 12-05, 6-18-2012) = defers to FBC R322/1612, no local freeboard (checked Supplement 16, 2020-04-06); Sec. 26-90 with 'base flood elevation plus one foot' first appears via Ord. 20-04 adopted 10-5-2020 (present in Supplement 17, 2021-01-04); retained by Ord. 24-04 (1-22-2024). history_complete=true for the 1998-onward record; Marco Island incorporated in 1997 (not verified here), so pre-1998 rules were Collier County's. The local +1 ft coincides with the FBC-R statewide +1 ft (collected separately); the local rule's added bite was the 9 ft NAVD88 floor (2020-2024) and crown-of-road rules."
+ },
+ {
+  "cid": "515527",
+  "community": "HAMPTON, CITY OF",
+  "state": "VA",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 3.0,
+  "current_since_year": 2014,
+  "history": [
+   {
+    "year": 2010,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://legistar.granicus.com/Hampton/attachments/8d001209-ccad-4fc0-b4e3-7094957cd909.pdf (Hampton Legistar matter 10-0349, Ordinance-Redline, passed 2010-08-11)",
+    "quote": "New construction or substantial improvement of any residential structure (including manufactured homes) shall have the lowest floor, including basement, elevated no lower than one foot above the base flood elevation."
+   }
+  ],
+  "first_freeboard_year": 2010,
+  "history_complete": true,
+  "other_height_rules": "Zone AO: lowest floor above highest adjacent grade at least the FIRM depth number, or 2 ft above HAG if no depth number. Building height for flood-zone structures measured from the design flood elevation (2014 amendment to the height definition). No 0.2%-chance or road-crown rule found.",
+  "source_url": "https://library.municode.com/va/hampton/codes/zoning (Zoning Ordinance Ch. 9 Art. IV O-FZ Flood Zone Overlay, Sec. 9-34(2)(a); Supplement 20 Update 2, 2025-11-12; Municode API productId 14728, jobId 488012)",
+  "quote": "(2) General standards. In all special flood hazard areas the following provisions shall apply: (a) The freeboard shall be three (3) feet. The freeboard, in addition to the base flood elevation, shall constitute the design flood elevation.",
+  "date_source_url": "https://legistar.granicus.com/Hampton/attachments/807de105-009d-4e8b-9130-a0a0df344d19.pdf (Hampton Legistar matter 14-0371, Redline; matter passed 2014-09-10 per webapi.legistar.com/v1/hampton/matters/12229)",
+  "date_quote": "Sec. 17.3-34.2. - General standards. In all special flood hazard areas the following provisions shall apply: A. The freeboard shall be three (3) feet. The freeboard, in addition to the base flood elevation, shall constitute the design flood elevation.",
+  "confidence": "high",
+  "notes": "Timeline: pre-Aug 2010 Zoning Ord. Art. V (FZD) required residential lowest floor 'at or above the base flood elevation' (old text in the 2010 redline: 'Residential structures require that the lowest floor (including basement) be constructed at or above the base flood elevation as shown in the FIS and FIRM'). Ord. Z10-09 (Legistar 10-0349, adopted 8-11-2010) repealed and replaced Art. V with BFE + 1 ft (A zones) and BFE + 1 ft for V-zone lowest horizontal member ('Flood Protection Elevation - The base flood elevation plus one (1) foot of freeboard'). Legistar 14-0371 (passed 9-10-2014) set freeboard to 3 ft (design flood elevation = BFE + 3 ft) for all SFHA zones; Municode zoning Supp 7 (codified through 3-12-2014) still shows 1 ft, Supp 8 (through 6-10-2015) shows 3 ft. The 2015 zoning rewrite (Ord. Z15-11, 6-10-2015) and Ord. Z16-03 (4-13-2016, current Art. IV O-FZ) kept 3 ft. The 2014 ordinance PDF itself is a scanned image (not text-readable), so the exact effective date was not verified; adoption date from the Legistar matter record. Virginia USBC statewide freeboard collected separately."
+ },
+ {
+  "cid": "480296",
+  "community": "HOUSTON, CITY OF",
+  "state": "TX",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": null,
+  "current_since_year": 2018,
+  "history": [
+   {
+    "year": 2008,
+    "a_zone_freeboard_ft": 1.0,
+    "year_is_earliest_evidence_not_adoption": true,
+    "source_url": "https://www.houstonpermittingcenter.org/media/1196/download",
+    "quote": "Minimum flood protection elevation shall mean the base flood elevation plus 12 inches."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Since 2018-09-01 the rule is NOT a fixed freeboard: Sec. 19-2 'Minimum flood protection elevation means the 0.2 percent flood elevation, plus 2 feet'; applies in Zones A1-30, AE, AH, A, A99 AND in shaded X (500-yr floodplain). Because the 0.2% elevation is >= BFE, 2.0 ft above BFE is a LOWER BOUND, not the actual requirement; the actual height above BFE = (0.2% elev - BFE) + 2 ft. AO zones: lowest floor >= 2 ft above FIRM depth number (3 ft above HAG if no depth). Additions <=33% of habitable area in A zones may be at BFE + 1 ft. Critical facilities in shaded X: 3 ft above 0.2% elevation. Pre-2018 rule applied only in the 100-yr SFHA: BFE + 12 inches.",
+  "source_url": "https://bellairetx.civicweb.net/document/44059/City%20of%20Houston%20-%20Chapter%2019%20-%20Floodplain.pdf?handle=DD0435188CB04580AE9D2E8C55DECEFA",
+  "quote": "Minimum flood protection elevation means the 0.2 percent flood elevation, plus 2 feet. ... Sec. 19-33 (a) The following additional requirements shall apply in Zones A1—30, AE, AH, A, and A99: (1) For any addition to, and new construction and substantial improvement of, any residential structure: a. The lowest floor and all utilities must be elevated to at least the minimum flood protection elevation",
+  "date_source_url": "https://bellairetx.civicweb.net/document/44059/City%20of%20Houston%20-%20Chapter%2019%20-%20Floodplain.pdf?handle=DD0435188CB04580AE9D2E8C55DECEFA",
+  "date_quote": "Editor's note(s)—Ord. No. 2018-258, § 2(Exh. A), adopted April 4, 2018, effective September 1, 2018, amended Ch. 19 in its entirety to read as herein set out. Former Ch. 19 pertained to similar subject matter and derived from Ord. No. 85-1705, § 1, adopted 9-25-1985, and subsequent amendatory provisions.",
+  "confidence": "medium",
+  "notes": "Current rule (500-yr + 2 ft) is high confidence; a_zone_freeboard_ft=2.0 is only the guaranteed minimum above BFE (see other_height_rules) - treat as relative-to-0.2% rule, not fixed freeboard. Houston Public Works 2018 summary (https://houston.novusagenda.com/agendapublic/AttachmentViewer.ashx?AttachmentID=61395&ItemID=13694): \"Houston's current code only applies to property in the 100-year floodplain and protects one foot above 100-year flood elevation. The proposed revisions would include property in the 500-year floodplain and protect two feet above 500-year flood elevation.\" The pre-2018 BFE+12 in rule is documented in the Feb 2009 Chapter 19 Guidelines (code 'as amended and effective on September 1, 2008'), so 2008 is only the earliest year I verified, NOT the adoption year. First adoption of the 12-inch freeboard is unknown: the pre-2018 definitions section history lists Ord. 85-1705 (9-25-85), 87-393, 90-635, 94-1268, 96-1376, 02-399, 03-1190, 04-383, 06-894, 08-658 (from the Feb 2018 council redline draft https://www.houstontx.gov/council/committees/tti/20180212/chapter19draft.pdf), and Sec. 19-33 history lists 85-1705, 87-393, 96-1376, 03-1190, 06-894; any of these could have introduced it. Municode CodeBank for Houston only goes back to 2012; web.archive.org was unreachable from this session. Before 1985 Ch. 19 derived from Ord. 81-914 (1981)."
+ }
+]

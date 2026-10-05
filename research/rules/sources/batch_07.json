@@ -1,0 +1,159 @@
+[
+ {
+  "cid": "370047",
+  "community": "EMERALD ISLE, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "earliest_evidence_year": 2008,
+  "other_height_rules": "AO/AH zones: depth number + 2 ft above highest adjacent grade, or 3 ft above HAG if no depth number (UDO 6.2.4(7)(i), amended March 2024 from 2 ft to 3 ft when no depth number). Unnumbered A zones (no BFE): 2 ft above highest adjacent grade. VE: bottom of lowest horizontal structural member at RFPE.",
+  "source_url": "https://library.municode.com/nc/emerald_isle/codes/code_of_ordinances?nodeId=APXAUNDEOR_CH10DERUIN_10.2DE (Municode API productId 12284, jobId 479665 = Supp. 52, codified through Ord. of Sept 9, 2025)",
+  "quote": "Within areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus two (2) feet of freeboard. In areas where no BFE has been established, all structures and other development must be elevated or floodproofed, if non-residential, to two (2) feet above the highest adjacent grade.",
+  "date_source_url": "https://library.municode.com/nc/emerald_isle/codes/code_of_ordinances?nodeId=APXAUNDEOR (Municode API jobId 145338 = Supp. 40, codified through Ord. of Dec 14, 2010)",
+  "date_quote": "Editor's note— Appendix A contains the text of the Unified Development Ordinance for the town, which derives from an ordinance adopted September 9, 2008. Amendments are indicated by parenthetical history notes following amended provisions. The absence of a history note indicates that the provision remains unchanged from the original ordinance.",
+  "confidence": "medium",
+  "notes": "Current value high confidence (UDO 10.2 RFPE definition; identical text in Municode Supp. 40 (2010), 45, 47, 49, 50, 51, 52). The Dec-2010 codification's 10.2 DEFINITIONS section carries no history note, so the BFE+2 ft RFPE was in the original UDO adopted 2008-09-09 -> 2 ft in force since at least 2008. Whether freeboard predates the 2008 UDO (pre-UDO flood ordinance) was not found: Municode version archive starts at Supp. 40 (2010); no older ordinance text located. Hence current_since_year/first_freeboard_year null, earliest_evidence_year=2008. Corroborated by Pamlico Sound Regional HMP (2020 and Jan 2025): 'Emerald Isle ... require a two-foot freeboard' (https://emeraldisle-nc.org/DocumentCenter/View/304/Hazard-Mitigation-Plan-PDF). UDO re-adopted 2023-06-13 (Editor's note, Supp. 52) restating 2 ft; March 2024 CRS Class 8 freeboard-prerequisite amendment (https://mcclibraryfunctions.azurewebsites.us/api/ordinanceDownload/12284/1280767/pdf) changed AO no-depth-number rule and equipment/manufactured home text, not the A-zone freeboard."
+ },
+ {
+  "cid": "370044",
+  "community": "ATLANTIC BEACH, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2024,
+  "history": [
+   {
+    "year": 2009,
+    "a_zone_freeboard_ft": 2.0,
+    "source_url": "https://library.municode.com/nc/atlantic_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH18UNDEOR_ART17NOSI_SA.3DE (Municode API productId 12307, jobId 159024 = Supp. 32, codified through Ord. 11-09-01, Sept 26, 2011; same text in jobs 213792, 245661, 265490 up to 2016)",
+    "quote": "Regulatory Flood Protection Elevation ... Within areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus two (2) feet of freeboard. In areas where no BFE has been established, all structures and other development must be elevated or floodproofed, if non-residential, to two (2) feet above the highest adjacent grade."
+   },
+   {
+    "year": 2017,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/nc/atlantic_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH18UNDEOR_ART18-10DEME_18.10.5DE (Municode jobId 308340 = Supp. 41, codified through Ord. 17-10-01, Oct 23, 2017; same text through jobId 439507, Feb 26, 2024)",
+    "quote": "Regulatory Flood Protection Elevation The elevation to which all structures and other development located within the special flood hazard areas must be elevated or floodproofed, if non-residential."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "No-BFE (unnumbered A) zones: at least 1 ft above highest adjacent grade per RFPE definition; 18.6.3 also says reference level at least 2 ft above HAG when BFE data not available. Openings max 1 ft above adjacent grade.",
+  "source_url": "https://library.municode.com/nc/atlantic_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH18UNDEOR_ART18-10DEME_18.10.5DE (Municode API productId 12307, jobId 494138 = Supp. 52, codified through Ord. 26-03-02, March 23, 2026)",
+  "quote": "In Special Flood Hazard Areas where Base Flood Elevations (BFE) have been determined, this elevation shall be the BFE plus one (1) foot freeboard. In Special Flood Hazard Areas where no BFE has been established, this elevation shall be at least one (1) foot above the highest adjacent grade.",
+  "date_source_url": "https://citizenportal.ai/articles/8482242/North-Carolina/Carteret-County/Town-of-Atlantic-Beach/Atlantic-Beach-council-adopts-freeboard-requirement-to-protect-flood-insurance-discounts",
+  "date_quote": "The Atlantic Beach Town Council unanimously adopted Ordinance 24-03-01 on March 25, 2024, adding a freeboard requirement to the town's Unified Development Ordinance to align local floodplain rules with FEMA Community Rating System (CRS) expectations.",
+  "confidence": "medium",
+  "notes": "Current 1 ft: high confidence. Municode version diff: the 'BFE plus one (1) foot' text is absent in jobId 439507 (Supp. 48 Upd. 1, Feb 26 2024) and present from jobId 452867 (Apr 22 2024), whose 18.10.5 history note ends 'Ord. No. 24-03-01, 3-25-2024'. 2009-2017 period: the Aug 24, 2009 UDO (Editor's note: 'Ord. No. 09-08-01, adopted Aug. 24, 2009') Appendix A.3 defined RFPE = BFE + 2 ft (A.3 history note: Ord. 10-01-01/10-01-02, 1-19-2010, so the 2 ft may date from 2009 or Jan 2010 - not resolved; history entry year 2009 = UDO adoption, as codified by 2011). New UDO Ord. 17-10-01 (Oct 23, 2017) dropped any number from the RFPE definition and 18.6.3 has no freeboard -> 0.0 locally 2017-2024 (state NC residential code freeboard not counted here). Corroboration: Carolina Coast Online 2021-05-31 'unanimously approved a motion not to adopt a 1-foot freeboard requirement' (https://www.carolinacoastonline.com/news_times/article_9e448bf0-be54-11eb-93e2-73a6c4bac572.html). CONFLICTS: Carolina Coast Online 2021-01-09 (https://www.carolinacoastonline.com/news_times/article_0bead834-5105-11eb-91dd-7fd80a425e37.html) says 'the town's building ordinance previously had a 2-foot freeboard, but it was removed in 2008' - but Municode Supp. 32-39 (2011-2016) still show BFE+2 ft, so removal looks like 2017 not 2008; the article implies 2 ft existed before 2008 (first adoption year unknown). Pamlico Sound Regional HMP 2020 lists Atlantic Beach with 'a one-foot freeboard requirement' (likely reflecting state code). Pre-2009 ordinance text not found."
+ },
+ {
+  "cid": "370187",
+  "community": "TOPSAIL BEACH, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 3.0,
+  "current_since_year": 2018,
+  "history": [
+   {
+    "year": 2007,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://library.municode.com/nc/topsail_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH14FLDAPR_ARTIINGE_S14-5DE (Municode API productId 14992, jobId 150264 = 2012 Recodification; same text through jobId 288726 = Supp. 4, Jan 2017)",
+    "quote": "Regulatory flood protection elevation means the base flood elevation plus the freeboard. In special flood hazard areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus one foot of freeboard. ... (Code 1990, § 7-5; Ord. of 2-14-2007)"
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "AO zones: depth number plus 3 ft freeboard (sec. 14-76 style text 'plus a freeboard of three feet of above the BFE'). Service equipment to RFPE (2023 CRS-driven amendment to 14-72(4)). Building height limit 38 ft is measured with the freeboard allowance.",
+  "source_url": "https://library.municode.com/nc/topsail_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH14FLDAPR_ARTIINGE_S14-5DE (Municode API jobId 472443 = Supp. 13, codified through Ord. 2025-003, Jan 5, 2025)",
+  "quote": "Free board is three feet above base flood elevation. The base flood elevation, plus the freeboard establishes the regulatory flood protection elevation. ... Regulatory flood protection elevation means the base flood elevation plus the freeboard. In special flood hazard areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus three feet of freeboard.",
+  "date_source_url": "https://library.municode.com/nc/topsail_beach/codes/code_of_ordinances?nodeId=PTIICOOR_CH14FLDAPR_ARTIINGE_S14-5DE (Municode jobId 335682 = Supp. 5, Jan 9 2019, first version with 'three feet'; jobId 288726 = Supp. 4, Jan 2017, still 'one foot')",
+  "date_quote": "(Code 1990, § 7-5; Ord. of 2-14-2007; Ord. of 6-12-2013; Ord. No. 2018-004, § 1, 7-11-2018)",
+  "confidence": "high",
+  "notes": "Municode version diff of sec. 14-5: 'BFE plus one foot' in Recodification (2012), Supp. 1-4 (2013-2017); 'BFE plus three feet' from Supp. 5 (Jan 2019) onward, the only new history entry being Ord. No. 2018-004, § 1, 7-11-2018 -> 3 ft since 2018. The 1-ft period: definition history is 'Code 1990, § 7-5; Ord. of 2-14-2007'; the 1 ft is attributed to 2007 (history year = Ord. of 2-14-2007) but it may have been carried from the 1990 code - not resolved, so first_freeboard_year null. Residential: 'elevated no lower than the regulatory flood protection elevation, as defined in section 14-5'. RFPE applies to all SFHAs incl. VE."
+ },
+ {
+  "cid": "370466",
+  "community": "NORTH TOPSAIL BEACH, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "earliest_evidence_year": 2009,
+  "other_height_rules": "Reference level in ALL SFHAs (incl. A/AE) is the bottom of the lowest horizontal structural member of the lowest floor (V-zone style), so in A zones the lowest floor surface sits above BFE+2 by the floor-system depth. No-BFE A zones: at least 2 ft above highest adjacent grade. 48-ft building height maximum.",
+  "source_url": "https://northtopsailbeachnc.gov/DocumentCenter/View/225/Article-7-Flood-Damage-Prevention-Effective-June-19-2020",
+  "quote": "REGULATORY FLOOD PROTECTION ELEVATION. The \"Base Flood Elevation\" plus the \"Freeboard.\" In Special Flood Hazard Areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus two feet of freeboard. In \"Special Flood Hazard Areas\" where no BFE has been established, this elevation shall be at least two feet above the highest adjacent grade. ... REFERENCE LEVEL. The bottom of the lowest horizontal structural member of the lowest floor for structures within all Special Flood Hazard Areas.",
+  "date_source_url": "https://northtopsailbeachnc.gov/DocumentCenter/View/208/Floodplain-Management-Plan-Annual-Progress-Report-2012",
+  "date_quote": "Town of North Topsail Beach Hazard Mitigation Plan Annex 3 of Onslow County Multi-Jurisdictional Hazard Mitigation Plan. The Board of Aldermen adopted Annex 3 on July 2, 2009. ... 9. Continue the requirement of 2-foot freeboard for all new construction in accordance NTB Town Code Chapter 8 Flood Ordinance.",
+  "confidence": "medium",
+  "notes": "Current 2 ft from UDO Article 7 (titled 'Effective June 19, 2020'). Editor's note in that PDF: 'Ord. passed 4-2-2009 amended Ch. 8 Flood Damage Prevention in its entirety ... The former Ch. 8 Flood Damage Prevention derived from Ord. passed 11-3-2005'; 7.06 says it re-enacts the flood ordinance 'enacted May 2, 1990, as amended'. The 2009 HMP annex (as quoted in the 2012 CRS progress report) already says 'Continue the requirement of 2-foot freeboard', so 2 ft was in force by mid-2009; 2014 annex update (https://northtopsailbeachnc.gov/DocumentCenter/View/359/Ntb-Hazard-Mitigation-Plan) repeats 'Requires an additional 2 foot freeboard'. First adoption (1990, 2005 or 2009 ordinance?) not determined: code is not on Municode; American Legal returned HTTP 403; Wayback rate-limited -> current_since_year/first_freeboard_year null."
+ },
+ {
+  "cid": "375346",
+  "community": "BEAUFORT, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "No-BFE A zones: 2 ft above highest adjacent grade. AO zones: depth number above HAG (no added freeboard); if no depth number, the no-BFE RFPE (2 ft above HAG). VE: bottom of lowest horizontal structural member at RFPE (BFE+1). PENDING (not adopted as of the 2026-08-25 report): draft flood damage prevention ordinance would raise freeboard 1->2 ft in mapped areas and 2->3 ft where no BFE.",
+  "source_url": "https://library.municode.com/nc/beaufort/codes/code_of_ordinances?nodeId=TITXVLAUS_CH151FLDAPR_ARTIGEPR_S151.05DE (Municode API productId 12417, jobId 487906 = Supp. 8, codified through Ordinance of Nov 10, 2025)",
+  "quote": "Within areas where Base Flood Elevations (BFEs) have been determined, this elevation shall be the BFE plus one foot of freeboard. In areas where no BFE has been established, all structures and other development must be elevated or floodproofed, if non-residential, to two feet above the highest adjacent grade. Two feet is minimum but a state standard, greater than two feet is optional.",
+  "date_source_url": "https://library.municode.com/nc/beaufort/codes/code_of_ordinances?nodeId=TITXVLAUS_CH151FLDAPR (Municode jobId 325481 = 2018 Republication and jobId 487906; every section of Ch. 151 incl. 151.05 carries this note)",
+  "date_quote": "(Ord. 03-018, passed 7-7-2003)",
+  "confidence": "medium",
+  "notes": "Current 1 ft: high confidence (same text in 2018 republication and Supp. 8, 2025). Date: Municode's only history note on 151.05 (and on all of Ch. 151) is Ord. 03-018 passed 7-7-2003, so the 1-ft RFPE is documented as in force since at least the 7-7-2003 ordinance (current_since_year left null because the 2003 ordinance may have restated an earlier freeboard); but Municode's archive starts at the 2018 republication (earlier code was American Legal style, sections 151.xx) and possible later re-adoptions may be unrecorded, so date confidence is low-medium. Whether any freeboard existed before 2003 not found -> history_complete false. Corroboration: Pamlico Sound Regional HMP 2020/2025 lists Beaufort with 'a one-foot freeboard requirement' (https://emeraldisle-nc.org/DocumentCenter/View/304/Hazard-Mitigation-Plan-PDF). Pending change: https://citizenportal.ai/articles/9581568/north-carolina/carteret-county/beaufort/proposed-flood-ordinance-would-raise-freeboard-require-elevation-certificates-before-construction (2026-08-25): 'raising required freeboard from 1 to 2 feet in mapped areas and from 2 to 3 feet where no base flood elevation is available' - draft only. Wayback was rate-limited (429), so pre-2018 code text could not be checked.",
+  "earliest_evidence_year": 2003
+ },
+ {
+  "cid": "370340",
+  "community": "ONSLOW COUNTY",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "earliest_evidence_year": 2005,
+  "other_height_rules": "No-BFE A zones: at least 2 ft above highest adjacent grade. Reference level = top of lowest floor in AE; bottom of lowest horizontal structural member in VE (and CAZ per 2020 text).",
+  "source_url": "https://www.onslowcountync.gov/DocumentCenter/View/807/Flood-Damage-Prevention-Ordinance-",
+  "quote": "\"Regulatory Flood Protection Elevation (RFPE)\" means the \"Base Flood Elevation\" plus the \"Freeboard\". In \"Special Flood Hazard Areas\" where Base Flood Elevations (BFEs) have been determined, this elevation shall be the BFE plus two (2) feet freeboard. In \"Special Flood Hazard Areas\" where no BFE has been established, this elevation shall be at least two (2) feet above the highest adjacent grade.",
+  "date_source_url": "https://www.onslowcountync.gov/DocumentCenter/View/984/Onslow-County-Flood-Damage-Prevention-Ordinance-",
+  "date_quote": "\"Regulatory Flood Protection Elevation\" means the elevation, in relation to mean sea level, to which the reference level of all structures and other development located within Special Flood Hazard Areas must be protected. Where Base Flood Elevations (BFEs) have been determined, this elevation shall be the BFE plus two ( 2 ) feet of freeboard. ... SECTION C. EFFECTIVE DATE. This ordinance shall become effective November 3, 2005.",
+  "confidence": "medium",
+  "notes": "Current ordinance header: 'Adopted: May 18, 2020 / Effective Date: June 19, 2020 / Amended: July 20, 2020' - BFE+2 ft. The 2005 ordinance (effective Nov 3, 2005; Municode Ch. 7 Editor's note: 'Ord. of Sept. 19, 2005, Arts. 1-6, amended Ch. 7 in its entirety ... Former Ch. 7 ... derived from Ord. of Apr. 2, 1990 and Ord. of May 2, 1994') also has BFE+2 ft; Municode (productId 15002) still shows the 2005 text through Supp. 10 (Feb 2024). So 2 ft in force since at least Nov 2005. Whether the 1987/1990/1994 ordinances had freeboard was not found -> current_since_year and first_freeboard_year null. Applies to unincorporated Onslow County only."
+ },
+ {
+  "cid": "370181",
+  "community": "PAMLICO COUNTY",
+  "state": "NC",
+  "a_zone_freeboard_ft": 4.0,
+  "v_zone_freeboard_ft": 4.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": null,
+    "a_zone_freeboard_ft": 2.0,
+    "source_url": "https://emeraldisle-nc.org/DocumentCenter/View/304/Hazard-Mitigation-Plan-PDF (Pamlico Sound Regional HMP 2020, sec. 5.3.6 political capability; dated February 2020; also https://pamlicocounty.org/Documents/County%20Government/Plan/pamlico-sound-regional-hmp-final-plan2020.pdf)",
+    "quote": "many of the participating jurisdictions have some local standards that exceed state requirements. For example, Washington, Washington Park, Atlantic Beach, Beaufort, Cedar Point, Morehead City, Newport, Pine Knoll Shores, and Havelock have a one-foot freeboard requirement; Craven County, Pamlico County, Cape Carteret, Emerald Isle, New Bern, River Bend, Vanceboro, Alliance, Arapahoe, Bayboro, Grantsboro, Mesic, Minnesott Beach, Oriental, Stonewall, and Vandemere require a two-foot freeboard."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "No-BFE A zones: at least 4 ft above highest adjacent grade. Reference level in ALL SFHAs is the bottom of the lowest horizontal structural member of the lowest floor (so A-zone floor surface sits above BFE+4 by the floor-system depth). Flood openings max 1 ft above adjacent grade.",
+  "source_url": "https://pamlicocounty.org/Documents/County%20Government/Ordinance/pamlico-county-fdpo.pdf (scanned PDF, read from page images p.7, 8, 21, 32)",
+  "quote": "\"Regulatory Flood Protection Elevation\" means the \"Base Flood Elevation\" plus the \"Freeboard\". In \"Special Flood Hazard Areas\" where Base Flood Elevations (BFEs) have been determined, this elevation shall be the BFE plus four (4) feet freeboard. In \"Special Flood Hazard Areas\" where no BFE has been established, this elevation shall be at least four (4) feet above the highest adjacent grade.",
+  "date_source_url": "https://pamlicocounty.org/Documents/County%20Government/Ordinance/pamlico-county-fdpo.pdf (p.32)",
+  "date_quote": "SECTION D. EFFECTIVE DATE. This ordinance shall become effective May 4th, 2020. SECTION E. ADOPTION CERTIFICATION. I hereby certify that this is a true and correct copy of the Flood Damage Prevention Ordinance as adopted by the Board of Commissioners of Pamlico County, North Carolina, on the 4th day May, 2020.",
+  "confidence": "medium",
+  "notes": "Current 4 ft read directly from the scanned ordinance (county site lists it as 'Flood Damage Prevention Ordinance Amended 2020'; no text layer, verified visually; pdf metadata CreationDate 2020-06-04). Residential: 'reference level, including basement, elevated no lower than the Regulatory Flood Protection Elevation'. The 4-ft value conflicts with the Pamlico Sound Regional HMP (Feb 2020, repeated verbatim in Jan 2025 update) which lists Pamlico County at two-foot freeboard: taken here as the pre-May-2020 value (HMP capability survey ran 2019), start year unknown, hence history year null; the 2025 HMP text appears stale copy-forward. Whether 4 ft was first adopted on 2020-05-04 or in an earlier amendment between the HMP survey and 2020 is not certain but the HMP suggests 2 ft as of 2019. Initial FDPO 1985-08-05; first adoption of any freeboard not found. Covers unincorporated Pamlico County."
+ }
+]

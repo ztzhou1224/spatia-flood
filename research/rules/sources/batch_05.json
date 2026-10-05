@@ -1,0 +1,88 @@
+[
+ {
+  "cid": "125105",
+  "community": "FORT LAUDERDALE, CITY OF",
+  "state": "FL",
+  "a_zone_freeboard_ft": 0.0,
+  "v_zone_freeboard_ft": 0.0,
+  "current_since_year": 2023,
+  "history": [
+   {
+    "year": 2014,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://library.municode.com/fl/fort_lauderdale/codes/code_of_ordinances?nodeId=COOR_CH14FLMA_ARTIIFLREDE_S14-11SPMECORE (Municode API CodesContent, jobId 226365 = Supp. 36, codified through Ord. C-14-41, Sept 16 2014; same text in jobId 424623 = Supp. 62, May 2023)",
+    "quote": "Pursuant to Broward County Administrative Provisions for the Florida Building Code, the following specific methods of construction and requirements apply: (1) Elevation requirements. All new buildings and substantial improvements of buildings shall have the lowest floor, including basement, elevated to or above the elevation required in the Florida Building Code or the base flood elevation plus one (1) foot, whichever is higher. [history: ( Ord. No. C-14-26, § 2, 6-17-14 )]"
+   }
+  ],
+  "first_freeboard_year": 2014,
+  "history_complete": true,
+  "other_height_rules": "Critical facilities: BFE + 3 ft or 0.2% (500-yr) elevation, whichever higher. AO zones: DFE = highest existing grade + depth number (2 ft if none). Pre-2014 AO: lowest floor at depth number above highest adjacent grade (2 ft if none). Nonstructural fill limited to existing grade + 1 ft or back-of-sidewalk/crown-of-road average, whichever lower (not a floor rule).",
+  "source_url": "https://library.municode.com/fl/fort_lauderdale/codes/code_of_ordinances?nodeId=COOR_CH14FLMA_ARTIIFLREDE_S14-11SPMECORE (Municode API, jobId 495396 = Supp. 67 Upd 2, codified through Ord. C-26-32, July 2 2026)",
+  "quote": "Pursuant to Broward County Administrative Provisions for the Florida Building Code, the following specific methods of construction and requirements apply: (1) Limitations on enclosed areas below the required base flood elevation. ... [the former '(1) Elevation requirements ... base flood elevation plus one (1) foot' item is gone; history: ( Ord. No. C-14-26, § 2, 6-17-14 ; Ord. No. C-17-06 , § 3, 4-4-17; Ord. No. C-23-46 , § 1, 12-19-23)]",
+  "date_source_url": "https://library.municode.com/fl/fort_lauderdale/codes/code_of_ordinances?nodeId=COOR_CH14FLMA (Municode API: Sec. 14-11 in jobId 424623 = Supp. 62 (through C-23-13, May 16 2023) still has the BFE+1 item; jobId 433873 = Supp. 63 (through C-24-12, Mar 19 2024) does not, with history note adding 'Ord. No. C-23-46 , § 1, 12-19-23')",
+  "date_quote": "Editor's note— Ord. No. C-14-26, § 2, adopted June 17, 2014 , amended Ch. 14, in its entirety, to read as herein set out. Prior to inclusion of said ordinance, Ch. 14 pertained to flood damage prevention. [and Sec. 14-11 history: Ord. No. C-23-46 , § 1, 12-19-23]",
+  "confidence": "medium",
+  "notes": "Pre-2014 Ch. 14 'Flood Damage Prevention' (Municode jobId 211092, Supp. 34, 2013) Sec. 14-66: 'Residential structures must be constructed so that the lowest floor, including basement, is located no lower than the base flood elevation' (Code 1953 § 48-27.3(1); Ords. C-77-13, C-81-95, C-88-14, C-93-35) -> 0 ft local freeboard before Ord. C-14-26 (adopted 2014-06-17; effective date not checked, used adoption year). Local BFE+1 ft (or FBC elevation if higher) 2014 to Ord. C-23-46 (2023-12-19), which deleted the local elevation item; since then the City defers to the Florida Building Code (state code, BFE+1 ft for most buildings since the 6th ed. 2017, and 8th ed. effective 2023-12-31), so the effective requirement for houses is likely still BFE+1 ft via state code. Recorded 0.0 as LOCAL freeboard per protocol. Why it was removed was not checked (likely duplication with FBC). The Broward County Administrative Provisions (BORA amendments) PDFs on broward.org returned 404/HTML, so I could not check whether the county-level FBC amendments add freeboard; Broward County Code 27-200(b) (future-conditions 100-yr map for lowest habitable floor, County file 21-065) is a county rule, not checked."
+ },
+ {
+  "cid": "125113",
+  "community": "HOLLYWOOD, CITY OF",
+  "state": "FL",
+  "a_zone_freeboard_ft": 0.0,
+  "v_zone_freeboard_ft": 0.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Residential lowest floor: the Florida Building Code elevation (state code: BFE+1 ft in A zones since FBC 6th ed. 2017) OR at least 18 inches above the highest point of the crown of all streets adjacent to the plot (or a rational engineering design approved by the Director, Public Utilities). Nonresidential: FBC elevation or 6 in above crown. Minimum finished lot grade not less than crown of adjacent street or top of sidewalk, whichever higher. Accessory structures: materials and M/E/P at BFE + 1 ft.",
+  "source_url": "https://codelibrary.amlegal.com/codes/hollywood/latest/hollywood_fl/0-0-0-13913 (American Legal blocks direct fetch with a Cloudflare challenge; page rendered via r.jina.ai reader proxy; version 2026 S-52)",
+  "quote": "(C) Specific methods of construction and requirements. Pursuant to Broward County Administrative Provisions for the Florida Building Code , the following specific methods of construction and requirements apply: (1) Minimum building elevations. (a) Residential buildings. New construction and substantial improvement of residential buildings shall have the lowest floor, including basement, elevated to or above the elevation required in the Florida Building Code, Residential or Florida Building Code, Building , as applicable, or at least 18 inches above the highest point of the crown of all streets adjacent to the plot upon which such buildings are located or in accordance with a system or method of design admitting of rational analysis in accordance with well-established principles of mechanics and sound engineering practices as determined by the Director, Public Utilities.",
+  "date_source_url": "https://codelibrary.amlegal.com/codes/hollywood/latest/hollywood_fl/0-0-0-13913",
+  "date_quote": "(Ord. O-2014-13, passed 7-16-14; Am. Ord. O-2020-04, passed 2-19-20; Am. Ord. O-2021-17, passed 10-6-21)",
+  "confidence": "low",
+  "notes": "Current local ordinance (Ch. 154, Floodplain Management Ordinance, § 154.50(C)(1)(a)) sets NO fixed freeboard above BFE: it defers to the Florida Building Code (state code BFE+1 ft) with an alternative 18-in-above-crown-of-street rule; reading 'or' as the higher of the two is my interpretation. Recorded 0.0 local freeboard. History unknown: American Legal shows '- No Earlier Versions -' for Hollywood, and I could not open O-2014-13, O-2020-04 or O-2021-17 texts, so I cannot tell whether the 2014 model ordinance contained a local BFE+1 ft item (neighbouring Fort Lauderdale's 2014 ordinance did, under the same 'Pursuant to Broward County Administrative Provisions' heading, and dropped it in Dec 2023) or when the crown rule began. Pre-2014 Hollywood flood ordinance not found. Broward County Administrative Provisions (BORA amendments) not checked (broward.org PDFs 404)."
+ },
+ {
+  "cid": "120192",
+  "community": "PALM BEACH COUNTY (UNINCORPORATED)",
+  "state": "FL",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2017,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Areas without a Master Stormwater Drainage System: higher of BFE + 1 ft or 18 in above the Lowest Adjacent Road Crown (LARC) (also in A zones and Zone AO: higher of depth+1 ft or 18 in above LARC). Approximate Zone A: BFE (as determined per Art. 18.A.5.B) + 1 ft. Zone AO: depth number + 1 ft above natural grade (3 ft above highest adjacent grade if no depth). All new buildings outside master-engineered areas, incl. outside SFHA: at least 18 in above LARC (per 2017 staff summary). Critical facilities: BFE + 3 ft or 0.2% elevation, whichever higher. Freeboard applies to M/E/P service equipment too.",
+  "source_url": "https://library.municode.com/fl/palm_beach_county/codes/unified_land_development_code?nodeId=ART18FLDAPR (Municode API jobId 487455, codified through Ord. 2025-031, Dec 10 2025); same text in http://www.pbcgov.com/uldc/pdf/Article18.pdf (Supplement No. 32, Printed 10/25)",
+  "quote": "B. Additional Elevation of Buildings (Freeboard) 1. For New Construction and Substantial Improvements, including electrical systems, equipment and components, heating, ventilating, air conditioning, plumbing appliances and plumbing fixtures, duct systems, and other service equipment, in Zones AE, AH, and VE, the minimum elevation requirement (for the Lowest Floor or lowest horizontal member, as applicable) shall be at least one foot above the Base Flood Elevation. In areas without a Master Stormwater Drainage System, the minimum elevation requirement shall be the higher of one foot above the Base Flood Elevation or 18 inches above the Lowest Adjacent Road Crown (LARC). [Ord. 2024-024]",
+  "date_source_url": "https://discover.pbc.gov/pzb/zoning/Hearings-Meetings-BCC/2017-08-24-13.pdf (BCC adoption hearing packet for Ord. 2017-026; ordinance itself at https://discover.pbc.gov/pzb/zoning/Ordinances/2017-026.pdf)",
+  "date_quote": "SECTION 6. EFFECTIVE DATE: The provisions of this Ordinance shall become effective October 5, 2017. [and staff summary:] The local programmatic enhancements that have been retained during this process are: ... Language to create the requirement for additional elevation (freeboard) in each type of affected Special Flood Hazard Area. ... Language requiring all new buildings to be at least 18 inches above the lowest adjacent road crown (LARC) in all areas of the County which do not have finished floors from a \"master-engineered\" stormwater management analysis.",
+  "confidence": "medium",
+  "notes": "Current text (BFE+1 ft in AE/AH/VE) is in Ord. 2017-026 (repealed and replaced ULDC Art. 18, effective 2017-10-05 with new FIRMs) and was restated by Ord. 2024-024 (adopted Nov 2024 for the 2024-12-20 FIRMs). current_since_year=2017 is the earliest date I could DOCUMENT for this text, not necessarily when freeboard began: the 2017 staff summary lists freeboard among 'local programmatic enhancements that have been retained', which suggests (but does not prove) the pre-2017 Article 18 (ULDC Ord. 2003-67 era) already had freeboard. I could not obtain the pre-2017 Article 18 text (PBC ULDC on Municode has only one version; Wayback unreachable), so first_freeboard_year is unknown. County joined NFIP 1979-01-31 (Ord. 2017-026 whereas clause)."
+ },
+ {
+  "cid": "120112",
+  "community": "HILLSBOROUGH COUNTY (UNINCORPORATED)",
+  "state": "FL",
+  "a_zone_freeboard_ft": 0.0,
+  "v_zone_freeboard_ft": 0.0,
+  "current_since_year": 2021,
+  "history": [
+   {
+    "year": 2002,
+    "a_zone_freeboard_ft": 0.5,
+    "source_url": "https://library.municode.com/fl/hillsborough_county/codes/code_of_ordinances,_part_a?nodeId=HICOCOORLA_CH8BUBURE_ARTIHICOCOCO (Municode API CodesContent, jobId 212254 = Supp. 3, July 2014; same text in jobIds 263904 (2016), 323130 (2018), 367376 (Aug 2020)) - Hillsborough County Construction Code (Ord. No. 12-5, 3-8-2012, as amended) Chapter 3, Sec. 301.2.3",
+    "quote": "301.2.3 Specific Standards (Zone A). Within Zones A, A1—30, AO, AH, and AE of the special flood hazard area where base flood elevation data is provided, all of the following provisions shall apply: ... 2. The elevation requirements of Section R322 of the Florida Building Code, Residential and Section 1612.4 of the Florida Building Code Building, by reference to ASCE 24, apply except: a. For new construction and substantial improvement of buildings that were permitted on or after March 1, 2002, the minimum required elevation shall be at or above the current-effective base flood elevation plus 6 inches. b. For additions to existing buildings permitted before March 1, 2002 and that meet current elevation requirements, the minimum required elevation shall be at or above the current-effective elevation."
+   }
+  ],
+  "first_freeboard_year": 2002,
+  "history_complete": false,
+  "other_height_rules": "Critical facilities: BFE + 3 ft or 500-yr elevation, whichever higher (since 2021; earlier 3 ft above BFE). Accessory structures: materials and M/E/P at BFE + 1 ft. Pre-2021: manufactured homes BFE + 6 in; dry-floodproofed nonresidential +6 in over ASCE 24. Outside SFHA without approved lot-grading plan: minimum elevation per FBC or Building Official.",
+  "source_url": "https://library.municode.com/fl/hillsborough_county/codes/land_development_code?nodeId=ARTIIISPDI_PT3.06.00FLDACORE (Municode API jobId 491160, LDC Supp. 58, Jan 2026) and Construction Code Chapter 3 in Code Part A Ch. 8 Art. I (jobId 491161, Supp. 27, Aug 2026)",
+  "quote": "[LDC Sec. 3.06.09 Buildings and Structures contains only FBC-exempt structures and critical facilities: 'The critical facility shall be elevated or protected to or above the nearest base flood elevation plus three (3) feet or the 500-year flood elevation, whichever is higher.' (Ord. No. 21-24, § 2(Exh. A), 6-16-21, eff. 6-22-21). The current Construction Code Chapter 3 'Technical Amendments to the Florida Building Code' amends R322.1.6, R322.2.2, R322.2.3, R322.3.3, R322.3.5 and adds 1612.4.3/1612.4.4, but has no lowest-floor freeboard for houses; the 'base flood elevation plus 6 inches' item is absent.]",
+  "date_source_url": "https://library.municode.com/fl/hillsborough_county/codes/code_of_ordinances,_part_a?nodeId=HICOCOORLA_CH8BUBURE_ARTIHICOCOCO (Municode API: BFE+6 in present in jobId 367376 = Supp. 16, Aug 27 2020; absent in jobId 380493 = Supp. 18, June 17 2021)",
+  "date_quote": "Ord. No. 21-23 , § 1(Exh. A), 6-23-2021 [Construction Code history note]; Ord. No. 21-24, § 2(Exh. A), 6-16-21, eff. 6-22-21 [LDC Part 3.06 history note]",
+  "confidence": "medium",
+  "notes": "Local rule history: Construction Code (Ord. 12-5, 2012, and earlier county construction code) required BFE + 6 in for buildings permitted on or after March 1, 2002 (the statewide Florida Building Code effective date); I took 2002 from that applicability date in the text. I did not see the original 2002 adopting ordinance, so first adoption is inferred, and history_complete=false; clause (b) implies pre-2002 buildings needed only the BFE. In June 2021 (Ords. 21-23/21-24, with the FDEM model rewrite; LDC Part 3.06 effective 2021-06-22) the local +6 in was dropped and houses now follow the Florida Building Code (state code BFE+1 ft since 6th ed. 2017), so the local freeboard is recorded as 0.0 although the effective state requirement (BFE+1 ft) is higher than the old local +6 in. Pre-2021 LDC Part 3.06 (Ords. 00-21, 00-38, 08-15) deferred lowest-floor elevation to 'Chapter 3 of the Hillsborough County Construction Code'. V zone: the +6 in clause was under Zone A specific standards; V-zone rule not checked in detail."
+ }
+]

@@ -1,6 +1,6 @@
 """Does the flood-elevation RULE in force when a house was built improve floor-height prediction?
 
-Rule data (data/rules/raw/*.json, collected from ordinances / state codes with source URL + verbatim quote):
+Rule data (research/rules/sources/*.json, collected from ordinances / state codes with source URL + verbatim quote):
   state_codes.json   statewide freeboard periods (building codes / statutes)
   batch_*.json       local freeboard of the 60 communities with the most measured houses, with adoption history
 Per house (research/states houses_all + rules/house_community):
@@ -38,7 +38,7 @@ ABBR = {"FL": "FL", "NC": "NC", "VA": "VA", "HAR": "TX", "NYC": "NY"}
 
 
 def periods_state():
-    rows = json.load(open(D / "rules" / "raw" / "state_codes.json"))
+    rows = json.load(open(HERE / "sources" / "state_codes.json"))
     out = {}
     for r in rows:
         if r.get("a_zone_freeboard_ft") is None or r.get("effective_year") is None:
@@ -55,7 +55,7 @@ def periods_local():
     a first_freeboard_year at or before the first dated value, the rule is 0 ft (NFIP minimum) before that year; with
     history_complete, no first year and a current 0 ft, the community never had local freeboard."""
     out = {}
-    for f in sorted(glob.glob(str(D / "rules" / "raw" / "batch_*.json"))):
+    for f in sorted(glob.glob(str(HERE / "sources" / "batch_*.json"))):
         for r in json.load(open(f)):
             per = [(int(h["year"]), float(h["a_zone_freeboard_ft"])) for h in (r.get("history") or [])
                    if h.get("year") is not None and h.get("a_zone_freeboard_ft") is not None]

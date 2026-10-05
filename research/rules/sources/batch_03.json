@@ -1,0 +1,130 @@
+[
+ {
+  "cid": "370159",
+  "community": "CHARLOTTE, CITY OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": null,
+  "current_since_year": 2021,
+  "history": [
+   {
+    "year": 1999,
+    "a_zone_freeboard_ft": null,
+    "source_url": "https://www.charlottenc.gov/files/sharedassets/city/v/1/services/stormwater/documents/regulations/floodplain-technical-guidance-document-03_08.pdf",
+    "quote": "October 1999 \u2013 Numerous changes including: \u2022 Revisions to add Future Land Use Map (FLUM) and Community Encroachment Area concepts; ... \u2022 Interim Freeboard Requirements."
+   },
+   {
+    "year": 2007,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://library.municode.com/nc/charlotte/codes/code_of_ordinances?nodeId=PTIICOOR_CH9FLRE (Municode API jobId 180704, Supplement 26 Update 2, published 2012-02-20; chapter per Ord. No. 3578 adopted April 23, 2007)",
+    "quote": "Flood protection elevation means the elevation to which all structures located within the community special flood hazard area must be elevated (or floodproofed if non-residential). Within areas where base flood elevations (BFEs) have been determined, this elevation shall be the community base flood elevation plus one (1) foot of freeboard along the Catawba River, including Lake Wylie and Mountain Island Lake the flood protection elevation is the FEMA base flood elevation plus two (2) feet of freeboard."
+   }
+  ],
+  "first_freeboard_year": 1999,
+  "history_complete": false,
+  "other_height_rules": "Freeboard is measured above the COMMUNITY base flood elevation (1%-annual-chance WSE computed with future land-use conditions), not the FEMA BFE; the 2008 guidance says pilot studies found existing-conditions BFEs under-predicted by ~2.2 ft on average, so the effective height above the FEMA BFE is >= 2 ft and varies by stream. Catawba River / Lake Wylie / Mountain Island Lake: FEMA BFE + 2 ft (added May 2003 per guidance doc). Current text says FPE drops back to Community BFE + 1 ft once the community SFHA is remapped with new future-conditions criteria. Community Encroachment Area (0.1 ft surcharge) is stricter than FEMA floodway. Since 2023 the rules sit in UDO Article 27 with the same FPE text.",
+  "source_url": "https://www.charlottenc.gov/files/sharedassets/city/v/1/services/stormwater/documents/regulations/cityfloodplainordinance.pdf",
+  "quote": "Flood protection elevation or FPE. The elevation to which all structures located within the community special flood hazard area or FEMA special flood hazard area must be elevated (or floodproofed if non-residential). This elevation is the community base flood elevation plus two feet of freeboard until such time as the Community special flood hazard area is mapped using new future conditions criteria when it shall be the Community base flood elevation plus one foot, except along the Catawba River, including Lake Wylie and Mountain Island Lake where it is the FEMA base flood elevation plus two feet of freeboard.",
+  "date_source_url": "https://library.municode.com/nc/charlotte/codes/code_of_ordinances?nodeId=PTIICOOR_CH9FLRE (Municode API jobId 397964, Supplement 47 published 2022-04-04, Sec. 9-21 Definitions; prior jobId 390133, Supplement 46 published 2021-08-09, still reads 'community base flood elevation plus one foot of freeboard')",
+  "date_quote": "(Ord. No. 4912, 6-25-2012; Ord. No. 9399 , 9-10-2018; Ord. No. 192 , \u00a7 1, 12-13-2021)",
+  "confidence": "medium",
+  "notes": "Current value: Community BFE + 2 ft (Sec. 9-21 as amended by Ord. No. 192, 12-13-2021, inferred because Municode Supp. 46 (Aug 2021) shows +1 ft and Supp. 47 (Apr 2022) shows +2 ft with the 12-13-2021 history note); carried into Charlotte UDO Article 27 (read.charlotteudo.org not reachable from here; text confirmed via search snippet). From at least 2007 (Ord. 3578) through 2021 the city chapter text was Community BFE + 1 ft (verified in Municode versions 2012-02, 2012-10, 2018-04, 2019-06/10, 2020, 2021); March 2008 technical guidance also says 'New construction within the City of Charlotte must have the lowest floor elevated at least one foot (two feet on the Catawba River) above the Community Base Flood Elevation.' The 2008 guidance lists 'Interim Freeboard Requirements' as an October 1999 change (value not found); community floodplain maps adopted locally in 2000. 1978 and 1972 regulations: freeboard not documented either way, so history_complete=false. All values are relative to the Community (future-conditions) BFE, so a_zone_freeboard_ft relative to the FEMA BFE is a lower bound. No V zones in Charlotte."
+ },
+ {
+  "cid": "370185",
+  "community": "ELIZABETH CITY, CITY OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": null,
+  "current_since_year": 2018,
+  "history": [],
+  "first_freeboard_year": 2018,
+  "history_complete": false,
+  "other_height_rules": "SFHA without BFE (Zone A): at least 4 ft above highest adjacent grade (2018 Chapter 154 RFPE definition). Requirements apply only within SFHAs.",
+  "source_url": "https://elizabethcitync.gov/vertical/sites/%7B81CF1C17-216A-4959-BE57-0B405379B891%7D/uploads/Minutes_-_City_Council_Regular_Session_October_22_2018_WEB.pdf",
+  "quote": "\u201cRegulatory Flood Protection Elevation\u201d means the \u201cBase Flood Elevation\u201d plus the \u201cFreeboard.\u201d In \u201cSpecial Flood Hazard Areas\u201d where Base Flood Elevations (BFEs) have been determined, this elevation shall be the BFE plus two (2) feet freeboard. In \u201cSpecial Flood Hazard Areas\u201d where no BFE has been established, this elevation shall be at least four (4) feet above the highest adjacent grade.",
+  "date_source_url": "https://elizabethcitync.gov/vertical/sites/%7B81CF1C17-216A-4959-BE57-0B405379B891%7D/uploads/Minutes_-_City_Council_Regular_Session_October_22_2018_WEB.pdf",
+  "date_quote": "Motion was made by Councilwoman Jeannie Young, seconded by Councilman Kem Spence to adopt the ordinance approve the proposed changes to City Code Chapter 154 \u2013 Floods and UDO Chapter 159 Section 12-2 \u2013 Flood Hazard District Overlay. ... Motion carried. ... This ordinance shall become effective December 21, 2018.",
+  "confidence": "medium",
+  "notes": "Chapter 154 Floods replaced in its entirety (TA 02-18), adopted 10-22-2018, effective 12-21-2018 with the new Pasquotank County FIRM. The council memo (Oct 19, 2018, PH_TA_02-18_Floods.pdf) frames freeboard as a new option: 'One option in the ordinance is the addition of a \u201cfreeboard.\u201d ... The State and City staff are recommending a freeboard of two feet.' Planning Commission minutes 10-02-2018 likewise say staff proposed 'to add ... a \u201cfreeboard\u201d height', BUT also record a garbled remark: 'The current freeboard is five-foot with the waterfront having a zero freeboard. Mr. Schelly commented the new maps would have four-foot above the Base Flood Elevation.' The pre-2018 Chapter 154 (last revised with 1980s FIRMs) was not found (city code is on American Legal, which returned HTTP 403 here), so the earlier rule is unverified and history_complete=false. Current amlegal text not directly verified; no later amendment found in searches. No V-zone value recorded (no VE standards checked in detail; city is on Pasquotank River, ordinance defines Coastal High Hazard Area generically)."
+ },
+ {
+  "cid": "370013",
+  "community": "BEAUFORT COUNTY",
+  "state": "NC",
+  "a_zone_freeboard_ft": 0.0,
+  "v_zone_freeboard_ft": 0.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "SFHA with no BFE (Zone A): reference level at least 2 ft above highest adjacent grade. AO zones: reference level at least the FIRM depth number, or 2 ft above highest adjacent grade if no depth number. VE reference level = bottom of lowest horizontal structural member, at BFE.",
+  "source_url": "https://co.beaufort.nc.us/DocumentCenter/View/1579/Flood-Damage-Prevention-Ordinance---Effective-June-19-2020",
+  "quote": "\u201cRegulatory Flood Protection Elevation\u201d means the \u201cBase Flood Elevation\u201d plus the \u201cFreeboard\u201d. In \u201cSpecial Flood Hazard Areas\u201d where Base Flood Elevations (BFEs) have been determined, this elevation shall be the BFE. In \u201cSpecial Flood Hazard Areas\u201d where no BFE has been established, this elevation shall be at least 2 feet above the highest adjacent grade.",
+  "date_source_url": "https://co.beaufort.nc.us/DocumentCenter/View/1579/Flood-Damage-Prevention-Ordinance---Effective-June-19-2020",
+  "date_quote": "This ordinance shall become effective June 19, 2020. ... I hereby certify that this is a true and correct copy of the Flood Damage Prevention Ordinance as adopted by the Board of Commissioners of Beaufort County, North Carolina, on the 4th day of May, 2020. ... The date of the initial Flood Damage Prevention Ordinance for Beaufort County is February 3, 1987.",
+  "confidence": "medium",
+  "notes": "The current county ordinance (adopted 5-4-2020, effective 6-19-2020; scanned PDF read page-by-page as images) sets RFPE = BFE, i.e. NO local freeboard in A or V zones; the NC State Building Code's own freeboard (collected separately) still applies to buildings. This county ordinance governs unincorporated Beaufort County only; the City of Washington (370017) and other towns have their own ordinances. Initial county FDPO enacted Feb 3, 1987; its text and any interim amendments were not found, so whether the county ever had a local freeboard before 2020 is unknown (current_since_year null, history_complete false). Searches found no post-2020 county amendment raising freeboard (search hits about a 1->2 ft proposal refer to the Town of Beaufort, Carteret County, a different community)."
+ },
+ {
+  "cid": "370072",
+  "community": "CRAVEN COUNTY",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": 2004,
+  "history": [],
+  "first_freeboard_year": 2004,
+  "history_complete": true,
+  "other_height_rules": "SFHA with no BFE: at least 2 ft above highest adjacent grade (2021 text). AO zones: FIRM depth number plus 2 ft freeboard above highest adjacent grade, or at least 2 ft above HAG if no depth number (2020 draft text). Pre-2013/2020 text exempted non-substantial additions to post-FIRM structures built 5/4/1987-7/2/2004 from freeboard, and allowed existing manufactured-home sites an exemption where 2 ft would exceed 36 in. ground clearance.",
+  "source_url": "https://library.municode.com/nc/craven_county/codes/code_of_ordinances?nodeId=CD_ORD_CH18FLDAPR (Municode API jobId 459266, Supplement 13 Update 2, published 2024-09-16, Sec. 18-2 definitions)",
+  "quote": "Regulatory flood protection elevation means the base flood elevation plus the freeboard. In special flood hazard areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus two feet of freeboard. In special flood hazard areas where no BFE has been established, this elevation shall be at least two feet above the highest adjacent grade.",
+  "date_source_url": "https://library.municode.com/nc/craven_county/codes/code_of_ordinances?nodeId=CD_ORD_CH18FL (Municode API jobId 157069, Supplement 2, published 2011-12-19, Sec. 18-1 Definitions)",
+  "date_quote": "Where base flood elevations (BFE) have been determined, the regulatory flood protection elevation shall be the BFE plus two feet of freeboard, except for existing manufactured home sites. ... Any nonsubstantial additions to post-FIRM structures in which construction commenced on or after May 4, 1987 and prior to July 2, 2004, must be elevated to at least the BFE but are exempt from freeboard. ... (Code 1984, \u00a7 7.5-5; Ord. of 5-17-2004; Ord. of 8-2-2004)",
+  "confidence": "high",
+  "notes": "2 ft freeboard verified in every Craven County text read: Municode 2011 (Ord. of 5-17-2004 / 8-2-2004), 2019 (ordinance of March 22, 2013), the 2020 county PDF (cravencountync.gov DocumentCenter/View/10885, ordinance adopted June 1, 2020) and the current chapter (resolution adopted July 6, 2021 re-enacting ch. 18). The definitions note shows freeboard came in with the 2004 rewrite (Ord. of 5-17-2004), tied to the July 2, 2004 FIRM: post-FIRM construction from May 4, 1987 (initial FIRM) to July 2, 2004 needed only BFE, so first_freeboard_year=2004 (effective date is likely 7-2-2004; adoption 5-17-2004). The initial county FDPO dates to April 6, 1987. Applies to unincorporated Craven County only; New Bern (370074) has its own ordinance."
+ },
+ {
+  "cid": "370074",
+  "community": "NEW BERN, CITY OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": null,
+  "history": [],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "SFHA with no BFE: at least 2 ft above highest adjacent grade. AO zones: FIRM depth number plus 2 ft freeboard above highest adjacent grade, or 2 ft above HAG if no depth number.",
+  "source_url": "https://library.municode.com/nc/new_bern/codes/code_of_ordinances?nodeId=PTIICOOR_APXALAUS_ARTXVIFLDAPR (Municode API jobId 490565, Supplement 83 published 2026-01-13, App. A Art. XVI Sec. 15-270 definitions)",
+  "quote": "Regulatory flood protection elevation means the \"base flood elevation\" plus the \"freeboard.\" In \"special flood hazard areas\" where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus two (2) feet freeboard. In \"special flood hazard areas\" where no BFE has been established, this elevation shall be at least two (2) feet above the highest adjacent grade.",
+  "date_source_url": "https://library.municode.com/nc/new_bern/codes/code_of_ordinances?nodeId=PTIICOOR_APXALAUS_ARTXVIFLFLDRER (Municode API jobId 173018, Supplement 44 published 2011-12-13, Sec. 15-270 Definitions)",
+  "date_quote": "Regulatory flood protection elevation means the elevation to which all structures and other development located within the special flood hazard areas must be elevated or floodproofed, if non-residential. Within areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus two feet of freeboard. ... (Ord. No. 2004-44, \u00a71(Exh. A), 6-22-04)",
+  "confidence": "medium",
+  "notes": "2 ft freeboard verified in every Municode version read (2011, 2014, 2016, 2017, 2019 under Ord. No. 2004-44 adopted June 22, 2004; and current Art. XVI re-enacted by Ord. No. 20-015 adopted May 26, 2020). So 2 ft has been in force since at least 6-22-2004. Editor's note: the 2004 ordinance repealed an earlier Art. XVI derived from the original codification, Ord. No. 1998-51 (7-28-1998) and Ord. No. 2000-32 (6-13-2000); the city flood ordinance was first adopted April 28, 1987. The freeboard in those pre-2004 texts was not found (Municode API versions available only from Dec 2011), so first_freeboard_year and current_since_year are null (not guessed). VE: RFPE (BFE + 2 ft) applies to all SFHAs including coastal high hazard areas; whether the city currently has VE zones was not checked."
+ },
+ {
+  "cid": "370017",
+  "community": "WASHINGTON, CITY OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": 2012,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/nc/washington/codes/code_of_ordinances?nodeId=PTIICOOR_CH40ZO_ARTXFLDAPR (Municode API jobId 179527, Supplement 4 published 2012-10-08; same text in Supplements 7, 9, 10, 11 through jobId 342587 published 2020-03-09)",
+    "quote": "Regulatory flood protection elevation means the elevation to which all structures and other development located within the special flood hazard areas must be elevated or floodproofed, if nonresidential. Within areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE. ... (Code 1993, \u00a7 27-103; Ord. No. \u00a7\u00a7 3-9, 4-14-2003)"
+   }
+  ],
+  "first_freeboard_year": 2020,
+  "history_complete": false,
+  "other_height_rules": "SFHA with no BFE: at least the closest existing BFE (2020 text). Pre-2020 text: residential reference level at 'the regulatory flood protection elevation or the design flood elevation, whichever is higher' (design flood elevation not defined in the article; likely the State building code's value) and non-residential at RFPE plus one foot; no-BFE areas 2 ft above highest adjacent grade.",
+  "source_url": "https://library.municode.com/nc/washington/codes/code_of_ordinances?nodeId=PTIICOOR_CH40ZO_ARTXFLDAPR (Municode API jobId 472073, Supplement 18 published 2025-08-04, Sec. 40-260 definitions)",
+  "quote": "Regulatory flood protection elevation means the \"base flood elevation\" plus the \"freeboard.\" In \"special flood hazard areas\" where base flood elevations (BFEs) have been determined, this elevation shall be the BFE plus one (1) foot of freeboard. In \"special flood hazard areas\" where no BFE has been established, this elevation shall be at least the closest existing BFE.",
+  "date_source_url": "https://library.municode.com/nc/washington/codes/code_of_ordinances?nodeId=PTIICOOR_CH40ZO_ARTXFLDAPR (Municode API jobId 363554, Supplement 12 published 2020-10-12)",
+  "date_quote": "Editor's note\u2014 Ord. No. 20-5, \u00a7\u00a7 1,2, adopted June 8, 2020, repealed the former art. X, \u00a7\u00a7 40-259\u201440-264, and enacted a new art. X as set out herein. The former art. X pertained to similar subject matter, and derived from the Code of 1993, \u00a7\u00a7 27-102\u201427-107; Ord. No. 03-9, adopted Apr. 14, 2003; Ord. No. 07-03, \u00a7 1, adopted Mar. 12, 2007; Ord. No. 12-5, \u00a7 1, adopted Oct. 8, 2012; Ord. No. 14-4, \u00a7 1, adopted June 9, 2014; and Ord. No. 15-2, \u00a7 1, adopted Apr. 13, 2015.",
+  "confidence": "medium",
+  "notes": "Municode Supplement 11 (published 2020-03-09) still has RFPE = BFE; Supplement 12 (2020-10-12) has BFE + 1 ft under Ord. No. 20-5 adopted 6-8-2020 (coinciding with the Beaufort County FIRM effective 6-19-2020); definitions later amended by Ord. No. 21-3 (6-14-2021) with the 1 ft unchanged through Supplement 18 (2025). Earliest Municode version available is Oct 2012, so the 2003/2007 text (Ord. 03-9, 07-03) was not read; first_freeboard_year=2020 is the first local A-zone freeboard found, with 0 ft verified only for 2012-2020 (history_complete=false). Note pre-2020 residential rule also referenced an undefined 'design flood elevation, whichever is higher'. v_zone value assumes the RFPE definition applies to all SFHAs (the article has VE construction provisions); not checked whether VE zones exist in the city."
+ }
+]

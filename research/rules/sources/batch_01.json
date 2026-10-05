@@ -1,0 +1,195 @@
+[
+ {
+  "cid": "370430",
+  "community": "SOUTHERN SHORES, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 3.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": 2006,
+    "a_zone_freeboard_ft": 2.0,
+    "source_url": "https://library.municode.com/nc/southern_shores/codes/code_of_ordinances?nodeId=PTIICOOR_CH16FLDAPR (Municode API CodesContent, jobId 163685 = OC/Correction codified through Ord. 2011-07-01; same text in jobId 320856 = Supp. 9, 2019)",
+    "quote": "Regulatory flood protection elevation means the base flood elevation plus the freeboard. In special flood hazard areas where base flood elevations (BFEs) have been determined, this elevation shall be the base flood elevation plus two feet of freeboard. [Sec. 16-2 history: (Code 1988, § 7-212; Ord. No. 06-07-01, art. 2, 8-1-2006)]"
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Since Ord. 2020-06-02 (6-1-2020): AE = max(BFE+3 ft, 8 ft NAVD88); VE = BFE+3 ft or minimum 14 ft NAVD88; AO = base flood depth above highest natural adjacent grade + 1 ft freeboard (the +1 ft is absent from the Supp. 10 (2020) text and present in Supp. 11 (2021), i.e. added by Ord. 2021-05-02, 5-4-2021) or 8 ft NAVD88, whichever greater; shaded X and X zones: RFPE 8 ft NAVD88 or natural grade if higher.",
+  "source_url": "https://library.municode.com/nc/southern_shores/codes/code_of_ordinances?nodeId=PTIICOOR_CH16FLDAPR_S16-2DE (Municode API, jobId 483725 = Supp. 16, codified through Ord. 2026-06-04)",
+  "quote": "In VE zones, the RFPE is the base flood elevation as designated on the effective FIRM plus three feet of freeboard or an elevation to a minimum of 14 feet NAVD 1988. In AE zones, the RFPE is the base flood elevation as designated on the effective FIRM plus three feet of freeboard or an elevation to or above eight feet NAVD 1988, whichever is greater.",
+  "date_source_url": "https://library.municode.com/nc/southern_shores/codes/code_of_ordinances?nodeId=PTIICOOR_CH16FLDAPR (Municode API jobId 349857 = Supp. 10, codified through Ord. 2020-06-02)",
+  "date_quote": "(Ord. No. 2020-06-02 , pt. I, 6-1-2020) ... a true and correct copy of the flood damage prevention ordinance as adopted by the town council of the Town of Southern Shores, North Carolina, on the 1 st day of June, 2020.",
+  "confidence": "high",
+  "notes": "Compared Municode code versions via api.municode.com: 2011 and 2019 versions say BFE + 2 ft freeboard in all SFHAs with BFEs (definitions section carrying history note Ord. No. 06-07-01, 8-1-2006, derived from Code 1988 § 7-212); Supp. 10 (2020) onward say BFE + 3 ft (AE, VE). Whether the 2 ft predates the 2006 ordinance (1988 code) not determined, so first_freeboard_year is null and history incomplete; 2006 is only the earliest evidence. AO +1 ft freeboard appears in current text but not in the 6-1-2020 text; it first appears in Supp. 11 (codified through Ord. 2021-08-01), consistent with Ord. 2021-05-02 (5-4-2021) amending Sec. 16-2."
+ },
+ {
+  "cid": "370439",
+  "community": "KITTY HAWK, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": 2011,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://library.municode.com/nc/kitty_hawk/codes/code_of_ordinances?nodeId=PTIIICOOR_CH14FLDAPR (Municode API CodesContent, jobId 174599 = Supp. 5, codified through Ord. 12-01, 1-9-2012; same 1-ft text in jobId 339820 = Supp. 12, 2019)",
+    "quote": "Regulatory flood protection elevation means the base flood elevation plus the freeboard. In special flood hazard areas where base flood elevations (BFEs) have been determined, this elevation shall be the BFE, plus one foot of freeboard. [Sec. 14-5 history: (Code 1990, § 8-1; Ord. No. 88-4A, art. 2, 1-18-1988; Ord. No. 93-7, 3-1-1993; Ord. No. 06-13, art. 2, 8-7-2006; Ord. No. 07-19, 6-4-2007; Ord. No. 11-10, 9-6-2011)]"
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Since Ord. 20-01 (effective 3-2-2020): AE = max(BFE+3 ft, 8 ft NAVD88); VE and AH = BFE+1 ft; AO = FIRM depth above highest adjacent grade + 1 ft; shaded X and X zones: RFPE 8 ft NAVD88 or natural grade if higher.",
+  "source_url": "https://library.municode.com/nc/kitty_hawk/codes/code_of_ordinances?nodeId=PTIIICOOR_CH14FLDAPR_ARTIIDE_S14-21DE (Municode API jobId 469962 = Supp. 17, codified through Ord. 24-14)",
+  "quote": "The RFPE is as follows: (1) In VE and AH zones, the RFPE is the base flood elevation as designated on the effective FIRM plus one foot of freeboard. (2) In AE zones, the RFPE is the base flood elevation as designated on the effective FIRM plus three feet of freeboard or an elevation to eight feet NAVD 1988, whichever is greater. (3) In AO zones, the RFPE shall be elevated at least as high as the depth number specified on the FIRM above the highest adjacent grade, plus a freeboard of one foot.",
+  "date_source_url": "https://library.municode.com/nc/kitty_hawk/codes/code_of_ordinances?nodeId=PTIIICOOR_CH14FLDAPR_ARTVILESTPR_S14-104EFDA",
+  "date_quote": "Sec. 14-104. - Effective date. This chapter shall become effective on March 2, 2020. (Ord. No. 20-01, 3-2-2020)",
+  "confidence": "high",
+  "notes": "Compared Municode versions via api.municode.com: 2012 (Supp. 5) and 2019 (Supp. 12) codes say BFE + 1 ft in all SFHAs with BFEs; Supp. 13 (Ord. 20-01, 3-2-2020) onward say AE BFE+3 ft (or 8 ft NAVD88), VE/AH +1 ft. The 1-ft definition sits in a section amended 1988, 1993, 2006, 2007 and 2011; which of those introduced the 1 ft is not determined (history row year 2011 = latest amendment of that section before the earliest code version seen, not the adoption year). first_freeboard_year null. Note the 20-01 ordinance also repealed the 'flood damage prevention ordinance of the town enacted on January 19, 1988, as amended'."
+ },
+ {
+  "cid": "375356",
+  "community": "NAGS HEAD, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 1.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2025,
+  "history": [
+   {
+    "year": 2012,
+    "a_zone_freeboard_ft": null,
+    "source_url": "https://library.municode.com/nc/nags_head/codes/code_of_ordinances?nodeId=PTIICOOR_CH22FL_ARTIIFLDAPR_S22-32DE (Municode API jobId 178080 = Supp. 32, Aug 2012; same text through jobId 216218 = Supp. 37, June 2014)",
+    "quote": "Regulatory flood protection elevation means the \"base flood elevation\" plus the \"freeboard\" as specified in the North Carolina Building Codes. [history: ... Ord. No. 12-05-013, Pt. I, 5-2-2012]"
+   },
+   {
+    "year": 2014,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://library.municode.com/nc/nags_head/codes/code_of_ordinances?nodeId=PTIICOOR_CH22FL_ARTIIFLDAPR_S22-32DE (Municode API jobId 231074 = Supp. 38, Jan 2015; same in UDO Appendix A through jobId 348361 = Supp. 49, Sept 2019)",
+    "quote": "Regulatory flood protection elevation means the \"base flood elevation\" plus the \"freeboard\". In \"special flood hazard areas\" where base flood elevations (BFE) have been determined, this elevation shall be the BFE plus one (1) foot of freeboard [history: ... Ord. No. 13-04-009, Pt. I, 4-3-2013; Ord. No. 14-10-026, Pt. I, 10-1-2014]"
+   },
+   {
+    "year": 2020,
+    "a_zone_freeboard_ft": 0.0,
+    "source_url": "https://library.municode.com/nc/nags_head/codes/code_of_ordinances?nodeId=PTIIUNDEOR_ART11ENRE_PTIIIFLDAPR_S11.42GEPR (Municode API jobId 365099 = Supp. 51, Sept 2020; same text through jobId 484503 = Supp. 64, Nov 2025)",
+    "quote": "the RFPE is 12 feet NAVD 1988. 11.42.3.1.2. Properties west of NC 12 and SR 1243- The RFPE for properties located west of NC 12 and SR 1243 and in flood zones Shaded X, X, or AE, is 9 feet NAVD 1988. ( Ord. No. 20-06-008 , Art. II, Pt. I, 6-3-2020) ... This ordinance shall become effective June 19, 2020."
+   }
+  ],
+  "first_freeboard_year": 2014,
+  "history_complete": true,
+  "other_height_rules": "Local elevation standard (fixed NAVD88 floors) since 6-19-2020: east of NC 12/SR 1243 (CHHA) RFPE 12 ft NAVD88; west of NC 12/SR 1243 in AE, shaded X and X RFPE 9 ft NAVD88; from Ord. 25-12-001 (12-3-2025) each is 'or BFE + 1 ft, whichever is greater', and AO = 12 ft NAVD or FIRM depth + 1 ft, whichever greater. From 6-19-2020 until the 2025 amendment the rule was the fixed elevation only (no BFE-relative freeboard in the text).",
+  "source_url": "https://library.municode.com/nc/nags_head/codes/code_of_ordinances?nodeId=PTIIUNDEOR_ART11ENRE_PTIIIFLDAPR_S11.42GEPR (Municode API jobId 488156 = Supp. 65, codified through Ord. 26-03-004)",
+  "quote": "11.42.3.1.2. Properties west of NC 12 and SR 1243- The RFPE for properties located west of NC 12 and SR 1243 and in flood zones Shaded X, X, or AE, is 9 feet NAVD 1988, or the Base Flood Elevation (BFE) as designated on the effective FIRM plus one (1) foot of freeboard, whichever Is greater. ... the RFPE is 12 feet NAVD 1988, or the Base Flood Elevation (BFE) as designated on the effective FIRM plus one (1) foot of freeboard, whichever Is greater.",
+  "date_source_url": "https://library.municode.com/nc/nags_head/codes/code_of_ordinances?nodeId=PTIIUNDEOR_ART11ENRE_PTIIIFLDAPR_S11.42GEPR (Municode API jobId 488156)",
+  "date_quote": "( Ord. No. 20-06-008 , Art. II, Pt. I, 6-3-2020; Ord. No. 22-03-006 , Art. III, Pt. II, 3-2-2022; Ord. No. 25-12-001 , Art. III, Pt. I, 12-3-2025)",
+  "confidence": "medium",
+  "notes": "Built by diffing Municode code versions (api.municode.com Jobs/product/13763). Supp. 31 (Feb 2012) Sec. 22-32: 'Regulatory flood protection elevation means the \"base flood elevation\". In \"special flood hazard areas\" where BFE's have been determined, this elevation shall be the BFE.' (history Ord. 06-08-030, 8-2-2006; Ord. 07-03-006, 3-7-2007) = 0 ft local. Ord. 12-05-013 (5-2-2012) pointed to the NC Building Code freeboard (state code, not a local number; history row value null). Ord. 14-10-026 (10-1-2014) set local BFE+1 ft (first local numeric freeboard). Ord. 20-06-008 (adopted 6-3-2020, effective 6-19-2020) replaced it with fixed 9/12 ft NAVD88 floors and no BFE-relative term (history row 0.0 for that reason; the floor was usually above BFE+1 but not guaranteed). The '+1 ft whichever is greater' language is absent in Supp. 64 (Nov 2025) and present in Supp. 65 (Mar 2026), so attributed to Ord. 25-12-001 (12-3-2025); current_since_year 2025 is its adoption year (effective date not seen). Pre-2006 ordinance text (orig. 2-3-1975) not seen; history_complete assumes the 2012 BFE-only text reflects earlier practice."
+ },
+ {
+  "cid": "370078",
+  "community": "CURRITUCK COUNTY",
+  "state": "NC",
+  "a_zone_freeboard_ft": 2.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": 2018,
+  "history": [
+   {
+    "year": null,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://currituckcountync.gov/wp-content/uploads/boc-minutes-18nov05.pdf",
+    "quote": "staff recommends an increase to our current regulatory flood protection elevation (RFPE). The RFPE is the base flood elevation plus freeboard. Our current freeboard is one foot and staff suggests raising this requirement to two feet."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Where no BFE is established in an SFHA, RFPE = at least 2 ft above highest adjacent grade. County flood page also says lowest floor joist, ductwork and equipment must be at least 1 ft above BFE.",
+  "source_url": "https://www.currituckcountync.gov/wp-content/uploads/UDO.pdf (UDO amended July 18, 2025, Ch. 10 definitions; Sec. 7.4.6 residential and VE standards use RFPE)",
+  "quote": "REGULATORY FLOOD PROTECTION EVEVATION (RFPE) The base flood elevation plus freeboard. In special flood hazard areas where base flood elevations have been determined, this elevation shall be the base flood elevation plus two feet of freeboard. In special flood hazard areas where no base flood elevation has been established, this elevation shall be at least two feet above the highest adjacent grade.",
+  "date_source_url": "https://currituckcountync.gov/wp-content/uploads/boc-minutes-18nov05.pdf",
+  "date_quote": "this elevation shall be the base flood elevation plus one foot two feet of freeboard [redline in PB 18-24 text amendment] ... Commissioner Payment amended his motion setting an effective date of November 15, 2018. The motion passed unanimously.",
+  "confidence": "high",
+  "notes": "Current 2 ft (A and V, via the single RFPE definition) adopted by the Board of Commissioners 11-5-2018 (PB 18-24, with the 12-21-2018 FIRMs), effective 11-15-2018 per the minutes; the county FIRM page says 'The County revised the Flood Ordinance section of the Unified Development Ordinance on November 5, 2018' and 'increased the required freeboard from 1 foot to 2 feet'. The prior 1 ft start year was not found: the 2020 Outer Banks Regional HMP (CUR13 status) says '1 foot of freeboard has been incorporated into the unified development ordinance which has been officially adopted' (UDO rewrite effective 1-1-2013, per the same 2018 minutes packet), which suggests but does not prove 1 ft began with the 2013 UDO; pre-2013 ordinance not seen. Floodplain rules live in the UDO (not on Municode; Municode Code of Ordinances has no flood chapter)."
+ },
+ {
+  "cid": "375353",
+  "community": "KILL DEVIL HILLS, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": null,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://connect.ncdot.gov/resources/PROTECT2023-NC12/Documents/Outer%20Banks%20HMP%20Final%20Plan-%20Adopted_2020.pdf (Outer Banks Regional HMP 2020, Sec. 5.3.6)",
+    "quote": "nearly all participating jurisdictions have some local standards that exceed state requirements. For example, Currituck County, Dare County, Kill Devil Hills, Kitty Hawk, Manteo, and Nags Head have a one-foot freeboard requirement; Duck and Southern Shores require a two-foot freeboard."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Since 6-19-2020: AE = max(BFE+3 ft, above 8 ft NAVD88); AO = base flood depth + 1 ft above highest natural adjacent grade or 8 ft NAVD88, whichever greatest; VE = BFE + 'one foot free of obstruction' (bottom of lowest horizontal structural member); shaded X/X west of NC 12 = 8 ft NAVD88 or natural grade if higher; shaded X/X east of NC 12 = 8 ft NAVD88 or natural grade if higher, plus one foot free of obstruction.",
+  "source_url": "https://www.kdhnc.com/DocumentCenter/View/12445/Flood-Damage-Prevention-Ord6102020 (scanned 'Final Ordinance June 10, 2020', Ordinance Number 17-23, Chapter 151, p. 7; read visually from rendered page image)",
+  "quote": "For Kill Devil Hills the RFPE is as follows: In VE zones, the RFPE is the Base Flood Elevation as designated on the effective FIRM plus one foot free of obstruction. In AE zones, the RFPE is the Base Flood Elevation as designated on the effective FIRM plus 3 feet of freeboard OR an elevation to above 8 feet NAVD 1988, whichever is greater.",
+  "date_source_url": "https://www.kdhnc.com/DocumentCenter/View/12445/Flood-Damage-Prevention-Ord6102020 (p. 30)",
+  "date_quote": "(D) EFFECTIVE DATE. This ordinance shall become effective June 19, 2020. ... Adopted and approved by the Board of Commissioners of the Town of Kill Devil Hills at a recessed meeting held on the 10th day of June, 2020, by a vote of 5 in favor and 0 opposed.",
+  "confidence": "medium",
+  "notes": "Adopted 6-10-2020, effective 6-19-2020 (scanned PDF, no text layer; read from page images). Could not open the current codified Chapter 151 on American Legal (codelibrary.amlegal.com returns a Cloudflare JS challenge), so later amendments are not checked; a search-engine snippet of the amlegal Chapter 151 page showed 'BFE plus one (1) foot of freeboard' wording, which may be stale index text of the pre-2020 ordinance or a definition elsewhere; not verified. Pre-2020 value (1 ft) comes only from the 2020 Outer Banks Regional HMP capability assessment; its start year is unknown (the town's Jan 2020 'Summary of Changes' says definitions 'were included in the 2006 ordinance' but does not state the old freeboard). VE freeboard recorded as 1.0 ft from 'plus one foot free of obstruction'."
+ },
+ {
+  "cid": "370632",
+  "community": "DUCK, TOWN OF",
+  "state": "NC",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 2.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": 2012,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://ducknc.gov/wp-content/uploads/2013/07/Town-of-Duck-Land-Use-Ordinances.pdf (Duck Code Title XV, Ch. 150, § 150.05, uploaded 2013-07)",
+    "quote": "The FREEBOARD requirement for the town shall be 1 foot. ... In \"special flood hazard areas\" where base flood elevations (BFEs) have been determined, this ELEVATION shall be the BFE plus 1 foot of \"freeboard\". [§ 150.05 history: (Ord. 06-07, passed 8-2-2006; Am. Ord. 07-14, passed 10-3-2007; Am. Ord. 12-01, passed 6-6-2012)]"
+   },
+   {
+    "year": null,
+    "a_zone_freeboard_ft": 2.0,
+    "source_url": "https://ducknc.gov/wp-content/uploads/2018-Outreach-for-Website.pdf",
+    "quote": "If your structure is non-compliant with the Base Flood Elevation plus the Town's two-foot freeboard requirement, consider elevating your structure if possible."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Since 6-19-2020 (Ord. 20-01): AE = max(BFE+3 ft, 10 ft NAVD88); CHHA (VE) = BFE+2 ft; AO = max(FIRM depth above highest natural adjacent grade, 10 ft NAVD88); shaded X and X = 10 ft NAVD88 or natural grade if higher (X-zone elevation-certificate rule relaxed by Ord. 22-04, July 2022, not the elevation itself).",
+  "source_url": "https://obx.townofduck.com/wp-content/uploads/20-01-Updating-Flood-Damage-Prevention-Standards-Ordinance.pdf (Ordinance 20-01, scanned; § 150.05 p. 10, read from rendered page image; linked from Duck Tales Spring/Summer 2021 via bit.ly/3tideug)",
+  "quote": "For the Town of Duck, the RFPE is applied as follows: (1) In CHHA zones, the RFPE is the Base Flood Elevation as designated on the effective FIRM plus 2 feet of freeboard. (2) In AE zones, the RFPE is the Base Flood Elevation as designated on the effective FIRM plus 3 feet of freeboard OR an elevation to or above 10 feet NAVD 1988, whichever is greater.",
+  "date_source_url": "https://obx.townofduck.com/wp-content/uploads/20-01-Updating-Flood-Damage-Prevention-Standards-Ordinance.pdf (p. 37)",
+  "date_quote": "150.27 EFFECTIVE DATE. This ordinance shall become effective June 19, 2020. ... Date adopted: May 20, 2020 ... Vote: 5 AYES 0 NAYS",
+  "confidence": "medium",
+  "notes": "Three periods found: 1 ft in the 2013-era code (§ 150.05, last amended 6-6-2012; whether 1 ft dates from Ord. 06-07 of 8-2-2006 or a later amendment not determined, so history row year 2012 = latest amendment before that code text, not proven start); 2 ft by 2018 (town CRS outreach 2018; also 2020 Outer Banks Regional HMP: 'Duck and Southern Shores require a two-foot freeboard'), adoption date not found (council minutes before recent years not online; American Legal code library blocked by Cloudflare challenge); 3 ft AE / 2 ft VE from 6-19-2020. Later amendments after 2022 not checked (current codified text on American Legal not reachable)."
+ },
+ {
+  "cid": "375348",
+  "community": "DARE COUNTY",
+  "state": "NC",
+  "a_zone_freeboard_ft": 3.0,
+  "v_zone_freeboard_ft": 1.0,
+  "current_since_year": 2020,
+  "history": [
+   {
+    "year": null,
+    "a_zone_freeboard_ft": 1.0,
+    "source_url": "https://connect.ncdot.gov/resources/PROTECT2023-NC12/Documents/Outer%20Banks%20HMP%20Final%20Plan-%20Adopted_2020.pdf (Outer Banks Regional HMP 2020, Sec. 5.3.6)",
+    "quote": "For example, Currituck County, Dare County, Kill Devil Hills, Kitty Hawk, Manteo, and Nags Head have a one-foot freeboard requirement; Duck and Southern Shores require a two-foot freeboard."
+   }
+  ],
+  "first_freeboard_year": null,
+  "history_complete": false,
+  "other_height_rules": "Reported (unverified, see notes): local elevation standard of 8 ft NAVD88 as the regulatory flood elevation in shaded X and X zones of unincorporated Dare County, with the 2020 FIRMs.",
+  "source_url": "https://www.darenc.gov/government/flood-maps/2020-flood-maps (NOT opened: HTTP 403 Akamai 'Access Denied' to curl and WebFetch; text below is the WebSearch tool's extract of this page)",
+  "quote": "A freeboard of 3 feet is established for AE and AO flood zones designated on the revised FIRMs and a 1-foot freeboard for VE zones. [search extract, also: 'a local elevation standard that applies in unincorporated Dare County in designated Shaded X or X zones on the revised FIRMs, establishing a regulatory flood elevation level of 8 feet for Shaded X and X zones']",
+  "date_source_url": "https://www.darenc.gov/government/flood-maps/2020-flood-maps (NOT opened; WebSearch extract)",
+  "date_quote": "The Dare County Board of Commissioners adopted the revised Flood Insurance Rate Maps (FIRMs) on May 5, 2020. The Dare County Flood Damage Prevention Ordinance (FDPO) was updated in conjunction with the revised FIRMs.",
+  "confidence": "low",
+  "notes": "Primary sources unreachable from this environment: darenc.gov returns 403 (Akamai) and the codified Dare County Code ch. 151 on codelibrary.amlegal.com returns a Cloudflare JS challenge; outerbanksvoice.com also blocked. Current values (AE/AO 3 ft, VE 1 ft, X/shaded X 8 ft NAVD88) and the 5-5-2020 adoption date come only from WebSearch result extracts of darenc.gov, so they are UNVERIFIED; the effective date was presumably with the 6-19-2020 Dare County FIS/FIRMs (the date the KDH, Duck and Nags Head 2020 ordinances cite) but not confirmed for the county. The pre-2020 1 ft is from the 2020 Outer Banks Regional HMP (opened); its start year was not found. Re-check by opening amlegal Dare County Code § 151.02/151.08 in a browser."
+ }
+]
