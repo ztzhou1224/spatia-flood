@@ -49,12 +49,17 @@ def soil(pts):
 
 
 def climate(lat, lon):
-    for _ in range(4):
+    def get(start, end):
+        r = requests.get("https://archive-api.open-meteo.com/v1/archive", params=dict(
+            latitude=lat, longitude=lon, start_date=start, end_date=end,
+            daily="temperature_2m_mean,precipitation_sum", timezone="UTC"), timeout=300).json()
+        return pd.DataFrame(r["daily"])
+    # one 30-year request; if the connection keeps failing (it does for one coastal NC cell), the same days in three
+    # 10-year requests
+    for chunks in ([("1991-01-01", "2020-12-31")],) * 3 + ([("1991-01-01", "2000-12-31"), ("2001-01-01", "2010-12-31"),
+                                                         ("2011-01-01", "2020-12-31")],) * 2:
         try:
-            r = requests.get("https://archive-api.open-meteo.com/v1/archive", params=dict(
-                latitude=lat, longitude=lon, start_date="1991-01-01", end_date="2020-12-31",
-                daily="temperature_2m_mean,precipitation_sum", timezone="UTC"), timeout=300).json()
-            d = pd.DataFrame(r["daily"])
+            d = pd.concat([get(a, b) for a, b in chunks], ignore_index=True)
             d["time"] = pd.to_datetime(d.time)
             d["winter"] = d.time.dt.year + (d.time.dt.month >= 7)
             fi = d.assign(c=(-d.temperature_2m_mean).clip(lower=0)).groupby("winter").c.sum().iloc[1:-1].mean()
