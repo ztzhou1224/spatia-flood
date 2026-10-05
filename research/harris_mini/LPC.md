@@ -84,3 +84,24 @@ As a stand-alone estimate for every house both are too noisy (MAE 1.3-2.4 ft aga
 - Answer-key screen and block-bootstrap intervals added; detection counted over the houses each method scores.
 - Not done yet: roof-plane fitting for a sturdier main eave; 2018 vs 2024 eave differences to find houses raised
   after 2018; per-house uncertainty bands; area B (no point-cloud tiles yet) for an out-of-area test.
+
+## Imagery for the triage list: Bee Maps, several frames per house (2026-10-05)
+
+Scripts `beemaps_multi.py C 6 150 3000`, `vlm_multi.py C` (Gemini, prompt v3), `eval_multi.py C` (output
+`eval_multi_output.txt`). Houses: the 317 on the triage list (out-of-fold model > 2 ft or an appraisal basement /
+lower level; fixed before any image was read; it holds 164 of the 198 raised houses) and 150 random unflagged houses.
+Up to 6 diverse forward-camera frames per house (8-45 m, unobstructed, in the field of view). Images and reads stay in
+`data/` (provider=beemaps).
+
+- **Coverage is the limit, not price.** Any Bee Maps frame within 60 m: 11% of triage houses, 33% of control houses.
+  A usable frame: 7 of 317 triage houses (2.2%) and 14 of 150 controls (9.3%). 56 image views were downloaded in
+  total ($0.005 each). Captures 2025-12 to 2026-08.
+- **None of the 164 raised houses got a usable frame.** All 21 houses seen are not raised (door <= 3 ft), so the
+  imagery cannot be scored on the houses it was meant for.
+- On the 15 houses with an image door height (none raised), the reading is worse than the lidar + records model
+  (MAE 1.10 vs 0.24 ft); the image "raised" vote flagged 10 of the 21 non-raised houses (false positives). Image story
+  count agrees with the appraisal record for 71% (15 of 21).
+- Verdict for Clear Lake: Bee Maps dashcam coverage misses the raised neighbourhoods (waterfront and side streets)
+  entirely; more frames per house cannot help where there are no frames. The evidence that does reach those houses is
+  the lidar point cloud and the appraisal record. Imagery for them needs another source (see
+  research/coverage/IMAGERY_SOURCES.md) or field capture.
