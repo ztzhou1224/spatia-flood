@@ -1,0 +1,55 @@
+C: houses tried 467 {'control': 150, 'triage': 317}; house seen in >= 1 frame {'control': 0.02, 'triage': 0.038}; door height read {'control': 0.007, 'triage': 0.025}; raised (door > 3 ft) {'control': 2, 'triage': 164}
+seen houses: views per house median 2, max 4; door views median 1; spread of door-height reads across frames (houses with >= 2): median 0.00 ft
+
+## Door height above ground (ft), all
+
+|                                                        |   n |   MAE |   within_1 |
+|:-------------------------------------------------------|----:|------:|-----------:|
+| ('houses with an image door height', 'pred')           |   9 | 1.325 |      0.778 |
+| ('houses with an image door height', 'img')            |   9 | 3.523 |      0.111 |
+| ('houses with an image door height', 'img_else_model') |   9 | 3.523 |      0.111 |
+| ('houses with an image door height', 'mean_both')      |   9 | 2.295 |      0.556 |
+| ('raised among them', 'pred')                          |   3 | 3.443 |      0.333 |
+| ('raised among them', 'img')                           |   3 | 8.086 |      0     |
+| ('raised among them', 'img_else_model')                |   3 | 8.086 |      0     |
+| ('raised among them', 'mean_both')                     |   3 | 5.765 |      0     |
+| ('all seen houses', 'pred')                            |  15 | 1.148 |      0.733 |
+| ('all seen houses', 'img')                             |   9 | 3.523 |      0.111 |
+| ('all seen houses', 'img_else_model')                  |  15 | 2.467 |      0.333 |
+| ('all seen houses', 'mean_both')                       |   9 | 2.295 |      0.556 |
+| ('raised seen houses', 'pred')                         |   4 | 2.99  |      0.25  |
+| ('raised seen houses', 'img')                          |   3 | 8.086 |      0     |
+| ('raised seen houses', 'img_else_model')               |   4 | 6.473 |      0     |
+| ('raised seen houses', 'mean_both')                    |   3 | 5.765 |      0     |
+
+## Door height above ground (ft), answer key passes the screen
+
+|                                                        |   n |   MAE |   within_1 |
+|:-------------------------------------------------------|----:|------:|-----------:|
+| ('houses with an image door height', 'pred')           |   9 | 1.325 |      0.778 |
+| ('houses with an image door height', 'img')            |   9 | 3.523 |      0.111 |
+| ('houses with an image door height', 'img_else_model') |   9 | 3.523 |      0.111 |
+| ('houses with an image door height', 'mean_both')      |   9 | 2.295 |      0.556 |
+| ('raised among them', 'pred')                          |   3 | 3.443 |      0.333 |
+| ('raised among them', 'img')                           |   3 | 8.086 |      0     |
+| ('raised among them', 'img_else_model')                |   3 | 8.086 |      0     |
+| ('raised among them', 'mean_both')                     |   3 | 5.765 |      0     |
+| ('all seen houses', 'pred')                            |  15 | 1.148 |      0.733 |
+| ('all seen houses', 'img')                             |   9 | 3.523 |      0.111 |
+| ('all seen houses', 'img_else_model')                  |  15 | 2.467 |      0.333 |
+| ('all seen houses', 'mean_both')                       |   9 | 2.295 |      0.556 |
+| ('raised seen houses', 'pred')                         |   4 | 2.99  |      0.25  |
+| ('raised seen houses', 'img')                          |   3 | 8.086 |      0     |
+| ('raised seen houses', 'img_else_model')               |   4 | 6.473 |      0     |
+| ('raised seen houses', 'mean_both')                    |   3 | 5.765 |      0     |
+
+## Raised detection on seen houses (n 15, raised 4)
+
+|                          |   flagged |   precision |   recall |
+|:-------------------------|----------:|------------:|---------:|
+| model > 3 ft             |         3 |       1     |     0.75 |
+| image raised vote >= 0.5 |         4 |       0.5   |     0.5  |
+| either                   |         6 |       0.667 |     1    |
+| both                     |         1 |       1     |     0.25 |
+
+stories, image vs appraisal record (n 12): agree 58%; crosstab {1.0: {1.0: 1, 2.0: 0}, 2.0: {1.0: 4, 2.0: 6}, 3.0: {1.0: 1, 2.0: 0}}

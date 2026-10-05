@@ -70,3 +70,39 @@ Same rectified views, three Gemini models (answer key = scorer only; none of the
 3. Mark the target's extent in the view, and skip attached units or label them as a row.
 4. Coverage is the real limit for raised houses: test on an area where they are on driven streets, or use a
    different source (research/coverage/IMAGERY_SOURCES.md).
+
+## Mapillary, checked on its images (2026-10-05, after the token was provided)
+
+Script `mapillary_multi.py C 6` (same 467 houses). Candidates as before; only images with an SfM pose; up to 6 per
+house; each rendered level and target-centred from `computed_rotation` and the camera model; audit copies mark the
+footprint edges.
+- **Images per house**: 29 of 467 houses (6%) have any candidate image (8-45 m, unobstructed); 15 get a usable view
+  (12 triage, 3 control), median 2 views, max 4. 95% are 2012 panoramas (Microsoft Streetside imports): 6 years
+  before the answer key and 5 before Harvey. 4 raised houses have a view (Bee Maps: none).
+- **Processing**: two faults found and fixed. (1) 2048 px panorama thumbnails give ~5.7 px per degree, too blurry
+  for steps: now the original resolution. (2) One 2026 phone image has a wrong SfM rotation and rendered upside
+  down: now dropped by a pose check (the camera's down axis must point down). A brightness test tried first was
+  wrong (it dropped five upright views with a dark canopy over a bright lawn) and was replaced.
+- **House matching**: checked by eye on the audit copies; the target sits between the footprint-edge marks (e.g.
+  502907, a raised building with outside stairs to the living floor).
+
+## Our own model (owner decision 2026-10-05: no Gemini for recognition)
+
+`local_vlm.py`: open-weight Qwen3-VL (Apache-2.0, Hugging Face), run here on CPU (4 threads, bfloat16), same prompt
+and output fields as the Gemini reader. Speed: 4B about 38 s per image on this CPU (2B about 50 s while another job
+ran); a GPU is needed for production.
+- **Qwen3-VL-2B on the 43 rectified Bee Maps views**: degenerate. Door "visible" in 42 of 43 views, height 1.0 or
+  1.5 ft every time, "slab" for every house; stories agree with the record 71% (21 houses). Its door MAE (0.49 ft)
+  only reflects that all these houses are ordinary slabs: it cannot find a raised house.
+- **Qwen3-VL-4B on the 38 Mapillary views** (`eval_multi_mapillary_qwen3vl4b_output.txt`; 15 houses, 4 raised):
+  raised vote catches 2 of 4 raised houses with 2 false alarms (precision 0.5, recall 0.5); the lidar + records model
+  flags 3 of 4 with none wrong. Door height on the 3 raised houses with a read: MAE 8.1 ft (it reports 0.8-3.5 ft
+  for doors 12-13 ft up). It does see the cues: for 502907 (door 12.7 ft) it reports piers / raised crawlspace and
+  5-10 steps, but turns them into 1.2-3.5 ft; for 503216 (12.2 ft) it counts the enclosed ground level as a story
+  and reads the ground-level door. Stories agree with the record for 58% (12 houses).
+- **Reading**: a small open model is a partial feature detector (piers, steps, stories), not a height measurer.
+  For our own pipeline, height should come from geometry (lidar eave minus stories: raised one-story 1.1-1.4 ft,
+  two-story 2.4-2.6 ft median error in C and B), and the image model should answer categorical questions only:
+  raised or not, piers vs enclosure, whether the lowest level is living space or garage/enclosure, step count.
+  Next: test those categorical reads (and Qwen3-VL-8B on a GPU), and the M3 detector path (Grounding DINO + SAM 2,
+  Apache-2.0) with lidar distances for the door position.
