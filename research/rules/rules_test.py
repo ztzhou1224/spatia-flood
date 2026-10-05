@@ -48,6 +48,10 @@ def periods_state():
 
 
 def periods_local():
+    """cid -> (periods, start): periods = [(year, ft)], start = year from which the local rule is known.
+
+    With history_complete and a first_freeboard_year, the rule is 0 ft before that year (NFIP minimum) and known from
+    the FIRM onwards; otherwise it is known only from the earliest dated period (earlier years -> NaN)."""
     out = {}
     for f in sorted(glob.glob(str(D / "rules" / "raw" / "batch_*.json"))):
         for r in json.load(open(f)):
@@ -55,16 +59,27 @@ def periods_local():
                    if h.get("year") is not None and h.get("a_zone_freeboard_ft") is not None]
             if r.get("a_zone_freeboard_ft") is not None and r.get("current_since_year") is not None:
                 per.append((int(r["current_since_year"]), float(r["a_zone_freeboard_ft"])))
-            if per:
-                out[str(r["cid"])] = sorted(set(per))
+            if not per:
+                continue
+            per = sorted(set(per))
+            first = r.get("first_freeboard_year")
+            if r.get("history_complete") and first is not None and int(first) <= per[0][0]:
+                if per[0][1] > 0 and int(first) < per[0][0]:
+                    continue  # freeboard began earlier than the first dated value: value unknown, skip community
+                out[str(r["cid"])] = ([(0, 0.0)] + per, -9999)
+            else:
+                out[str(r["cid"])] = (per, per[0][0])
     return out
 
 
-def at(periods, year):
+def at(periods, year, start=None):
+    """Value in force in `year`. State periods: 0 before the first statewide rule. Local: NaN before `start`."""
     if not periods or not np.isfinite(year):
         return np.nan
+    if start is not None and year < start:
+        return np.nan
     v = [fb for y, fb in periods if y <= year]
-    return v[-1] if v else (0.0 if year < periods[0][0] else np.nan)
+    return v[-1] if v else 0.0
 
 
 def main():
@@ -77,8 +92,8 @@ def main():
     t["post_firm"] = (t.year >= t.firm_year).astype(float).where(t.firm_year.notna())
     t["yrs_after_firm"] = t.year - t.firm_year
     sp, lp = periods_state(), periods_local()
-    t["fb_state"] = [at(sp.get(ABBR[s]), y) for s, y in zip(t.state, t.year)]
-    t["fb_local"] = [at(lp.get(c), y) if c in lp else np.nan for c, y in zip(t.cid, t.year)]
+    t["fb_state"] = [at(sp.get(s, sp.get(ABBR[s])), y) for s, y in zip(t.state, t.year)]  # NYC has its own code if recorded
+    t["fb_local"] = [at(lp[c][0], y, lp[c][1]) if c in lp else np.nan for c, y in zip(t.cid, t.year)]
     t["fb_rule"] = np.where(t.post_firm == 0, 0.0, np.fmax(t.fb_state.fillna(0), t.fb_local))
     t["fb_rule"] = t.fb_rule.where(t.post_firm.notna())
     t["req_height"] = (t.bfe_minus_ground + t.fb_rule).where((t.sfha > 0) & t.bfe_minus_ground.notna())

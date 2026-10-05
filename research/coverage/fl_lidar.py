@@ -27,7 +27,7 @@ from sklearn.neighbors import KDTree
 
 ROOT = Path(__file__).resolve().parents[2]
 D = ROOT / "data" / "fl"
-EC = Path("/tmp/claude-0/-home-user/7f483c91-2d9e-5082-9e8a-aee11eac531b/scratchpad/ec_joined.parquet")
+EC = ROOT / "data" / "fl" / "ec_joined.parquet"  # written by ec_backtest/join2.py, run in data/fl
 FT = {"S": 0, "C": 1, "B": 2, "P": 3, "I": 4, "W": 5}
 USFT = 1200 / 3937
 
