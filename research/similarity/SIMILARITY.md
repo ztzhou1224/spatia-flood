@@ -21,37 +21,43 @@ No paper defines similarity for floor-height transfer. Adjacent work:
   cannot see.
 - Bourassa et al. (1999, J Housing Econ): data-driven housing submarkets beat a-priori ones.
 
-## Experiment 1: which measure picks a good donor region? (MAE ft; local model 1.32, best possible donor 1.51,
-random donor 3.23, all donors pooled 1.80; donors >= 100 km: oracle 1.56, pooled 2.18)
+**Correction (2026-10-05, later the same day).** Experiments 1 and 2 were rerun after fixing the NC flood inputs in
+houses_all (coded zone / yes-no flag read as BFE; see research/states/STATES.md). The tables below are the rerun;
+first-run values are in the git history. The conclusions hold; the input-only flood and area-of-applicability measures
+got weaker. Experiment 3 still shows the FIRST-RUN numbers: its region context needs Open-Meteo, whose daily request
+limit was exhausted on 2026-10-05, so it awaits a rerun.
+
+## Experiment 1: which measure picks a good donor region? (MAE ft; local model 1.33, best possible donor 1.52,
+random donor 3.23, all donors pooled 1.96; donors >= 100 km: oracle 1.57, pooled 2.22)
 
 | measure | Spearman with transfer error | top-1 donor | top-3 pooled | top-1, donors >= 100 km |
 |---|---|---|---|---|
-| distance (km) | 0.40 | 1.80 | 1.75 | 2.50 |
-| same state | 0.43 | 2.12 | 2.17 | 2.49 |
-| foundation mix (NSI) | 0.19 | 2.28 | 2.11 | 2.51 |
-| building age | -0.04 | 3.16 | 2.50 | 3.26 |
-| flood exposure (SFHA, V, BFE - ground) | 0.35 | 2.26 | 2.01 | 2.45 |
-| all descriptors | 0.27 | 2.00 | 1.94 | 2.27 |
-| MMD (input distributions) | 0.33 | 2.05 | 1.92 | 2.36 |
-| area-of-applicability DI | 0.31 | 2.03 | 1.97 | 2.37 |
-| **30 measured houses ('probe')** | **0.96** | **1.58** | **1.59** | **1.63** |
+| distance (km) | 0.42 | 1.83 | 1.79 | 2.48 |
+| same state | 0.46 | 2.15 | 2.23 | 2.49 |
+| foundation mix (NSI) | 0.18 | 2.26 | 2.11 | 2.51 |
+| building age | -0.04 | 3.23 | 2.67 | 3.33 |
+| flood exposure (SFHA, V, BFE - ground) | 0.18 | 2.47 | 2.24 | 2.77 |
+| all descriptors | 0.17 | 2.10 | 1.95 | 2.47 |
+| MMD (input distributions) | 0.18 | 2.11 | 1.96 | 2.36 |
+| area-of-applicability DI | 0.03 | 2.50 | 2.41 | 2.87 |
+| **30 measured houses ('probe')** | **0.96** | **1.60** | **1.60** | **1.65** |
 
-Every input-only measure is weak (Spearman 0.2-0.4); for a new area (donors >= 100 km) none beats simply pooling all
-donors (2.18 ft). A 30-house probe ranks donors almost perfectly (0.96).
+Every input-only measure is weak (Spearman 0.0-0.5); for a new area (donors >= 100 km) none beats simply pooling all
+donors (2.22 ft). A 30-house probe ranks donors almost perfectly (0.96).
 
 ## Experiment 2: how many measured houses does a new region need? (84 targets, donors >= 100 km; MAE ft)
 
 | method | n=5 | 10 | 20 | 30 | 50 | 100 |
 |---|---|---|---|---|---|---|
-| pooled donors (n = 0) | 2.22 | | | | | |
-| pooled + bias from probe | 2.05 | 1.95 | 1.91 | 1.88 | 1.86 | 1.85 |
-| probe-picked donor | 1.90 | 1.82 | 1.74 | 1.66 | 1.64 | 1.62 |
-| probe-picked donor + bias | 1.92 | 1.79 | 1.70 | 1.64 | 1.62 | 1.61 |
-| model on the probe houses only | | 1.87 | 1.75 | 1.67 | 1.58 | 1.51 |
-| local model, up to 3,000 houses | 1.32 | | | | | |
+| pooled donors (n = 0) | 2.30 | | | | | |
+| pooled + bias from probe | 2.21 | 2.09 | 2.04 | 2.00 | 1.98 | 1.97 |
+| probe-picked donor | 1.98 | 1.86 | 1.73 | 1.69 | 1.67 | 1.64 |
+| probe-picked donor + bias | 1.97 | 1.81 | 1.70 | 1.65 | 1.65 | 1.60 |
+| model on the probe houses only | | 1.91 | 1.74 | 1.68 | 1.59 | 1.52 |
+| local model, up to 3,000 houses | 1.34 | | | | | |
 
-By state at n = 30 (probe-picked + bias vs pooled donors vs local): FL 0.64 / 0.69 / 0.54; HAR 0.68 / 2.22 / 0.48;
-NC 2.18 / 2.96 / 1.74; NYC 2.10 / 2.96 / 1.97; VA 1.89 / 3.01 / 1.33.
+By state at n = 30 (probe-picked + bias vs pooled donors vs local): FL 0.64 / 1.06 / 0.54; HAR 0.68 / 1.82 / 0.48;
+NC 2.19 / 2.94 / 1.77; NYC 2.15 / 2.28 / 1.97; VA 1.83 / 2.56 / 1.33.
 
 ## Reading
 
@@ -59,13 +65,13 @@ NC 2.18 / 2.96 / 1.74; NYC 2.10 / 2.96 / 1.97; VA 1.89 / 3.01 / 1.33.
   housing style), not in the inputs themselves. Input-only similarity (foundation mix, age, flood exposure, MMD,
   area of applicability) cannot see that, as Ben-David's bound predicts.
 - The working definition of similarity is therefore empirical: a donor is similar to a place if its model fits a
-  small measured sample there. 20-30 measured houses close most of the gap (2.22 -> 1.64-1.70 ft); beyond about 50
+  small measured sample there. 20-30 measured houses close most of the gap (2.30 -> 1.65-1.70 ft); beyond about 50
   houses, a model on the local houses alone starts to win.
 - Product rule: every new region needs a calibration sample of about 30 measured houses (survey, certificates, or a
   public dataset) to pick and correct the donor model; with none, ship the pooled model with a wide error band.
 - Soil, climate, terrain and rule context: tested in Experiment 3 below.
 
-## Experiment 3: physical and regulatory context (2026-10-05)
+## Experiment 3: physical and regulatory context (2026-10-05; FIRST RUN, before the NC fix — rerun pending)
 
 Scripts `region_context.py` (output `region_context_output.txt`), `context_test.py` (output `context_output.txt`).
 Per region: soil from USDA Soil Data Access (water-table depth, poorly drained share, flooding frequency, hydrologic

@@ -2,15 +2,17 @@
 
 Rule data (research/rules/sources/*.json, collected from ordinances / state codes with source URL + verbatim quote):
   state_codes.json   statewide freeboard periods (building codes / statutes)
-  batch_*.json       local freeboard of the 60 communities with the most measured houses, with adoption history
+  batch_*.json       local freeboard of 66 communities (the 60 with the most measured houses + 6), with adoption history
 Per house (research/states houses_all + rules/house_community):
   post_firm          built in or after the community's first FIRM year (NFIP Community Status Book)
   fb_state           statewide freeboard in force in the build year (0 before the first statewide rule)
   fb_local           local freeboard in force in the build year (NaN when the community or the date is unknown)
-  fb_rule            max(state, local) for post-FIRM houses; 0 for pre-FIRM houses
+  fb_rule            max(state, local) for post-FIRM houses (state alone where local is unknown: a lower bound); 0 pre-FIRM
   req_height         in an SFHA with a BFE: BFE - NSI ground + fb_rule (the minimum legal floor height), else NaN
 Tests (scorer only uses the measured floors):
   compliance         share of post-FIRM SFHA houses whose measured floor height >= req_height - 1 ft
+  rule changes       floor above BFE of SFHA houses built 1-5 years before vs after each dated rule change in a
+                     community (output rule_events.csv)
   new area           pooled model on regions >= 100 km away (as research/similarity/context_test.py), with and
                      without the rule features
   cross-state        leave-one-state-out (as research/states/cross_state.py), with and without
@@ -97,7 +99,7 @@ def at(periods, year, start=None):
     return v[-1] if v else 0.0
 
 
-def event_study(t, rule_at, w=5, min_n=10):
+def event_study(t, rule_at, state_changes=frozenset(), w=5, min_n=10):
     """Around each change of the rule in force (state or local) in a community: floor above BFE of SFHA houses built
     1-w years before vs 1-w years after the change year (the change year itself is skipped: permits lag)."""
     s = t[(t.sfha > 0) & t.bfe_minus_ground.notna() & (t.post_firm == 1)].copy()
@@ -111,19 +113,27 @@ def event_study(t, rule_at, w=5, min_n=10):
             pre = g[g.year.between(y - w, y - 1) & g.fb_rule.eq(a)]
             post = g[g.year.between(y + 1, y + w) & g.fb_rule.eq(b)]
             if len(pre) >= min_n and len(post) >= min_n:
-                rows.append(dict(cid=cid, state=st_, year=y, rule_before=a, rule_after=b, n_before=len(pre), n_after=len(post),
-                                 above_bfe_before=pre.above_bfe.median(), above_bfe_after=post.above_bfe.median()))
+                rows.append({"cid": cid, "state": st_, "year": y,
+                             "kind": "statewide" if (st_, y) in state_changes else "local",
+                             "rule_before": a, "rule_after": b, "n_before": len(pre), "n_after": len(post),
+                             "above_bfe_before": pre.above_bfe.median(), "above_bfe_after": post.above_bfe.median()})
     if not rows:
         return "## Rule changes: none with enough houses on both sides"
     e = pd.DataFrame(rows)
     e["rule_change"] = e.rule_after - e.rule_before
     e["floor_change"] = e.above_bfe_after - e.above_bfe_before
+    e.to_csv(HERE / "rule_events.csv", index=False)
     up = e[e.rule_change > 0]
     out = (f"## Rule changes with >= {min_n} post-FIRM SFHA houses (with a BFE) built 1-{w} years before and after\n\n"
            + e.round(2).to_markdown(index=False))
     if len(up):
         out += (f"\n\nincreases: {len(up)}; median floor change {up.floor_change.median():.2f} ft for a median rule change "
                 f"{up.rule_change.median():.2f} ft; floor rose in {(up.floor_change > 0).mean():.0%} of them")
+        k = up.groupby("kind").agg(n=("floor_change", "size"), rule_change=("rule_change", "median"),
+                                   floor_change=("floor_change", "median"), rose=("floor_change", lambda v: (v > 0).mean()),
+                                   houses=("n_after", "sum"), above_bfe_before=("above_bfe_before", "median"),
+                                   before_already_above_new_rule=("above_bfe_before", lambda v: (v >= up.loc[v.index, "rule_after"]).mean()))
+        out += "\n\nby kind of change (medians):\n\n" + k.round(2).to_markdown()
     return out
 
 
@@ -158,8 +168,12 @@ def main():
         if year < fy:
             return 0.0
         loc = at(lp[cid][0], year, lp[cid][1]) if cid in lp else np.nan
+        if cid in lp and not np.isfinite(loc):
+            return np.nan  # the community has a local rule record but its value in this year is unknown
         return float(np.fmax(np.nan_to_num(at(sp.get(state, sp.get(ABBR[state])), year)), loc))
-    print("\n" + event_study(t, rule_at))
+    state_changes = {(s_, y) for s_ in t.state.unique() for y in range(1970, 2027)
+                     if at(sp.get(s_, sp.get(ABBR[s_])), y) != at(sp.get(s_, sp.get(ABBR[s_])), y - 1)}
+    print("\n" + event_study(t, rule_at, state_changes))
 
     # new-area pooled model, as context_test.py
     t["region"] = t.state + "_" + (t.lon // st.CELL).astype(int).astype(str) + "_" + (t.lat // st.CELL).astype(int).astype(str)
