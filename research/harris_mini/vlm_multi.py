@@ -5,7 +5,7 @@ camera-to-footprint distance; never the answer key, the lidar or the records. Ev
 data/harris_mini/<AREA>/vlm_multi/ (keyed by model + prompt version), so reruns cost nothing; every billed call is
 appended to data/harris_mini/vlm_calls.jsonl, and the script refuses to exceed BUDGET calls in that log.
 Output: data/harris_mini/<AREA>/beemaps_multi_reads.parquet (provider=beemaps).
-Usage: python vlm_multi.py AREA
+Usage: python vlm_multi.py AREA [INPUT_PARQUET OUTPUT_TAG]   (model from GEMINI_MODEL; default inputs = the crops)
 """
 import json
 import os
@@ -81,7 +81,7 @@ def call(path: str, dist: float) -> dict:
 
 
 def read_one(r, area) -> dict:
-    cache = D / area / "vlm_multi" / f"{r.oid}_{r.sequence}_{int(r.idx)}_{MODEL}_{PROMPT_V}.json"
+    cache = D / area / "vlm_multi" / f"{r.oid}_{r.sequence}_{int(r.idx)}_{MODEL}_{PROMPT_V}{TAG}.json"
     if cache.exists():
         resp = json.loads(cache.read_text())
     else:
@@ -96,18 +96,23 @@ def read_one(r, area) -> dict:
     return out
 
 
-def main(area):
-    v = pd.read_parquet(D / area / "beemaps_multi.parquet")
+TAG = ""
+
+
+def main(area, inp="beemaps_multi.parquet", tag=""):
+    global TAG
+    TAG = f"_{tag}" if tag else ""
+    v = pd.read_parquet(D / area / inp)
     v = v[v.path.notna()]
     (D / area / "vlm_multi").mkdir(exist_ok=True)
     with ThreadPoolExecutor(6) as ex:
         rows = list(ex.map(lambda r: read_one(r, area), v.itertuples()))
     df = pd.DataFrame(rows).assign(provider="beemaps")
-    df.to_parquet(D / area / "beemaps_multi_reads.parquet", index=False)
+    df.assign(model=MODEL).to_parquet(D / area / f"beemaps_multi_reads{TAG}.parquet", index=False)
     print(f"{area}: {len(df)} reads, parsed {int(df.parse_ok.sum())}; house visible {int(df.house_visible.fillna(False).sum())}, "
           f"door visible {int(df.front_door_visible.fillna(False).sum())}, height {int(df.door_threshold_height_above_ground_ft.notna().sum())}; "
           f"billed calls in log: {calls_so_far()}")
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(*sys.argv[1:4])
