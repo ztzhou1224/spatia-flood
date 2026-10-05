@@ -21,7 +21,7 @@ D = Path(__file__).resolve().parents[2] / "data" / "harris_mini"
 FT = {"S": 0, "C": 1, "B": 2, "P": 3, "I": 4, "W": 5}
 P = dict(objective="l1", n_estimators=400, learning_rate=0.03, num_leaves=15, min_child_samples=30,
          subsample=0.8, subsample_freq=1, colsample_bytree=0.8, verbose=-1)
-LPC = ["bldg_share", "roof_p05", "roof_p50", "roof_p95", "eave_p10", "eave_p50", "ground_in_share", "ring_low_share",
+LPC = ["bldg_share", "roof_p05", "roof_p50", "roof_p95", "eave_p10", "eave_p50", "eave_main", "ridge", "ground_in_share", "ring_low_share",
        "ring_low_p90", "pts_m2"]
 
 

@@ -6,9 +6,9 @@ appraiser notes (the owner file Real_acct_owner.zip is never downloaded). Main b
   building_res      year built (date_erected), living / base / gross area (im_sq_ft, base_ar, gross_ar)
   exterior          sub-areas by level (last letter of the code: U upper, L lower): upper living area = BAU base
                     area upper + FSU/MSU one-story frame/masonry upper + HFU/HMU half story; lower: BAL base area
-                    lower, FGL/MGL garage lower, OFL porch lower, ...
+                    lower, FGL/MGL garage lower, OFL porch lower, ... and BFF/BPF basement / part basement
   structural_elem1  FND foundation type (Slab / Crawl Space / Full or Partial Basement)
-Per account: upper_base (upper living area), upper_any, lower_any, lower_base, lower_garage (sq ft),
+Per account: upper_base (upper living area), upper_any, lower_any, lower_base, lower_garage, basement (sq ft),
 stories = 1 + (upper living area > 0), foundation.
 Output: data/hcad/bld_<YEAR>.parquet.  Usage: python hcad_buildings.py 2018
 """
@@ -38,10 +38,11 @@ def main(year):
     lvl = e.sar_cd.str[-1]  # level letter: P primary, U upper, L lower (C = canopy / common, others)
     e["upper_base"] = e.sar_cd.isin(["BAU", "FSU", "MSU", "HFU", "HMU"]) * e.area  # upper living area
     e["upper_any"] = (lvl == "U") * e.area
-    e["lower_any"] = (lvl == "L") * e.area
+    e["basement"] = e.sar_cd.isin(["BFF", "BPF"]) * e.area  # BASEMENT / PART BASEMENT: codes end in F, not L
+    e["lower_any"] = ((lvl == "L") | e.sar_cd.isin(["BFF", "BPF"])) * e.area
     e["lower_base"] = (e.sar_cd == "BAL") * e.area
     e["lower_garage"] = e.sar_cd.isin(["FGL", "MGL"]) * e.area
-    agg = e.groupby("acct")[["upper_base", "upper_any", "lower_any", "lower_base", "lower_garage"]].sum()
+    agg = e.groupby("acct")[["upper_base", "upper_any", "lower_any", "lower_base", "lower_garage", "basement"]].sum()
     s = read(z, "structural_elem1.txt", ["acct", "bld_num", "type", "category_dscr"])
     fnd = s[(s.bld_num == "1") & (s.type == "FND")].drop_duplicates("acct").set_index("acct").category_dscr.rename("foundation")
     out = b.set_index("acct").join(agg).join(fnd).reset_index()
