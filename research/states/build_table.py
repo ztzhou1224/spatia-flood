@@ -11,8 +11,9 @@ Target y = first living floor - ground next to the house (ft), from each place's
 Inputs (the same national sources everywhere, never the answer key): NSI nearest RES1 point within 30 m
 (foundation type, default foundation height, stories, median year built, NSI ground), the house's own year built
 from parcel / city records where published (else NSI), FEMA flood zone and BFE (FL from the certificate's map BFE,
-NC / VA from the published map BFE fields, NYC from NFHL converted NGVD29 -> NAVD88 (-1.08 ft, VDatum),
-HAR from NFHL), BFE - NSI ground. Spatial block = 0.05 deg grid cell.
+VA from the published map BFE field, NYC from NFHL converted NGVD29 -> NAVD88 (-1.08 ft, VDatum),
+HAR from NFHL; NC from the FEMA static BFE via nc_bfe.py, since the NC layer has no BFE value), BFE - NSI ground.
+Spatial block = 0.05 deg grid cell. (Before 2026-10-05 NC used the coded FLD_ZONE / STATIC_BFE flags by mistake.)
 Output: data/states/houses_all.parquet.  Usage: python build_table.py
 """
 import sys
@@ -79,10 +80,12 @@ def fl():
 def nc():
     n = pd.read_parquet(S / "nc_measured.parquet")
     n = n[n.OCCUP_TYPE_name.astype(str).str.startswith("RES1")].reset_index(drop=True)
-    sfha, ve = zone_flags(n.FLD_ZONE)
-    bfe = pd.to_numeric(n.STATIC_BFE, errors="coerce")
+    # FLD_ZONE is a coded domain (1001 = AE ...): use the decoded name. STATIC_BFE is a yes/no flag, not an
+    # elevation: the BFE comes from the FEMA static BFE at the building (nc_bfe.py; NaN off static-BFE zones).
+    sfha, ve = zone_flags(n.FLD_ZONE_name.fillna(n.FLD_ZONE))
+    bfe = n[["OBJECTID"]].merge(pd.read_parquet(S / "nc_nfhl.parquet"), on="OBJECTID", how="left").nfhl_bfe88
     d = pd.DataFrame({"lon": n.lon, "lat": n.lat, "y": n.FFE - n.LIDAR_LAG, "year": pd.to_numeric(n.YEAR_BUILT, errors="coerce"),
-                      "bfe": bfe.where(bfe > -9000), "sfha": sfha, "ve": ve})
+                      "bfe": bfe.values, "sfha": sfha, "ve": ve})
     d = pd.concat([d, nsi_match(d.lon, d.lat, pd.read_parquet(S / "nsi_37.parquet"), 32617)], axis=1)
     return finish(d, "NC")
 

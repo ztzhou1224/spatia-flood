@@ -48,27 +48,42 @@ def periods_state():
 
 
 def periods_local():
-    """cid -> (periods, start): periods = [(year, ft)], start = year from which the local rule is known.
+    """cid -> (periods, start): periods = [(year, ft)] (ft NaN = changed then, value unknown), start = first year known.
 
-    With history_complete and a first_freeboard_year, the rule is 0 ft before that year (NFIP minimum) and known from
-    the FIRM onwards; otherwise it is known only from the earliest dated period (earlier years -> NaN)."""
+    current_since_year dates the current value. Without it, documented_in_force_by / earliest_evidence_year only show
+    the value was in force by then: earlier years after the last history entry are unknown. With history_complete and
+    a first_freeboard_year at or before the first dated value, the rule is 0 ft (NFIP minimum) before that year; with
+    history_complete, no first year and a current 0 ft, the community never had local freeboard."""
     out = {}
     for f in sorted(glob.glob(str(D / "rules" / "raw" / "batch_*.json"))):
         for r in json.load(open(f)):
             per = [(int(h["year"]), float(h["a_zone_freeboard_ft"])) for h in (r.get("history") or [])
                    if h.get("year") is not None and h.get("a_zone_freeboard_ft") is not None]
-            if r.get("a_zone_freeboard_ft") is not None and r.get("current_since_year") is not None:
-                per.append((int(r["current_since_year"]), float(r["a_zone_freeboard_ft"])))
+            cur, since = r.get("a_zone_freeboard_ft"), r.get("current_since_year")
+            by = r.get("documented_in_force_by") or r.get("earliest_evidence_year")
+            first, complete = r.get("first_freeboard_year"), bool(r.get("history_complete"))
+            if cur is not None:
+                if since is not None:
+                    per.append((int(since), float(cur)))
+                elif by is not None:
+                    last = max(per) if per else None
+                    if last is not None and last[1] != float(cur) and last[0] < int(by):
+                        per.append((last[0] + 1, np.nan))  # changed some time after the last dated value
+                    per.append((int(by), float(cur)))
+            cid = str(r["cid"])
             if not per:
+                if complete and cur == 0 and first is None:
+                    out[cid] = ([(0, 0.0)], -9999)
                 continue
-            per = sorted(set(per))
-            first = r.get("first_freeboard_year")
-            if r.get("history_complete") and first is not None and int(first) <= per[0][0]:
+            per = sorted(set(per), key=lambda p: (p[0], np.nan_to_num(p[1], nan=-1)))
+            if complete and first is not None and int(first) <= per[0][0]:
                 if per[0][1] > 0 and int(first) < per[0][0]:
-                    continue  # freeboard began earlier than the first dated value: value unknown, skip community
-                out[str(r["cid"])] = ([(0, 0.0)] + per, -9999)
+                    continue  # freeboard began before the first dated value: value unknown in between
+                out[cid] = ([(0, 0.0)] + per, -9999)
+            elif complete and first is None and cur == 0:
+                out[cid] = ([(0, 0.0)] + per, -9999)
             else:
-                out[str(r["cid"])] = (per, per[0][0])
+                out[cid] = (per, per[0][0])
     return out
 
 
@@ -80,6 +95,36 @@ def at(periods, year, start=None):
         return np.nan
     v = [fb for y, fb in periods if y <= year]
     return v[-1] if v else 0.0
+
+
+def event_study(t, rule_at, w=5, min_n=10):
+    """Around each change of the rule in force (state or local) in a community: floor above BFE of SFHA houses built
+    1-w years before vs 1-w years after the change year (the change year itself is skipped: permits lag)."""
+    s = t[(t.sfha > 0) & t.bfe_minus_ground.notna() & (t.post_firm == 1)].copy()
+    s["above_bfe"] = s.y - s.bfe_minus_ground  # measured floor height minus (BFE - NSI ground)
+    rows = []
+    for (st_, cid), g in s.groupby(["state", "cid"]):
+        for y in range(int(g.year.min()) + 1, int(g.year.max()) + 1):
+            a, b = rule_at(st_, cid, y - 1), rule_at(st_, cid, y)
+            if not (np.isfinite(a) and np.isfinite(b)) or a == b:
+                continue
+            pre = g[g.year.between(y - w, y - 1) & g.fb_rule.eq(a)]
+            post = g[g.year.between(y + 1, y + w) & g.fb_rule.eq(b)]
+            if len(pre) >= min_n and len(post) >= min_n:
+                rows.append(dict(cid=cid, state=st_, year=y, rule_before=a, rule_after=b, n_before=len(pre), n_after=len(post),
+                                 above_bfe_before=pre.above_bfe.median(), above_bfe_after=post.above_bfe.median()))
+    if not rows:
+        return "## Rule changes: none with enough houses on both sides"
+    e = pd.DataFrame(rows)
+    e["rule_change"] = e.rule_after - e.rule_before
+    e["floor_change"] = e.above_bfe_after - e.above_bfe_before
+    up = e[e.rule_change > 0]
+    out = (f"## Rule changes with >= {min_n} post-FIRM SFHA houses (with a BFE) built 1-{w} years before and after\n\n"
+           + e.round(2).to_markdown(index=False))
+    if len(up):
+        out += (f"\n\nincreases: {len(up)}; median floor change {up.floor_change.median():.2f} ft for a median rule change "
+                f"{up.rule_change.median():.2f} ft; floor rose in {(up.floor_change > 0).mean():.0%} of them")
+    return out
 
 
 def main():
@@ -104,6 +149,17 @@ def main():
     ok = t.y[m] >= t.req_height[m] - 1
     print(f"\ncompliance check (post-FIRM SFHA houses with a BFE, n {int(m.sum())}): measured floor >= legal minimum - 1 ft for "
           f"{ok.mean():.0%}; by state {ok.groupby(t.state[m]).mean().round(2).to_dict()}")
+    firm_by_cid = t.groupby("cid").firm_year.first()
+
+    def rule_at(state, cid, year):
+        fy = firm_by_cid.get(cid, np.nan)
+        if not np.isfinite(fy):
+            return np.nan
+        if year < fy:
+            return 0.0
+        loc = at(lp[cid][0], year, lp[cid][1]) if cid in lp else np.nan
+        return float(np.fmax(np.nan_to_num(at(sp.get(state, sp.get(ABBR[state])), year)), loc))
+    print("\n" + event_study(t, rule_at))
 
     # new-area pooled model, as context_test.py
     t["region"] = t.state + "_" + (t.lon // st.CELL).astype(int).astype(str) + "_" + (t.lat // st.CELL).astype(int).astype(str)
