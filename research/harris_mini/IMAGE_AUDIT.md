@@ -106,3 +106,16 @@ ran); a GPU is needed for production.
   raised or not, piers vs enclosure, whether the lowest level is living space or garage/enclosure, step count.
   Next: test those categorical reads (and Qwen3-VL-8B on a GPU), and the M3 detector path (Grounding DINO + SAM 2,
   Apache-2.0) with lidar distances for the door position.
+- **Same 43 rectified Bee Maps views, all readers** (none of these houses is raised; answer key = scorer only):
+
+| reader | runs where | non-raised houses called raised | stories agree with record | door MAE (houses) |
+|---|---|---|---|---|
+| gemini-2.5-flash | Google API | 10 | 74% (19) | 1.26 ft (10) |
+| gemini-3.8-flash | Google API | 0 | 89% (18) | 0.34 ft (5) |
+| gemini-3.1-pro-preview | Google API | 0 | 94% (18) | 0.82 ft (7) |
+| Qwen3-VL-2B (own) | here, CPU | 0 (calls every house slab) | 71% (21) | 0.49 ft (21) |
+| Qwen3-VL-4B (own) | here, CPU | 1 | 94% (18) | 0.62 ft (12) |
+
+  On these clear, recent dashcam frames the own 4B model matches the best API model on stories and nearly on false
+  raised calls; on the blurry 2012 Mapillary panoramas it falls to 58% stories and misses half the raised houses.
+  Image quality matters as much as the model.
