@@ -51,10 +51,13 @@ Same rectified views, three Gemini models (answer key = scorer only; none of the
 | gemini-2.5-flash | 10 | 74% (19) | 1.26 ft (10) | 0.19 ft |
 | gemini-2.5-pro | 4 | 85% (20) | 1.15 ft (10) | 0.30 ft |
 | gemini-3.1-pro-preview | 0 | 94% (18) | 0.82 ft (7) | 0.30 ft |
+| gemini-3.8-flash | 0 | 89% (18) | 0.34 ft (5) | 0.18 ft |
 
 - gemini-2.5-flash (used for every image result so far, Mapillary included) is not good enough: it calls half of the
-  plain slab houses raised and miscounts stories a quarter of the time. gemini-3.1-pro-preview makes no false raised
-  call and matches the records' story count 94% of the time; it also declines more often when the door is hidden.
+  plain slab houses raised and miscounts stories a quarter of the time. gemini-3.1-pro-preview and gemini-3.8-flash
+  make no false raised call and match the records' story count 94% / 89% of the time; both decline more often when
+  the door is hidden (3.8-flash reports the door visible in only 6 of 43 frames, so its height MAE rests on 5 houses).
+  gemini-3.8-flash is the owner's preferred fast reader; use it from here on.
 - On these ordinary houses no model beats the lidar + records model (0.2-0.3 ft). Whether the better model reads RAISED
   houses well cannot be tested here: no raised house has a usable frame. Samples are tiny (7-21 houses).
 - Earlier image results (RESULTS.md, M3.md VLM rows, the Bee Maps addendum) used flash and the uncorrected crops, so
@@ -63,7 +66,7 @@ Same rectified views, three Gemini models (answer key = scorer only; none of the
 ## What to change before more imagery is bought
 
 1. Rectified, target-centred views (done for Bee Maps; apply the same to Mapillary perspective images with k1 / k2).
-2. Reader: gemini-3.1-pro-preview (or 2.5-pro), not flash.
+2. Reader: gemini-3.8-flash (or gemini-3.1-pro-preview), not gemini-2.5-flash.
 3. Mark the target's extent in the view, and skip attached units or label them as a row.
 4. Coverage is the real limit for raised houses: test on an area where they are on driven streets, or use a
    different source (research/coverage/IMAGERY_SOURCES.md).
