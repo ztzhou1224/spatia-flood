@@ -1,0 +1,37 @@
+C: 2539 houses; HCAD record 99.4%; stories {1.0: 1922, 2.0: 603}; raised (door > 3 ft) 198
+
+## Records alone: share raised (door > 3 ft) by HCAD foundation / lower level / stories
+
+|                                        |   houses |   raised |   share |
+|:---------------------------------------|---------:|---------:|--------:|
+| ('Crawl Space', 'no lower', 1)         |       30 |        4 |    0.13 |
+| ('Crawl Space', 'no lower', 2)         |        7 |        6 |    0.86 |
+| ('Full Basement', 'lower level', 1)    |        8 |        5 |    0.62 |
+| ('Full Basement', 'lower level', 2)    |       26 |       26 |    1    |
+| ('Full Basement', 'no lower', 1)       |        2 |        2 |    1    |
+| ('Full Basement', 'no lower', 2)       |        5 |        5 |    1    |
+| ('Partial Basement', 'lower level', 1) |        2 |        2 |    1    |
+| ('Partial Basement', 'no lower', 1)    |        1 |        0 |    0    |
+| ('Partial Basement', 'no lower', 2)    |        2 |        2 |    1    |
+| ('Slab', 'lower level', 1)             |       15 |        9 |    0.6  |
+| ('Slab', 'lower level', 2)             |       26 |       15 |    0.58 |
+| ('Slab', 'no lower', 1)                |     1864 |       60 |    0.03 |
+| ('Slab', 'no lower', 2)                |      537 |       57 |    0.11 |
+| ('no record', '-', 0)                  |       14 |        5 |    0.36 |
+
+typical eave_p10 of slab houses without a lower level (ft above ground): {1.0: 9.13, 2.0: 9.89}
+
+typical eave_p50 of slab houses without a lower level (ft above ground): {1.0: 10.25, 2.0: 14.28}
+
+## Door height above ground (ft) and raised detection (> 3 ft); GBM 5-fold by 1 km block
+
+|                                         |    n |   MAE |   within_1 |   raised_MAE |   not_raised_MAE |   flagged |   precision |   recall |
+|:----------------------------------------|-----:|------:|-----------:|-------------:|-----------------:|----------:|------------:|---------:|
+| eave - stories (eave_p10)               | 2525 | 1.33  |      0.714 |        4.918 |            1.033 |       247 |       0.417 |    0.52  |
+| eave - stories (eave_p50)               | 2525 | 1.833 |      0.599 |        4.442 |            1.617 |       503 |       0.296 |    0.753 |
+| GBM dem                                 | 2539 | 0.728 |      0.881 |        4.895 |            0.376 |       195 |       0.564 |    0.556 |
+| GBM dem + lpc                           | 2539 | 0.61  |      0.908 |        3.569 |            0.359 |       171 |       0.784 |    0.677 |
+| GBM dem + lpc + records                 | 2539 | 0.614 |      0.911 |        3.671 |            0.356 |       167 |       0.79  |    0.667 |
+| GBM dem + lpc + records + eave estimate | 2539 | 0.589 |      0.91  |        3.402 |            0.351 |       170 |       0.806 |    0.692 |
+
+raised houses: estimate (eave p50) vs truth, by HCAD stories (median abs error, ft): {1.0: 1.51, 2.0: 4.11} | median signed error: {1.0: 0.17, 2.0: 0.8}

@@ -34,7 +34,7 @@ def metrics(err, y):
 def main(area):
     f = pd.read_parquet(D / area / "coverage_features.parquet")
     f = f[f.prec <= 6].copy()
-    f["y"] = f.ffe - f.e2018_lag  # scorer only
+    f["dh"] = f.ffe - f.e2018_lag  # door height above ground: scorer only
     for c in ("p10", "med", "hag", "inside", "far"):
         f[f"g_{c}"] = f[f"e2018_{c}"] - f.e2018_lag
     f["nsi_ft"] = f.nsi_found_type.map(FT)
@@ -45,31 +45,31 @@ def main(area):
            "nsi_stories"]
     f["block"] = (f.x // 1000).astype(int).astype(str) + "_" + (f.y // 1000).astype(int).astype(str)
     print(f"{area}: {len(f)} houses (tiers A+B); point cloud seen the roof of {f.roof_p50.notna().mean():.1%}; "
-          f"raised (door > 3 ft) {int((f.y > 3).sum())}; blocks {f.block.nunique()}")
+          f"raised (door > 3 ft) {int((f.dh > 3).sum())}; blocks {f.block.nunique()}")
     preds = {}
     for name, cols in (("dem", dem), ("dem + lpc", dem + LPC)):
         p = np.full(len(f), np.nan)
         for tr, te in GroupKFold(5).split(f, groups=f.block):
-            p[te] = lgb.LGBMRegressor(**P).fit(f.loc[tr, cols], f.y.iloc[tr]).predict(f.loc[te, cols])
+            p[te] = lgb.LGBMRegressor(**P).fit(f.loc[tr, cols], f.dh.iloc[tr]).predict(f.loc[te, cols])
         preds[name] = p
-    res = pd.DataFrame({k: metrics(p - f.y.values, f.y.values) for k, p in preds.items()}).T
+    res = pd.DataFrame({k: metrics(p - f.dh.values, f.dh.values) for k, p in preds.items()}).T
     print("\n## Door height above ground, 5-fold by 1 km block (ft)\n")
     print(res.round(3).to_markdown())
     print("\n## Raised-house detection (door > 3 ft) from the predicted height > 3 ft\n")
     rows = {}
     for k, p in preds.items():
-        tp, fp, fn = ((p > 3) & (f.y > 3)).sum(), ((p > 3) & (f.y <= 3)).sum(), ((p <= 3) & (f.y > 3)).sum()
+        tp, fp, fn = ((p > 3) & (f.dh > 3)).sum(), ((p > 3) & (f.dh <= 3)).sum(), ((p <= 3) & (f.dh > 3)).sum()
         rows[k] = {"flagged": int(tp + fp), "precision": tp / max(tp + fp, 1), "recall": tp / max(tp + fn, 1)}
     print(pd.DataFrame(rows).T.round(3).to_markdown())
     print("\n## Single measures: ROC AUC for raised (door > 3 ft), houses with the measure\n")
     auc = {}
     for c in LPC + ["nsi_found_ht", "g_inside"]:
         m = f[c].notna()
-        if m.sum() > 50 and (f.y[m] > 3).nunique() == 2:
-            auc[c] = {"n": int(m.sum()), "AUC": roc_auc_score(f.y[m] > 3, f[c][m])}
+        if m.sum() > 50 and (f.dh[m] > 3).nunique() == 2:
+            auc[c] = {"n": int(m.sum()), "AUC": roc_auc_score(f.dh[m] > 3, f[c][m])}
     print(pd.DataFrame(auc).T.round(3).to_markdown())
     print("\nmedian measures, raised vs not raised:\n")
-    print(f.groupby(f.y > 3)[LPC].median().T.round(2).rename(columns={False: "not raised", True: "raised"}).to_markdown())
+    print(f.groupby(f.dh > 3)[LPC].median().T.round(2).rename(columns={False: "not raised", True: "raised"}).to_markdown())
 
 
 if __name__ == "__main__":

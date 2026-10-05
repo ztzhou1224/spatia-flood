@@ -1,18 +1,18 @@
-C: 2539 houses (tiers A+B); point cloud seen the roof of 100.0%; raised (door > 3 ft) 198; blocks 12
+C: 2539 houses (tiers A+B); point cloud seen the roof of 100.0%; raised (door > 3 ft) 198; blocks 27
 
 ## Door height above ground, 5-fold by 1 km block (ft)
 
 |           |    n |   MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |
 |:----------|-----:|------:|-----------:|-----------:|-------------:|-----------------:|
-| dem       | 2539 | 0.745 |      0.888 |        198 |        5.024 |            0.384 |
-| dem + lpc | 2539 | 0.637 |      0.9   |        198 |        3.799 |            0.369 |
+| dem       | 2539 | 0.728 |      0.881 |        198 |        4.895 |            0.376 |
+| dem + lpc | 2539 | 0.61  |      0.908 |        198 |        3.569 |            0.359 |
 
 ## Raised-house detection (door > 3 ft) from the predicted height > 3 ft
 
 |           |   flagged |   precision |   recall |
 |:----------|----------:|------------:|---------:|
-| dem       |       180 |       0.622 |    0.566 |
-| dem + lpc |       179 |       0.76  |    0.687 |
+| dem       |       195 |       0.564 |    0.556 |
+| dem + lpc |       171 |       0.784 |    0.677 |
 
 ## Single measures: ROC AUC for raised (door > 3 ft), houses with the measure
 
