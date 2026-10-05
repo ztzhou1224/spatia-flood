@@ -97,12 +97,21 @@ def main():
     cen = {r: (t[t.region == r].lat.mean(), t[t.region == r].lon.mean()) for r in regs}
     with ThreadPoolExecutor(4) as ex:
         soils = dict(zip(regs, ex.map(lambda r: soil(list(zip(samp[r].lon, samp[r].lat))), regs)))
-        clims = dict(zip(regs, ex.map(lambda r: climate(*cen[r]), regs)))
         ctys = dict(zip(regs, ex.map(lambda r: county(*cen[r]), regs)))
+    # Open-Meteo weighs a 30-year daily request heavily and has a daily limit: fetch one region at a time and cache
+    # each result, so a run stopped by the limit resumes where it left off
     import time
-    for r in [r for r in regs if not clims[r]]:  # rate-limited calls: retry one at a time
-        time.sleep(20)
-        clims[r] = climate(*cen[r])
+    cache_p = OUT / "climate_cache.json"
+    clims = json.loads(cache_p.read_text()) if cache_p.exists() else {}
+    for r in [r for r in regs if not clims.get(r)]:
+        v = climate(*cen[r])
+        if v:
+            clims[r] = {k: float(x) for k, x in v.items()}
+            cache_p.write_text(json.dumps(clims))
+        time.sleep(2)
+    missing = [r for r in regs if not clims.get(r)]
+    if missing:
+        raise SystemExit(f"climate missing for {len(missing)} of {len(regs)} regions (Open-Meteo limit?); rerun later to resume")
     terr = {}
     for st in ("FL", "NC", "VA", "NYC", "HAR"):
         src = NSI[st]
