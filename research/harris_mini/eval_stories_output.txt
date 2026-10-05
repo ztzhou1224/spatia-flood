@@ -22,6 +22,8 @@ typical eave_p10 of slab houses without a lower level (ft above ground): {1.0: 9
 typical eave_p50 of slab houses without a lower level (ft above ground): {1.0: 10.25, 2.0: 14.28}
 typical eave_main of slab houses without a lower level (ft above ground): {1.0: 10.31, 2.0: 19.72}
 
+triage for imagery (pred > 2 ft or records flag): 317 of 2539 houses; raised among them 164 of 198
+
 ## Door height above ground (ft), raised detection (> 3 ft); GBM 5-fold by 1 km block; all houses
 
 |                                          |    n |      MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |   flagged |   precision |   recall | MAE_95ci   | raised_MAE_95ci   |

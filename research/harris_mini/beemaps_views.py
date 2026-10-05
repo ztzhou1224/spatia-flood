@@ -84,7 +84,7 @@ def main(area: str, n: int, max_views: int):
         best = None
         for f in frames:
             p = f.get("position") or {}
-            if p.get("heading") is None or f.get("device") not in focal or f.get("mount", "front") != "front":
+            if p.get("heading") is None or f.get("device") not in focal or f.get("mount", "front") not in ("front", "unknown"):
                 continue
             cx, cy = TO_UTM.transform(p["lon"], p["lat"]); cam = Point(cx, cy)
             d = fp.distance(cam)

@@ -1,7 +1,7 @@
 """Bee Maps coverage census with catalog=true (metadata only, no signed image URLs).
 
 Bee Maps imagery is paid and licensed only within our implementation (no redistribution); rows are
-tagged provider=beemaps. The key comes from BEE_MAP_API_KEY and is never printed. Every response's
+tagged provider=beemaps. The key comes from BEEMAPS_API_KEY and is never printed. Every response's
 cost / credit fields are appended to data/harris_mini/beemaps/spend_log.jsonl.
 Output: data/harris_mini/<AREA>/beemaps_catalog.parquet.
 Usage: python beemaps_catalog.py AREA minlon minlat maxlon maxlat
@@ -15,7 +15,7 @@ API = "https://beemaps.com/api/developer"
 
 
 def post(path: str, body: dict, params: dict) -> dict:
-    hdr = {"Authorization": "Basic " + os.environ["BEE_MAP_API_KEY"], "Content-Type": "application/json"}
+    hdr = {"Authorization": "Basic " + os.environ["BEEMAPS_API_KEY"], "Content-Type": "application/json"}
     for attempt in range(5):
         try:
             r = requests.post(f"{API}/{path}", params=params, json=body, headers=hdr, timeout=180)

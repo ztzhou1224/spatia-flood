@@ -105,6 +105,15 @@ def main(area):
         for tr, te in GroupKFold(5).split(f, groups=f.block):  # trained on ALL rows, screened or not
             p[te] = lgb.LGBMRegressor(**el.P).fit(f.loc[tr, cols], f.dh.iloc[tr]).predict(f.loc[te, cols])
         preds[name] = p
+    # triage list for imagery (fixed before any image is read; label-free per house): out-of-fold prediction of the
+    # full model > 2 ft, or an appraisal basement / lower level / two-story crawl space
+    last = list(sets)[-1]
+    tri = pd.DataFrame({"oid": f.oid, "pred": preds[last], "rec_flag": rec_flag.values,
+                        "est_eave_p50": f.est_eave_p50, "est_eave_main": f.est_eave_main, "stories": f.stories})
+    tri["flagged"] = (tri.pred > 2) | tri.rec_flag
+    tri.to_parquet(D / "harris_mini" / area / "triage.parquet", index=False)
+    print(f"\ntriage for imagery (pred > 2 ft or records flag): {int(tri.flagged.sum())} of {len(tri)} houses; "
+          f"raised among them {int(((f.dh > 3) & tri.flagged).sum())} of {int((f.dh > 3).sum())}")
     for nm, m in (("all houses", np.ones(len(f), bool)), ("answer key passes the screen", f.key_ok.values)):
         rows = {k: {**score(p[m] - f.dh.values[m], f.dh.values[m]), **detect(p[m], f.dh.values[m]),
                     **boot_ci(p[m] - f.dh.values[m], f.dh.values[m], f.block.values[m])} for k, p in preds.items()}
