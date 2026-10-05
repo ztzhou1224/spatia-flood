@@ -5,14 +5,14 @@ C: 2539 houses (tiers A+B); point cloud seen the roof of 100.0%; raised (door > 
 |           |    n |   MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |
 |:----------|-----:|------:|-----------:|-----------:|-------------:|-----------------:|
 | dem       | 2539 | 0.728 |      0.881 |        198 |        4.895 |            0.376 |
-| dem + lpc | 2539 | 0.61  |      0.908 |        198 |        3.569 |            0.359 |
+| dem + lpc | 2539 | 0.608 |      0.909 |        198 |        3.523 |            0.361 |
 
 ## Raised-house detection (door > 3 ft) from the predicted height > 3 ft
 
 |           |   flagged |   precision |   recall |
 |:----------|----------:|------------:|---------:|
 | dem       |       195 |       0.564 |    0.556 |
-| dem + lpc |       171 |       0.784 |    0.677 |
+| dem + lpc |       169 |       0.793 |    0.677 |
 
 ## Single measures: ROC AUC for raised (door > 3 ft), houses with the measure
 
@@ -24,6 +24,8 @@ C: 2539 houses (tiers A+B); point cloud seen the roof of 100.0%; raised (door > 
 | roof_p95        | 2538 | 0.852 |
 | eave_p10        | 2538 | 0.815 |
 | eave_p50        | 2538 | 0.903 |
+| eave_main       | 2538 | 0.864 |
+| ridge           | 2538 | 0.849 |
 | ground_in_share | 2539 | 0.623 |
 | ring_low_share  | 2539 | 0.393 |
 | ring_low_p90    | 2521 | 0.367 |
@@ -41,6 +43,8 @@ median measures, raised vs not raised:
 | roof_p95        |        17.28 |    29.66 |
 | eave_p10        |         9.21 |    11.61 |
 | eave_p50        |        10.48 |    20.52 |
+| eave_main       |        10.83 |    22.91 |
+| ridge           |        17.93 |    31.15 |
 | ground_in_share |         0    |     0    |
 | ring_low_share  |         0.07 |     0.05 |
 | ring_low_p90    |         9.46 |     9.17 |
