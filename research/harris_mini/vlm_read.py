@@ -15,7 +15,9 @@ import pandas as pd, requests
 from PIL import Image
 
 D = Path(__file__).resolve().parents[2] / "data" / "harris_mini"
-MODEL = os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash"
+# reader model: gemini-3.8-flash since 2026-10-05 (IMAGE_AUDIT.md); override with VLM_MODEL (GEMINI_MODEL in the
+# environment still names 2.5-flash, which over-calls raised houses)
+MODEL = os.environ.get("VLM_MODEL") or "gemini-3.8-flash"
 PROMPT_V = "v2"  # v2 = v1 prompt + mediaResolution HIGH (1290 image tokens vs 258)
 BUDGET = 2500
 LOG = D / "vlm_calls.jsonl"

@@ -5,7 +5,7 @@ camera-to-footprint distance; never the answer key, the lidar or the records. Ev
 data/harris_mini/<AREA>/vlm_multi/ (keyed by model + prompt version), so reruns cost nothing; every billed call is
 appended to data/harris_mini/vlm_calls.jsonl, and the script refuses to exceed BUDGET calls in that log.
 Output: data/harris_mini/<AREA>/beemaps_multi_reads.parquet (provider=beemaps).
-Usage: python vlm_multi.py AREA [INPUT_PARQUET OUTPUT_TAG]   (model from GEMINI_MODEL; default inputs = the crops)
+Usage: python vlm_multi.py AREA [INPUT_PARQUET OUTPUT_TAG]   (model: VLM_MODEL, default gemini-3.8-flash; default inputs = the crops)
 """
 import json
 import os
