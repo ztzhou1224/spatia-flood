@@ -3,43 +3,43 @@
 
 |                                                           |   spearman_with_error |   top1_donor_MAE |   top3_pooled_MAE |
 |:----------------------------------------------------------|----------------------:|-----------------:|------------------:|
-| ('all donors', 'geo_km')                                  |                 0.398 |            1.798 |             1.752 |
-| ('all donors', 'desc_all')                                |                 0.266 |            1.999 |             1.937 |
-| ('all donors', 'ctx_soil')                                |                 0.371 |            2.195 |             2.131 |
-| ('all donors', 'ctx_climate')                             |                 0.351 |            2.309 |             2.023 |
-| ('all donors', 'ctx_terrain')                             |                 0.214 |            2.616 |             2.335 |
-| ('all donors', 'ctx_rules')                               |                 0.16  |            2.281 |             2.04  |
-| ('all donors', 'ctx_all')                                 |                 0.392 |            1.953 |             1.916 |
-| ('all donors', 'desc_all + ctx_all')                      |                 0.392 |            1.964 |             1.856 |
-| ('all donors', 'learned (pairs, leave target out)')       |                 0.647 |            1.887 |             1.829 |
-| ('donors >= 100 km', 'geo_km')                            |                 0.339 |            2.502 |             2.458 |
-| ('donors >= 100 km', 'desc_all')                          |                 0.221 |            2.274 |             2.345 |
-| ('donors >= 100 km', 'ctx_soil')                          |                 0.34  |            2.292 |             2.292 |
-| ('donors >= 100 km', 'ctx_climate')                       |                 0.29  |            2.811 |             2.518 |
-| ('donors >= 100 km', 'ctx_terrain')                       |                 0.163 |            2.691 |             2.523 |
-| ('donors >= 100 km', 'ctx_rules')                         |                 0.1   |            3.37  |             3.103 |
-| ('donors >= 100 km', 'ctx_all')                           |                 0.333 |            2.37  |             2.388 |
-| ('donors >= 100 km', 'desc_all + ctx_all')                |                 0.34  |            2.246 |             2.25  |
-| ('donors >= 100 km', 'learned (pairs, leave target out)') |                 0.641 |            1.943 |             1.968 |
+| ('all donors', 'geo_km')                                  |                 0.42  |            1.827 |             1.785 |
+| ('all donors', 'desc_all')                                |                 0.165 |            2.099 |             1.947 |
+| ('all donors', 'ctx_soil')                                |                 0.388 |            2.165 |             2.166 |
+| ('all donors', 'ctx_climate')                             |                 0.37  |            2.235 |             2.017 |
+| ('all donors', 'ctx_terrain')                             |                 0.22  |            2.733 |             2.361 |
+| ('all donors', 'ctx_rules')                               |                 0.182 |            2.304 |             2.124 |
+| ('all donors', 'ctx_all')                                 |                 0.417 |            1.973 |             1.88  |
+| ('all donors', 'desc_all + ctx_all')                      |                 0.362 |            1.897 |             1.821 |
+| ('all donors', 'learned (pairs, leave target out)')       |                 0.692 |            1.963 |             1.842 |
+| ('donors >= 100 km', 'geo_km')                            |                 0.369 |            2.479 |             2.418 |
+| ('donors >= 100 km', 'desc_all')                          |                 0.116 |            2.467 |             2.223 |
+| ('donors >= 100 km', 'ctx_soil')                          |                 0.356 |            2.271 |             2.315 |
+| ('donors >= 100 km', 'ctx_climate')                       |                 0.316 |            2.754 |             2.455 |
+| ('donors >= 100 km', 'ctx_terrain')                       |                 0.17  |            2.777 |             2.62  |
+| ('donors >= 100 km', 'ctx_rules')                         |                 0.125 |            3.332 |             3.069 |
+| ('donors >= 100 km', 'ctx_all')                           |                 0.359 |            2.327 |             2.296 |
+| ('donors >= 100 km', 'desc_all + ctx_all')                |                 0.302 |            2.292 |             2.133 |
+| ('donors >= 100 km', 'learned (pairs, leave target out)') |                 0.685 |            2.039 |             1.997 |
 
 ## Pooled model for a new area (donors >= 100 km), mean MAE over target regions (ft)
 
 |                         |   MAE |
 |:------------------------|------:|
-| house inputs only       | 2.176 |
-| + region context        | 2.136 |
-| + context + descriptors | 2.1   |
+| house inputs only       | 2.224 |
+| + region context        | 2.154 |
+| + context + descriptors | 2.114 |
 
 learned-similarity importance (gain, top 10):
 |                       |     0 |
 |:----------------------|------:|
-| |d f_fh|              | 86175 |
-| |d clim_freeze_index| | 80056 |
-| |d x_ve|              | 24830 |
-| |d terr_slope|        | 24815 |
-| |d x_bfe_g|           | 20921 |
-| |d x_sfha|            | 20852 |
-| |d soil_flood_freq|   | 17826 |
-| |d terr_relief_ft|    |  9891 |
-| |d f_bsmt|            |  9541 |
-| |d f_pier|            |  7883 |
+| |d x_ve|              | 72143 |
+| |d clim_freeze_index| | 69047 |
+| |d f_fh|              | 64868 |
+| |d terr_slope|        | 25903 |
+| |d soil_flood_freq|   | 22545 |
+| |d x_sfha|            | 19563 |
+| distance km           | 13865 |
+| |d clim_jan_c|        |  7797 |
+| |d soil_poor_drain|   |  7445 |
+| |d f_bsmt|            |  6839 |

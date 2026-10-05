@@ -84,5 +84,4 @@ quote, a confidence and notes. Unknown values were left null, never guessed.
 ## Also found while rebuilding (fixed, see research/states/STATES.md)
 
 The NC house rows read the NC layer's coded flood zone and its yes/no "STATIC_BFE" flag as if they were a zone name and
-an elevation. The house table, the cross-state test and similarity Experiments 1-2 were rerun after the fix; Experiment
-3 (region context) awaits Open-Meteo's daily limit.
+an elevation. The house table, the cross-state test and similarity Experiments 1-3 were rerun after the fix.

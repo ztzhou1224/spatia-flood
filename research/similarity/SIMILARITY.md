@@ -24,8 +24,7 @@ No paper defines similarity for floor-height transfer. Adjacent work:
 **Correction (2026-10-05, later the same day).** Experiments 1 and 2 were rerun after fixing the NC flood inputs in
 houses_all (coded zone / yes-no flag read as BFE; see research/states/STATES.md). The tables below are the rerun;
 first-run values are in the git history. The conclusions hold; the input-only flood and area-of-applicability measures
-got weaker. Experiment 3 still shows the FIRST-RUN numbers: its region context needs Open-Meteo, whose daily request
-limit was exhausted on 2026-10-05, so it awaits a rerun.
+got weaker. Experiment 3 was rerun too.
 
 ## Experiment 1: which measure picks a good donor region? (MAE ft; local model 1.33, best possible donor 1.52,
 random donor 3.23, all donors pooled 1.96; donors >= 100 km: oracle 1.57, pooled 2.22)
@@ -71,34 +70,36 @@ NC 2.19 / 2.94 / 1.77; NYC 2.15 / 2.28 / 1.97; VA 1.83 / 2.56 / 1.33.
   public dataset) to pick and correct the donor model; with none, ship the pooled model with a wide error band.
 - Soil, climate, terrain and rule context: tested in Experiment 3 below.
 
-## Experiment 3: physical and regulatory context (2026-10-05; FIRST RUN, before the NC fix — rerun pending)
+## Experiment 3: physical and regulatory context (2026-10-05; rerun after the NC fix)
 
 Scripts `region_context.py` (output `region_context_output.txt`), `context_test.py` (output `context_output.txt`).
 Per region: soil from USDA Soil Data Access (water-table depth, poorly drained share, flooding frequency, hydrologic
 group D), climate from Open-Meteo ERA5 1991-2020 (freezing index, January mean, precipitation), terrain from NSI
 ground (slope to neighbours, relief), rules from the NFIP Community Status Book (CRS class, first FIRM year).
-Shrink-swell clay and state freeboard ordinances were not available in a ready national form and are not included.
+Shrink-swell clay is not included. Freeboard rules by community and year are tested separately in
+research/rules/RULES.md. The rerun has climate for all 109 regions (the first run missed one coastal NC cell); NSI
+terrain relief differs slightly from the first run (NC median 13.41 -> 13.30 ft), likely a different NSI copy.
 
 | measure | Spearman | top-1 donor | top-3 pooled | top-1, donors >= 100 km |
 |---|---|---|---|---|
-| distance (km) | 0.40 | 1.80 | 1.75 | 2.50 |
-| input descriptors | 0.27 | 2.00 | 1.94 | 2.27 |
-| soil | 0.37 | 2.20 | 2.13 | 2.29 |
-| climate | 0.35 | 2.31 | 2.02 | 2.81 |
-| terrain | 0.21 | 2.62 | 2.34 | 2.69 |
-| flood rules | 0.16 | 2.28 | 2.04 | 3.37 |
-| all context | 0.39 | 1.95 | 1.92 | 2.37 |
-| descriptors + context | 0.39 | 1.96 | 1.86 | 2.25 |
-| **learned similarity** (GBM on pairwise differences, leave target out) | **0.65** | 1.89 | 1.83 | **1.94** |
-| 30 measured houses (Experiment 1) | 0.96 | 1.58 | 1.59 | 1.63 |
+| distance (km) | 0.42 | 1.83 | 1.79 | 2.48 |
+| input descriptors | 0.17 | 2.10 | 1.95 | 2.47 |
+| soil | 0.39 | 2.17 | 2.17 | 2.27 |
+| climate | 0.37 | 2.24 | 2.02 | 2.75 |
+| terrain | 0.22 | 2.73 | 2.36 | 2.78 |
+| flood rules | 0.18 | 2.30 | 2.12 | 3.33 |
+| all context | 0.42 | 1.97 | 1.88 | 2.33 |
+| descriptors + context | 0.36 | 1.90 | 1.82 | 2.29 |
+| **learned similarity** (GBM on pairwise differences, leave target out) | **0.69** | 1.96 | 1.84 | **2.04** |
+| 30 measured houses (Experiment 1) | 0.96 | 1.60 | 1.60 | 1.65 |
 
-Pooled model for a new area (donors >= 100 km): house inputs only 2.18 ft; + region context 2.14; + context and
-descriptors 2.10.
-Learned-similarity importance (gain): difference in NSI default height (foundation mix) and in freezing index lead,
-then V-zone share, terrain slope, BFE - ground, SFHA share, soil flooding frequency.
+Pooled model for a new area (donors >= 100 km): house inputs only 2.22 ft; + region context 2.15; + context and
+descriptors 2.11.
+Learned-similarity importance (gain): difference in V-zone share, freezing index and NSI default height (foundation
+mix) lead, then terrain slope, soil flooding frequency, SFHA share, distance.
 
-Reading: no single factor defines similarity; each alone is weak (Spearman 0.1-0.4). Learned from region pairs, the
-combination (mainly foundation mix + winter cold + coastal exposure + terrain) ranks donors far better (0.65) and,
-for a new area, picks a donor (1.94 ft) better than pooling everything (2.18). 30 measured houses (1.63) are still
-clearly better. Context as model features helps only a little (2.18 -> 2.10). Caveat: 102 of the 109 regions are in
+Reading: no single factor defines similarity; each alone is weak (Spearman 0.2-0.4). Learned from region pairs, the
+combination (mainly coastal exposure + winter cold + foundation mix + terrain) ranks donors far better (0.69) and,
+for a new area, picks a donor (2.04 ft) better than pooling everything (2.22). 30 measured houses (1.65) are still
+clearly better. Context as model features helps only a little (2.22 -> 2.11). Caveat: 102 of the 109 regions are in
 NC and FL, so the learned weights mostly reflect those two states.
