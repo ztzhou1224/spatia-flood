@@ -9,7 +9,7 @@ median living stories. Compared on the same houses (rules fixed before scoring; 
   mean of both          average of image and model where both exist
 Raised detection (door > 3 ft): model > 3 ft vs raised vote >= 0.5. Stories: VLM vs HCAD record.
 The answer-key screen of eval_stories.py (door within 6 ft of the roof top, or > 1 ft below grade) is reported.
-Usage: python eval_multi.py AREA [READS_TAG]
+Usage: python eval_multi.py AREA [READS_TAG] [PREFIX]   (PREFIX beemaps_multi (default) or mapillary_multi)
 """
 import sys
 from pathlib import Path
@@ -25,8 +25,8 @@ def mae(e):
     return pd.Series({"n": len(e), "MAE": e.mean(), "within_1": (e <= 1).mean()})
 
 
-def main(area, tag=""):
-    rd = pd.read_parquet(D / area / f"beemaps_multi_reads{'_' + tag if tag else ''}.parquet")
+def main(area, tag="", prefix="beemaps_multi"):
+    rd = pd.read_parquet(D / area / f"{prefix}_reads{'_' + tag if tag else ''}.parquet")
     rd = rd[rd.parse_ok & rd.house_visible.fillna(False)].copy()
     h_ok = rd.front_door_visible.fillna(False) & rd.door_threshold_height_above_ground_ft.notna()
     rd["h"] = rd.door_threshold_height_above_ground_ft.where(h_ok)
@@ -35,8 +35,8 @@ def main(area, tag=""):
     g = rd.groupby("oid").agg(views=("sequence", "size"), door_views=("h", "count"), img_h=("h", "median"),
                               img_h_spread=("h", lambda v: v.max() - v.min() if v.notna().sum() > 1 else np.nan),
                               raised_share=("raised_vote", "mean"), img_stories=("living_stories", "median"))
-    v = pd.read_parquet(D / area / "beemaps_multi.parquet")
-    tried = v.drop_duplicates("oid")[["oid", "group"]]
+    # the houses tried are the same for every provider: the triage list + controls of beemaps_multi.py
+    tried = pd.read_parquet(D / area / "beemaps_multi.parquet").drop_duplicates("oid")[["oid", "group"]]
     tri = pd.read_parquet(D / area / "triage.parquet")
     f = pd.read_parquet(D / area / "coverage_features.parquet")[["oid", "prec", "ffe", "e2018_lag"]]
     lpc = pd.read_parquet(D / area / "lpc_features.parquet")[["oid", "roof_p95"]]
@@ -79,4 +79,4 @@ def main(area, tag=""):
 
 if __name__ == "__main__":
     pd.set_option("display.width", 200)
-    main(*sys.argv[1:3])
+    main(*sys.argv[1:4])

@@ -12,7 +12,9 @@ Per house:
 4. each image re-rendered as a LEVEL, undistorted virtual view aimed at the footprint centroid with the camera model
    and the SfM rotation (m3_measure.level_view), field of view = footprint angular width + 2 x 8 deg (25-70 deg);
    an audit copy marks the footprint's left / right edges (magenta) to check the house matching by eye; views whose
-   central third is < 80% covered by the source image (house outside the camera's field of view) are dropped.
+   central third is < 80% covered by the source image (house outside the camera's field of view) are dropped, and so
+   are views whose SfM rotation puts the camera's down axis less than 60 deg below horizontal (bad pose).
+   Images are fetched at full resolution (thumb_original_url).
 Output: data/harris_mini/<AREA>/mapillary_multi.parquet, views in mapillary_multi/ (audit copies in mapillary_multi_audit/).
 Usage: python mapillary_multi.py AREA K
 """
@@ -26,7 +28,8 @@ from PIL import ImageDraw
 from scipy.spatial.transform import Rotation
 from shapely import wkt
 
-FIELDS = "id,width,height,camera_type,camera_parameters,computed_rotation,computed_geometry,captured_at,sequence,thumb_2048_url"
+FIELDS = ("id,width,height,camera_type,camera_parameters,computed_rotation,computed_geometry,captured_at,sequence,"
+          "thumb_2048_url,thumb_original_url")
 
 
 def main(area: str, k: int):
@@ -44,7 +47,7 @@ def main(area: str, k: int):
     cand["has_pose"] = cand.image_id.astype(str).map(lambda i: bool(meta.get(i, {}).get("computed_rotation")))
     cand["sequence"] = cand.image_id.astype(str).map(lambda i: meta.get(i, {}).get("sequence"))
     fps = hs.set_index("oid").fp_wkt
-    rows = []
+    rows, n_flipped = [], 0
     for oid, g in cand[cand.has_pose].groupby("oid"):
         g = g.assign(pref=(~g.is_pano).astype(int), dd=(g.dist_m - 18).abs()).sort_values(["pref", "dd"])
         chosen, per_seq = [], {}
@@ -64,12 +67,20 @@ def main(area: str, k: int):
             az = np.degrees(np.arctan2(c.x - cx, c.y - cy)) % 360
             angs = [(np.degrees(np.arctan2(px - cx, py - cy)) - az + 180) % 360 - 180 for px, py in fp.exterior.coords]
             hfov = float(np.clip(max(abs(a) for a in angs) * 2 + 16, 25, 70))
-            img = np.asarray(fetch_img(m["thumb_2048_url"]).convert("RGB"))
+            # full resolution: a 2048 px thumbnail of a 360 deg panorama is ~5.7 px per degree, too blurry for steps
+            img = np.asarray(fetch_img(m.get("thumb_original_url") or m["thumb_2048_url"]).convert("RGB"))
             ctype = "spherical" if r.is_pano else (m.get("camera_type") or "perspective")
             Rwc = Rotation.from_rotvec(np.array(m["computed_rotation"])).as_matrix()
             view, f, cov = level_view(img, Rwc, ctype, m.get("camera_parameters") or [], az, hfov)
             ccov = float(cov[:, VW // 3: 2 * VW // 3].mean())
             if ccov < 0.8:  # the house is outside this camera's field of view
+                continue
+            # pose sanity: the camera's "down" axis (row 1 of world->camera) must point down in the world; a wrong SfM
+            # rotation (seen: a 2026 phone image rendered upside down) fails this. (A brightness test was tried first
+            # and rejected: it dropped upright views with a dark tree canopy over a bright lawn.)
+            if Rwc[1, 2] > -0.5:
+                n_flipped += 1
+                view.save(aud / f"{oid}_{r.image_id}_DROPPED_bad_pose.jpg", quality=85)
                 continue
             p = out / f"{oid}_{r.image_id}.jpg"
             view.save(p, quality=92)
@@ -89,7 +100,7 @@ def main(area: str, k: int):
     seen = df.groupby("group").oid.nunique()
     print(f"houses with a rendered view: {per.size} ({seen.to_dict()} of {tried.group.value_counts().to_dict()}); views per house "
           f"median {per.median():.0f}, max {per.max()}; panoramas {df.is_pano.mean():.0%}; candidates without a pose "
-          f"dropped {int((~cand.has_pose).sum())} of {len(cand)}")
+          f"dropped {int((~cand.has_pose).sum())} of {len(cand)}; views dropped for a bad pose (camera down axis not down) {n_flipped}")
     print("capture years:", df.captured.dt.year.value_counts().sort_index().to_dict())
 
 
