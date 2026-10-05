@@ -1,0 +1,20 @@
+target regions: 84; donors >= 100 km away; mean MAE (ft) over target regions, by number of measured probe houses n
+
+| method              |      0 |      5 |     10 |     20 |     30 |     50 |    100 |
+|:--------------------|-------:|-------:|-------:|-------:|-------:|-------:|-------:|
+| local (reference)   |   1.32 | nan    | nan    | nan    | nan    | nan    | nan    |
+| pooled donors       |   2.22 |   2.22 |   2.22 |   2.22 |   2.22 |   2.22 |   2.22 |
+| pooled + bias       | nan    |   2.05 |   1.95 |   1.91 |   1.88 |   1.86 |   1.85 |
+| probe-picked donor  | nan    |   1.9  |   1.82 |   1.74 |   1.66 |   1.64 |   1.62 |
+| probe-picked + bias | nan    |   1.92 |   1.79 |   1.7  |   1.64 |   1.62 |   1.61 |
+| probe-picked top 3  | nan    |   1.87 |   1.85 |   1.74 |   1.7  |   1.7  |   1.64 |
+| probe houses only   | nan    | nan    |   1.87 |   1.75 |   1.67 |   1.58 |   1.51 |
+
+by state, n = 30 (n = 0 for pooled donors / local):
+| state   |   local (reference) |   pooled + bias |   pooled donors |   probe-picked + bias |
+|:--------|--------------------:|----------------:|----------------:|----------------------:|
+| FL      |                0.54 |            0.68 |            0.69 |                  0.64 |
+| HAR     |                0.48 |            0.97 |            2.22 |                  0.68 |
+| NC      |                1.74 |            2.52 |            2.96 |                  2.18 |
+| NYC     |                1.97 |            2.1  |            2.96 |                  2.1  |
+| VA      |                1.33 |            2.01 |            3.01 |                  1.89 |
