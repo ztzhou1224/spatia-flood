@@ -28,20 +28,17 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 import rasterio
-import torch
 from PIL import Image
 from pyproj import Transformer
 from scipy.spatial.transform import Rotation
 from shapely import wkt
 from shapely.geometry import LineString, Point, Polygon
 from shapely.strtree import STRtree
-from transformers import AutoModelForZeroShotObjectDetection, AutoProcessor, Sam2Model, Sam2Processor
 
 D = Path(__file__).resolve().parents[2] / "data" / "harris_mini"
 USFT = 1200 / 3937
 TO_UTM = Transformer.from_crs("EPSG:4326", "EPSG:6344", always_xy=True)
 VW, VH = 1280, 960
-torch.set_num_threads(2)
 
 
 # ---------- camera models (OpenSfM conventions; camera frame x right, y down, z forward) ----------
@@ -166,6 +163,10 @@ def mask_bottom(mask: np.ndarray, c0: float, c1: float) -> float:
 
 
 def main(area: str, limit: int | None) -> None:
+    # detection models only here, so the camera functions above import without torch
+    import torch
+    from transformers import AutoModelForZeroShotObjectDetection, AutoProcessor, Sam2Model, Sam2Processor
+    torch.set_num_threads(2)
     views = pd.read_parquet(D / area / "m3_views.parquet")
     views = views[views.path.notna()]
     if limit:

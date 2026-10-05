@@ -105,3 +105,25 @@ Up to 6 diverse forward-camera frames per house (8-45 m, unobstructed, in the fi
   entirely; more frames per house cannot help where there are no frames. The evidence that does reach those houses is
   the lidar point cloud and the appraisal record. Imagery for them needs another source (see
   research/coverage/IMAGERY_SOURCES.md) or field capture.
+
+## Out-of-area test: Cypress Creek (B) (2026-10-05)
+
+Script `eval_transfer.py` (output `eval_transfer_output.txt`); B features from the same 2018 flight (20 tiles,
+`lpc_features.py B`). B: 5,127 houses (tiers A+B), 49 raised (door > 3 ft), HCAD record 99.7%.
+
+**The per-story eave choice holds out of sample.** Raised houses passing the answer-key screen, median absolute error
+(median signed), ft:
+
+| | B one-story (22) | B two-story (26) | C one-story (77) | C two-story (111) |
+|---|---|---|---|---|
+| eave p50 - typical | **1.42** (-0.16) | 2.89 (-1.38) | **1.14** (+0.26) | 4.11 (+0.80) |
+| eave_main - typical | 1.89 (-0.18) | **2.40** (-2.32) | 2.98 (+0.95) | **2.59** (-0.22) |
+
+So the label-free estimate "eave p50 for one-story, main eave for two-story houses" (column `split`) is what C
+suggested and B confirms: about 1.1-1.4 ft on raised one-story and 2.4-2.6 ft on raised two-story houses, calibrated
+without the answer key in either area. B's two-story estimates run 2.3 ft low (bias not seen in C). As an estimate
+for every house it stays noisy (MAE 1.7-1.9 ft: it is for houses already flagged as raised).
+
+**The trained model does not transfer.** C -> B: MAE 0.502 (DEM + NSI) vs 0.540 ft with the point cloud (precision
+of the raised flag 0.15 -> 0.34, recall 0.45 -> 0.37). B -> C: 0.795 vs 0.796 ft, raised MAE 5.45 ft either way: B has
+49 raised houses, too few to learn them. A model needs local labels; the physical eave measurement does not.

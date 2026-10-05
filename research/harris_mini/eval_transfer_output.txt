@@ -1,0 +1,56 @@
+B: 5127 houses; raised (door > 3 ft) 49; HCAD record 99.7%; roof measured 100.0%; answer key fails the screen 8
+C: 2539 houses; raised (door > 3 ft) 198; HCAD record 99.4%; roof measured 100.0%; answer key fails the screen 19
+
+## Trained on C, scored on B (all); door height above ground (ft), raised = door > 3 ft
+
+|                                          |    n |   MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |   flagged |   precision |   recall |
+|:-----------------------------------------|-----:|------:|-----------:|-----------:|-------------:|-----------------:|----------:|------------:|---------:|
+| eave - stories (eave_p50)                | 5112 | 1.747 |      0.462 |         48 |        2.602 |            1.739 |      1023 |       0.024 |    0.521 |
+| eave - stories (eave_main)               | 5112 | 1.958 |      0.516 |         48 |        3.642 |            1.942 |       802 |       0.027 |    0.458 |
+| eave - stories (split)                   | 5112 | 1.724 |      0.588 |         48 |        3.34  |            1.709 |       466 |       0.049 |    0.479 |
+| GBM dem                                  | 5127 | 0.502 |      0.927 |         49 |        1.269 |            0.494 |       146 |       0.151 |    0.449 |
+| GBM dem + lpc                            | 5127 | 0.54  |      0.909 |         49 |        1.333 |            0.532 |        53 |       0.34  |    0.367 |
+| GBM dem + lpc + records                  | 5127 | 0.552 |      0.894 |         49 |        1.306 |            0.545 |        61 |       0.311 |    0.388 |
+| GBM dem + lpc + records + eave estimates | 5127 | 0.589 |      0.871 |         49 |        1.274 |            0.582 |       114 |       0.175 |    0.408 |
+
+## Trained on C, scored on B (screened); door height above ground (ft), raised = door > 3 ft
+
+|                                          |    n |   MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |   flagged |   precision |   recall |
+|:-----------------------------------------|-----:|------:|-----------:|-----------:|-------------:|-----------------:|----------:|------------:|---------:|
+| eave - stories (eave_p50)                | 5104 | 1.743 |      0.462 |         48 |        2.602 |            1.735 |      1020 |       0.025 |    0.521 |
+| eave - stories (eave_main)               | 5104 | 1.956 |      0.516 |         48 |        3.642 |            1.94  |       800 |       0.028 |    0.458 |
+| eave - stories (split)                   | 5104 | 1.722 |      0.589 |         48 |        3.34  |            1.707 |       465 |       0.049 |    0.479 |
+| GBM dem                                  | 5119 | 0.499 |      0.929 |         49 |        1.269 |            0.492 |       146 |       0.151 |    0.449 |
+| GBM dem + lpc                            | 5119 | 0.537 |      0.911 |         49 |        1.333 |            0.529 |        53 |       0.34  |    0.367 |
+| GBM dem + lpc + records                  | 5119 | 0.55  |      0.895 |         49 |        1.306 |            0.542 |        61 |       0.311 |    0.388 |
+| GBM dem + lpc + records + eave estimates | 5119 | 0.586 |      0.873 |         49 |        1.274 |            0.579 |       114 |       0.175 |    0.408 |
+
+## Trained on B, scored on C (all); door height above ground (ft), raised = door > 3 ft
+
+|                                          |    n |   MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |   flagged |   precision |   recall |
+|:-----------------------------------------|-----:|------:|-----------:|-----------:|-------------:|-----------------:|----------:|------------:|---------:|
+| eave - stories (eave_p50)                | 2525 | 1.833 |      0.599 |        193 |        4.442 |            1.617 |       503 |       0.296 |    0.772 |
+| eave - stories (eave_main)               | 2525 | 2.397 |      0.513 |        193 |        4.621 |            2.213 |       709 |       0.202 |    0.741 |
+| eave - stories (split)                   | 2525 | 1.859 |      0.647 |        193 |        4.28  |            1.658 |       415 |       0.342 |    0.736 |
+| GBM dem                                  | 2539 | 0.795 |      0.9   |        198 |        5.451 |            0.401 |       135 |       0.667 |    0.455 |
+| GBM dem + lpc                            | 2539 | 0.796 |      0.904 |        198 |        5.458 |            0.402 |       109 |       0.633 |    0.348 |
+| GBM dem + lpc + records                  | 2539 | 0.799 |      0.904 |        198 |        5.464 |            0.405 |       126 |       0.643 |    0.409 |
+| GBM dem + lpc + records + eave estimates | 2539 | 0.801 |      0.902 |        198 |        5.439 |            0.409 |       135 |       0.659 |    0.449 |
+
+## Trained on B, scored on C (screened); door height above ground (ft), raised = door > 3 ft
+
+|                                          |    n |   MAE |   within_1 |   raised_n |   raised_MAE |   not_raised_MAE |   flagged |   precision |   recall |
+|:-----------------------------------------|-----:|------:|-----------:|-----------:|-------------:|-----------------:|----------:|------------:|---------:|
+| eave - stories (eave_p50)                | 2506 | 1.785 |      0.603 |        188 |        4.242 |            1.586 |       496 |       0.298 |    0.787 |
+| eave - stories (eave_main)               | 2506 | 2.356 |      0.517 |        188 |        4.473 |            2.185 |       699 |       0.202 |    0.75  |
+| eave - stories (split)                   | 2506 | 1.814 |      0.652 |        188 |        4.075 |            1.63  |       408 |       0.346 |    0.75  |
+| GBM dem                                  | 2520 | 0.749 |      0.907 |        193 |        5.272 |            0.374 |       134 |       0.672 |    0.466 |
+| GBM dem + lpc                            | 2520 | 0.75  |      0.91  |        193 |        5.278 |            0.374 |       108 |       0.639 |    0.358 |
+| GBM dem + lpc + records                  | 2520 | 0.753 |      0.911 |        193 |        5.283 |            0.377 |       125 |       0.648 |    0.42  |
+| GBM dem + lpc + records + eave estimates | 2520 | 0.754 |      0.909 |        193 |        5.26  |            0.381 |       134 |       0.664 |    0.461 |
+B raised houses (screened), eave_p50: n {1.0: 22, 2.0: 26}, median abs error {1.0: 1.42, 2.0: 2.89}, median signed {1.0: -0.16, 2.0: -1.38}
+B raised houses (screened), eave_main: n {1.0: 22, 2.0: 26}, median abs error {1.0: 1.89, 2.0: 2.4}, median signed {1.0: -0.18, 2.0: -2.32}
+B raised houses (screened), split: n {1.0: 22, 2.0: 26}, median abs error {1.0: 1.42, 2.0: 2.4}, median signed {1.0: -0.16, 2.0: -2.32}
+C raised houses (screened), eave_p50: n {1.0: 77, 2.0: 111}, median abs error {1.0: 1.14, 2.0: 4.11}, median signed {1.0: 0.26, 2.0: 0.8}
+C raised houses (screened), eave_main: n {1.0: 77, 2.0: 111}, median abs error {1.0: 2.98, 2.0: 2.59}, median signed {1.0: 0.95, 2.0: -0.22}
+C raised houses (screened), split: n {1.0: 77, 2.0: 111}, median abs error {1.0: 1.14, 2.0: 2.59}, median signed {1.0: 0.26, 2.0: -0.22}
