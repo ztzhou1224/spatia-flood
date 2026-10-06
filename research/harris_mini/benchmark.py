@@ -1,4 +1,4 @@
-"""Benchmark of every evidence layer for the front-door floor height, Harris areas B (Cypress Creek) and C (Clear Lake).
+"""Benchmark of every evidence layer for the front-door floor height, Harris areas A, B and C.
 
 Target: front-door height above the DEM lowest adjacent grade (HCFCD answer key, tiers A+B; scorer only). FFE estimate
 = DEM lowest adjacent grade + estimated height. Methods, each adding one kind of evidence (fixed before scoring):
@@ -10,7 +10,8 @@ Target: front-door height above the DEM lowest adjacent grade (HCFCD answer key,
   F  E, physical override  E, but where the house is flagged raised (record basement / lower level / two-story
                            crawl space, or E > 3 ft) and the label-free split estimate is > 3 ft, use that estimate
   G  physical only         label-free split estimate everywhere (no answer key in calibration at all)
-Validation: within an area, 5 folds grouped by 1 km block; across areas, train on the other area. Metrics: MAE,
+Areas A (Meyerland), B (Cypress Creek), C (Clear Lake). Validation: within an area, 5 folds grouped by 1 km
+block; new area: train on the other two areas pooled. Metrics: MAE,
 within 1 ft, raised (door > 3 ft) MAE and detection, and for houses in the SFHA with a BFE: share whose estimated FFE
 is on the correct side of the BFE. 95% block-bootstrap interval of MAE. Reported on all houses and on houses whose
 answer key passes the screen (eval_stories.py). Image evidence covers ~30 houses and is benchmarked separately at
@@ -98,14 +99,16 @@ def image_component():
 
 
 def main():
-    a = {k: load(k) for k in ("B", "C")}
+    a = {k: load(k) for k in ("A", "B", "C")}
     for k, f in a.items():
         f["block"] = (f.x // 1000).astype(int).astype(str) + "_" + (f.y // 1000).astype(int).astype(str)
         print(f"{k}: {len(f)} houses (tiers A+B), raised {int((f.dh > 3).sum())}, SFHA with BFE "
               f"{int(((f.zone == 'SFHA') & f.bfe.notna()).sum())}, answer key fails the screen {int((~f.key_ok).sum())}")
-    for test, train, same in (("C", "C", True), ("B", "B", True), ("B", "C", False), ("C", "B", False)):
+    runs = [(k, k, True) for k in a] + [(k, "+".join(o for o in a if o != k), False) for k in a]
+    for test, train, same in runs:
         f = a[test]
-        preds = predictions(a[train], f, same)
+        tr = a[test] if same else pd.concat([a[o] for o in a if o != test], ignore_index=True)
+        preds = predictions(tr, f, same)
         for lab, m in (("all", np.ones(len(f), bool)), ("screened", f.key_ok.values)):
             res = pd.DataFrame({k: metrics(p[m], f[m].reset_index(drop=True)) for k, p in preds.items()}).T
             where = f"{test}, 5-fold by 1 km block" if same else f"trained on {train}, scored on {test}"
