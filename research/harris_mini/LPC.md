@@ -217,7 +217,8 @@ screen for all feature sets; "unchanged" = roof_p50 and eave_p50 within 1 ft bet
 | E BFE side | 87.5% / 87.8% | 86.2% / 86.2% |
 | same, key captured 2019-20 (nearer 2024) | 0.437 / 0.440 ft (1,131) | 0.658 / 0.696 ft (1,030) |
 
-QL1 density (2024) does not improve heights of houses that did not change; point density is not the limit. Use
+QL1 roof / eave measures (2024) do not improve heights of houses that did not change. Only the roof / eave side was
+swapped: heights are still above the 2018 DEM ground, so whether a denser ground helps is untested. Use
 the newest flight to refresh the houses that changed, not as a better measurement of the others.
 
 **Change from single-return roofs** (`eval_flights_output.txt`; "up" = roof_p50 and eave_p50 both up > 3 ft; no
@@ -282,7 +283,9 @@ C: 862 of 2,520 (1,513 none). The Clear Lake gaps are tracts with policies but n
 
 Where coverage is dense (Meyerland) the statistics recover about half of what 50 measured houses give (MAE 0.70 ->
 0.63 vs 0.56) and add a little on top of them. In block groups with >= 30 records the gain is the same (A 0.73 ->
-0.65), so it is not a house's own certificate leaking in. Where coverage is thin (C) they do not move MAE, only raised
+0.65). That argument alone is weak (renewals repeat a building ~2-3 times, so >= 30 records can be ~10 buildings);
+own-certificate leakage is not tested in a committed script (the independent review reported a by-size check with no sign
+of it). Where coverage is thin (C) they do not move MAE, only raised
 recall. The block-group statistics describe insured certified houses, not the neighbourhood: correlation of block-
 group share elevated (NFIP) with share of doors > 3 ft (key) is 0.31 (A, 24 block groups) and 0.35 (C, 6).
 Reading: a free partial substitute in dense flood-zone neighbourhoods, a useful extra feature everywhere it exists,
