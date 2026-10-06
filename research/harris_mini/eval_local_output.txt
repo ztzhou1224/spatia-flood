@@ -1,0 +1,75 @@
+
+## A: model from B+C plus k measured local houses (screened key; flagged houses in the area 466; mean of 20 draws)
+
+|                                                              |   MAE |   raised MAE |   raised recall |   BFE side |
+|:-------------------------------------------------------------|------:|-------------:|----------------:|-----------:|
+| ('pooled', 'k = 0')                                          | 0.704 |        2.121 |           0.282 |      0.783 |
+| ('pooled + override', 'k = 0')                               | 0.812 |        2.437 |           0.548 |      0.823 |
+| ('pooled + local (W 1)', 'k = 30 + 20 flagged')              | 0.619 |        1.696 |           0.465 |      0.825 |
+| ('pooled + local (W 10)', 'k = 30 + 20 flagged')             | 0.555 |        1.418 |           0.626 |      0.842 |
+| ('local only', 'k = 30 + 20 flagged')                        | 0.608 |        1.245 |           0.716 |      0.819 |
+| ('pooled + local (W 1) + override', 'k = 30 + 20 flagged')   | 0.777 |        2.294 |           0.583 |      0.837 |
+| ('pooled + local (W 10) + override', 'k = 30 + 20 flagged')  | 0.731 |        2.148 |           0.646 |      0.85  |
+| ('local only + override', 'k = 30 + 20 flagged')             | 0.786 |        1.982 |           0.733 |      0.83  |
+| ('pooled + local (W 1)', 'k = 60 + 40 flagged')              | 0.573 |        1.558 |           0.522 |      0.834 |
+| ('pooled + local (W 10)', 'k = 60 + 40 flagged')             | 0.528 |        1.372 |           0.621 |      0.847 |
+| ('local only', 'k = 60 + 40 flagged')                        | 0.559 |        1.233 |           0.708 |      0.834 |
+| ('pooled + local (W 1) + override', 'k = 60 + 40 flagged')   | 0.745 |        2.236 |           0.592 |      0.846 |
+| ('pooled + local (W 10) + override', 'k = 60 + 40 flagged')  | 0.699 |        2.111 |           0.632 |      0.855 |
+| ('local only + override', 'k = 60 + 40 flagged')             | 0.739 |        1.996 |           0.716 |      0.843 |
+| ('pooled + local (W 1)', 'k = 120 + 80 flagged')             | 0.536 |        1.484 |           0.567 |      0.845 |
+| ('pooled + local (W 10)', 'k = 120 + 80 flagged')            | 0.496 |        1.291 |           0.649 |      0.856 |
+| ('local only', 'k = 120 + 80 flagged')                       | 0.516 |        1.189 |           0.733 |      0.851 |
+| ('pooled + local (W 1) + override', 'k = 120 + 80 flagged')  | 0.702 |        2.171 |           0.587 |      0.853 |
+| ('pooled + local (W 10) + override', 'k = 120 + 80 flagged') | 0.665 |        2.047 |           0.652 |      0.862 |
+| ('local only + override', 'k = 120 + 80 flagged')            | 0.688 |        1.961 |           0.738 |      0.858 |
+
+## B: model from A+C plus k measured local houses (screened key; flagged houses in the area 34; mean of 20 draws)
+
+|                                                              |   MAE |   raised MAE |   raised recall |   BFE side |
+|:-------------------------------------------------------------|------:|-------------:|----------------:|-----------:|
+| ('pooled', 'k = 0')                                          | 0.443 |        1.232 |           0.327 |      0.874 |
+| ('pooled + override', 'k = 0')                               | 0.456 |        1.535 |           0.327 |      0.874 |
+| ('pooled + local (W 1)', 'k = 30 + 20 flagged')              | 0.422 |        1.291 |           0.176 |      0.896 |
+| ('pooled + local (W 10)', 'k = 30 + 20 flagged')             | 0.367 |        1.197 |           0.229 |      0.924 |
+| ('local only', 'k = 30 + 20 flagged')                        | 0.331 |        1.223 |           0.324 |      0.945 |
+| ('pooled + local (W 1) + override', 'k = 30 + 20 flagged')   | 0.43  |        1.533 |           0.176 |      0.896 |
+| ('pooled + local (W 10) + override', 'k = 30 + 20 flagged')  | 0.375 |        1.484 |           0.229 |      0.924 |
+| ('local only + override', 'k = 30 + 20 flagged')             | 0.339 |        1.575 |           0.34  |      0.945 |
+| ('pooled + local (W 1)', 'k = 60 + 40 flagged')              | 0.41  |        1.277 |           0.181 |      0.9   |
+| ('pooled + local (W 10)', 'k = 60 + 40 flagged')             | 0.339 |        1.171 |           0.221 |      0.94  |
+| ('local only', 'k = 60 + 40 flagged')                        | 0.314 |        1.235 |           0.291 |      0.95  |
+| ('pooled + local (W 1) + override', 'k = 60 + 40 flagged')   | 0.419 |        1.513 |           0.181 |      0.9   |
+| ('pooled + local (W 10) + override', 'k = 60 + 40 flagged')  | 0.348 |        1.46  |           0.221 |      0.94  |
+| ('local only + override', 'k = 60 + 40 flagged')             | 0.323 |        1.56  |           0.303 |      0.95  |
+| ('pooled + local (W 1)', 'k = 120 + 80 flagged')             | 0.39  |        1.243 |           0.177 |      0.906 |
+| ('pooled + local (W 10)', 'k = 120 + 80 flagged')            | 0.312 |        1.124 |           0.22  |      0.955 |
+| ('local only', 'k = 120 + 80 flagged')                       | 0.295 |        1.218 |           0.281 |      0.951 |
+| ('pooled + local (W 1) + override', 'k = 120 + 80 flagged')  | 0.398 |        1.41  |           0.177 |      0.906 |
+| ('pooled + local (W 10) + override', 'k = 120 + 80 flagged') | 0.32  |        1.339 |           0.22  |      0.955 |
+| ('local only + override', 'k = 120 + 80 flagged')            | 0.303 |        1.471 |           0.29  |      0.951 |
+
+## C: model from A+B plus k measured local houses (screened key; flagged houses in the area 196; mean of 20 draws)
+
+|                                                              |   MAE |   raised MAE |   raised recall |   BFE side |
+|:-------------------------------------------------------------|------:|-------------:|----------------:|-----------:|
+| ('pooled', 'k = 0')                                          | 0.721 |        4.945 |           0.549 |      0.82  |
+| ('pooled + override', 'k = 0')                               | 0.682 |        3.584 |           0.684 |      0.84  |
+| ('pooled + local (W 1)', 'k = 30 + 20 flagged')              | 0.682 |        4.717 |           0.571 |      0.823 |
+| ('pooled + local (W 10)', 'k = 30 + 20 flagged')             | 0.6   |        3.442 |           0.699 |      0.844 |
+| ('local only', 'k = 30 + 20 flagged')                        | 0.751 |        3.225 |           0.754 |      0.831 |
+| ('pooled + local (W 1) + override', 'k = 30 + 20 flagged')   | 0.662 |        3.628 |           0.669 |      0.845 |
+| ('pooled + local (W 10) + override', 'k = 30 + 20 flagged')  | 0.668 |        3.506 |           0.717 |      0.864 |
+| ('local only + override', 'k = 30 + 20 flagged')             | 0.904 |        3.5   |           0.764 |      0.845 |
+| ('pooled + local (W 1)', 'k = 60 + 40 flagged')              | 0.647 |        4.511 |           0.612 |      0.83  |
+| ('pooled + local (W 10)', 'k = 60 + 40 flagged')             | 0.561 |        3.153 |           0.703 |      0.855 |
+| ('local only', 'k = 60 + 40 flagged')                        | 0.623 |        2.995 |           0.739 |      0.854 |
+| ('pooled + local (W 1) + override', 'k = 60 + 40 flagged')   | 0.637 |        3.578 |           0.668 |      0.856 |
+| ('pooled + local (W 10) + override', 'k = 60 + 40 flagged')  | 0.636 |        3.496 |           0.71  |      0.872 |
+| ('local only + override', 'k = 60 + 40 flagged')             | 0.752 |        3.465 |           0.745 |      0.864 |
+| ('pooled + local (W 1)', 'k = 120 + 80 flagged')             | 0.573 |        3.944 |           0.645 |      0.845 |
+| ('pooled + local (W 10)', 'k = 120 + 80 flagged')            | 0.511 |        2.988 |           0.647 |      0.875 |
+| ('local only', 'k = 120 + 80 flagged')                       | 0.539 |        2.8   |           0.699 |      0.88  |
+| ('pooled + local (W 1) + override', 'k = 120 + 80 flagged')  | 0.6   |        3.652 |           0.658 |      0.875 |
+| ('pooled + local (W 10) + override', 'k = 120 + 80 flagged') | 0.597 |        3.69  |           0.656 |      0.881 |
+| ('local only + override', 'k = 120 + 80 flagged')            | 0.66  |        3.651 |           0.704 |      0.88  |
