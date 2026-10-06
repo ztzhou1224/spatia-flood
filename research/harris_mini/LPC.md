@@ -244,8 +244,8 @@ walls than the reference), and one-story "slab" houses (62) underestimated by 2.
 (+-1.5 ft) is as large as a 3-5 ft lift, and no label-free reference removes it.
 
 **What does: about 50 measured local houses** (`eval_local.py`, output `eval_local_output.txt`). Model from the
-other two areas, refit with a local sample of 30 random unflagged + 20 flagged houses (label-free choice, as for the
-bands) weighted 10x; scored on the area's other houses, mean of 20 draws:
+other two areas, refit with a local sample of 30 unflagged + 20 flagged houses (label-free choice, as for the bands;
+B has only 34 flagged houses, so 17 are drawn) weighted 10x; scored on the area's other houses, mean of 20 draws:
 
 | | A: MAE / raised MAE / recall / BFE side | B: MAE / BFE side | C: MAE / raised MAE / recall / BFE side |
 |---|---|---|---|
@@ -255,11 +255,16 @@ bands) weighted 10x; scored on the area's other houses, mean of 20 draws:
 | + 200 local houses (W 10) | 0.50 / 1.29 / 0.65 / 85.6% | 0.31 / 95.5% | 0.51 / 2.99 / 0.65 / 87.5% |
 | within area, all labels (benchmark E) | 0.46 / 1.11 / 0.76 / 86.9% | 0.29 / 94.6% | 0.55 / 3.27 / 0.69 / 86.1% |
 
-Fifty local houses close most of the gap to a model trained on the whole area, in all three areas; 200 come within
-0.04 ft of it (C: better). Equal weight (W 1) helps much less; a model on the local sample alone is better on raised
-houses (A 1.25, C 3.23 ft raised MAE) but worse overall in C (0.75 ft).
-With local houses the physical override no longer improves MAE (it still adds 1-2 points of BFE side in C). The
-same 50 houses calibrate the bands (BANDS.md): one survey sample per new area serves both.
+**Corrected after independent review (2026-10-06).** The "other areas only" row is scored on all houses, the k > 0
+rows on the houses left after drawing the sample (which removes high-error flagged houses). Scored on the SAME
+held-out sets, the pooled model gives A 0.699, B 0.440, C 0.700 ft (`eval_local_output.txt`, "same scored set"
+rows), so 50 local houses at W 10 lower MAE by 0.144 (A), 0.073 (B) and 0.100 ft (C). Against the within-area model
+(scored on all houses, so approximate) that closes about 61% (A), 48% (B) and 67% (C) of the gap. In B a model on
+the local sample alone is better than the W 10 refit (0.331 vs 0.367 ft, BFE side 94.5% vs 92.4%); in A and C it is
+worse overall (0.61, 0.75 ft) but better on raised houses (1.25, 3.23 ft raised MAE). Equal weight (W 1) helps much
+less. 200 local houses come within 0.02-0.03 ft of the within-area model (C: better). With local houses the physical
+override no longer improves MAE. The pre-registered test (`eval_design.py`, below) confirms the 30 + 20 / W 10
+choice on C. Bands from the same 50 houses are honest but wide (BANDS.md, corrected).
 
 ## FEMA flood-insurance statistics instead of (or with) the 50 local houses (2026-10-06)
 
@@ -331,19 +336,60 @@ area (weight 10), scored on the area's other houses (screened), mean of 20 draws
 A handful of labels already moves the model, and BFE side improves in all but one setting (A 78.3% -> 80-84%, B 87.4% -> 89-93%,
 C 82.0% -> 81.8-85.7%; 5 random labels in C: 81.8%). Which houses are labelled matters as much as how many: in Clear Lake random labels barely help
 raised houses until k = 50 (few random picks are raised), while 5 labels on flagged houses cut raised MAE from 4.95
-to 4.18 ft and 50 to 3.15 ft. In Cypress Creek (few raised houses) flagged-only labels lower raised recall (0.33 ->
-0.19-0.29): labels should match the houses that matter in the area.
+to 4.18 ft and 50 to 3.15 ft. (Corrected after review: the earlier sentence "in Cypress Creek flagged-only labels
+lower raised recall" was an artefact of comparing with k = 0 scored on all houses; on the same held-out sets raised
+recall goes 0.18 -> 0.19-0.21, and B's "flagged" samples hold only 17 flagged houses, the rest random.)
 
 **Bands by distance to the nearest label do not help.** 90% conformal bands, Mondrian by raised flag x distance to
 the nearest label (< 250 m, 250-1,000 m, > 1,000 m), residual pool from pseudo-experiments in the other two areas:
-coverage and width hardly change with distance (e.g. A not flagged 0.84 / 0.86 / 0.94-0.95 coverage, width
-1.55-1.72 ft, at k = 20), consistent with residual correlation vanishing beyond a few hundred metres
-(`eval_reach.py`). The flag dominates, and the flagged group is where borrowed bands fail: A flagged bands are
-12.5-17.8 ft wide (almost nothing decided), C flagged bands cover only 0.53-0.61 and their BFE calls are right only
-55-74%. Raised-house error depends on the area's own history; only local labels on flagged houses calibrate it
-(BANDS.md: 30 + 20 flagged local houses -> flagged coverage 0.81-0.84, decided calls right 90-92%).
+coverage and width hardly change with distance (e.g. A not flagged 0.84 / 0.86 / 0.95 coverage, width 1.55-1.73 ft,
+at k = 20; rerun with the finite-sample quantile), consistent with residual correlation vanishing beyond a few
+hundred metres (`eval_reach.py`). The flag dominates, and the flagged group is where borrowed bands fail: A flagged
+bands are 12.7-18.9 ft wide (almost nothing decided), C flagged bands within 1 km of a label cover only 0.54-0.61 and
+their BFE calls are right only 56-73%. Raised-house error depends on the area's own history; only local labels on
+flagged houses calibrate it (BANDS.md, corrected: 30 + 20 flagged local houses -> flagged coverage 0.90-0.91 with
+the finite-sample quantile, but flagged bands 7-15 ft wide).
 
-**Product rule from this.** Estimate everywhere; feed every real number back in (weight 10); for unflagged houses,
-bands from the pooled residuals are close to honest; for flagged (likely raised) houses, report "too close to call"
-on the BFE until about 20 local labels on flagged houses exist, then calibrate their bands locally. Labels are worth
+**Product rule from this** (revised after review and the pre-registered test). Estimate everywhere; refit with real
+numbers as they arrive (W 10 was chosen on A + B and confirmed on C, for both scattered and clustered labels; in B a
+local-only model did better, so the weight is not universal); for unflagged houses, bands borrowed from other areas
+are roughly honest (0.86-0.99); for flagged (likely raised) houses, report "too close to call" on the BFE until local
+labels on flagged houses exist, then calibrate their bands locally (honest, but wide with ~20). Labels are worth
 most on flagged houses in raised neighbourhoods (certificates are exactly that).
+
+## Pre-registered test of the local-label design (2026-10-06)
+
+`eval_design.py` (committed before its first run, c8854ca; output `eval_design_output.txt`). Choices made on A and B
+only (model for A from B alone, for B from A alone, so nothing from C enters a choice), confirmed once on C (model
+from A + B). 50 labels per area, 20 draws, scored on the same held-out sets as the no-label model.
+
+Scattered labels: 12 candidates (random 50 / 30 unflagged + 20 flagged / 50 flagged x W 1, 3, 10, plus local-only).
+Rule: lowest mean MAE over A and B, ties within 0.005 ft to the higher BFE side. Chosen: **30 unflagged + 20 flagged,
+W 10** (0.426 ft; "50 flagged, W 3" 0.421 ft lost the tie on BFE side, 0.891 vs 0.898). Confirmation on C:
+
+| C, same held-out sets | MAE | raised MAE | raised recall | BFE side |
+|---|---|---|---|---|
+| no local labels | 0.701 | 4.95 | 0.54 | 82.3% |
+| 30 unflagged + 20 flagged, W 10 | **0.597** | **3.33** | **0.70** | **84.7%** |
+
+Bands for the chosen design on C, 90% finite-sample conformal from the 50 labels' cross-fitted residuals: coverage
+0.96 (flagged 0.99, not flagged 0.96), median width 4.6 ft for unflagged houses, flagged bands mostly infinite (too
+few flagged labels in the group after refit), SFHA decided 38%, decided calls right 96%. Exploratory (not part of
+the confirmation): on C, "50 flagged, W 10" did as well (0.576 ft); "local only, 50 flagged" fails badly in A and C
+(2.04, 1.70 ft): a model trained only on raised houses cannot estimate ordinary ones.
+
+Clustered labels (certificate-like: the 50 SFHA houses nearest a random SFHA house): candidates global refit W 1 /
+3 / 10, or the W 10 refit applied only within 250 m / 1,000 m of a label. Chosen on A + B: **global refit W 10**
+(0.494 ft vs 0.553-0.580 for the trust regions). Confirmation on C: MAE 0.704 -> 0.669, raised MAE 4.87 -> 4.23,
+BFE side 81.7% -> 82.9%. Gains are largest near the cluster but reach houses more than 1 km away (C 0.578 -> 0.557
+ft; A 0.816 -> 0.673; B 0.349 -> 0.341), so restricting the refit to a radius only throws gains away. This differs
+from `eval_reach.py`, where a measured contiguous half of B hurt houses > 2 km away (0.273 -> 0.45 ft): a whole
+measured half-area, not a 50-house cluster, and B's two halves differ. Weighting still needs checking per area.
+
+## Records flag is area-specific (review item 5)
+
+`bands.py` (first table of `bands_output.txt`; scorer): the records part of the raised flag (basement / lower level /
+two-story crawl space) has precision / recall A 0.89 / 0.55 (369 houses), B 0.08 / 0.02 (12 houses), C 0.76 / 0.37
+(93 houses); eave_p50 AUC for raised houses A 0.87, B 0.76, C 0.91. Where raised houses are rare (B) the record flag
+is noise; the model part of the flag (estimate > 3 ft) carries the rest. Any sampling design that relies on the flag
+must be checked against the area's own records schema and raised share.
