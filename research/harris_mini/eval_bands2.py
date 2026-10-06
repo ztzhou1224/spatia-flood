@@ -12,7 +12,10 @@ absolute scores):
 Difficulty model s(x): LightGBM (objective l2) predicting |residual| from method E features plus the estimate, trained
 on residuals of cross-area pseudo-experiments among the training areas only (model trained on one area, residuals on
 another; never the test area), floored at 0.25 ft. Label-free at application.
-Reported: coverage all / flagged / not flagged, median width flagged / not flagged, SFHA BFE decided and decided correct.
+Reported: coverage all / flagged / not flagged, median width flagged / not flagged, SFHA BFE decided and decided correct;
+and (added 2026-10-06, the lead-list view; scorer only) for SFHA houses with a BFE: share truly below the BFE, share
+called below (90% band entirely below), below precision (truly below among called below), below recall (called below
+among truly below), share called above and above precision.
 Usage: python eval_bands2.py
 """
 import sys
@@ -69,7 +72,13 @@ def stats(f, lo, hi, g, ev):
     return {"coverage": cov[ev].mean(), "coverage flagged": cov[ev & g].mean() if (ev & g).any() else np.nan,
             "coverage not flagged": cov[ev & ~g].mean(), "median width flagged": np.median(w[ev & g]) if (ev & g).any() else np.nan,
             "median width not flagged": np.median(w[ev & ~g]), "BFE decided": dec.mean() if s.any() else np.nan,
-            "decided correct": ((above & (ffe >= bfe)) | (below & (ffe < bfe)))[dec].mean() if dec.any() else np.nan}
+            "decided correct": ((above & (ffe >= bfe)) | (below & (ffe < bfe)))[dec].mean() if dec.any() else np.nan,
+            "SFHA n": int(s.sum()), "truly below BFE": (ffe < bfe).mean() if s.any() else np.nan,
+            "called below": below.mean() if s.any() else np.nan,
+            "below precision": (ffe[below] < bfe[below]).mean() if below.any() else np.nan,
+            "below recall": below[ffe < bfe].mean() if (ffe < bfe).any() else np.nan,
+            "called above": above.mean() if s.any() else np.nan,
+            "above precision": (ffe[above] >= bfe[above]).mean() if above.any() else np.nan}
 
 
 def run(train, f, rng, label):
