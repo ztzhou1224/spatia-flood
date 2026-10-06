@@ -1,4 +1,15 @@
 
+## A, E + eave estimate: cross-conformal within the area
+
+|                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
+|:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
+| ('all', 'flagged raised')      |  540 |               467 |      0.776 |         2.514 |      0.893 |         3.454 |      536 |            0.651 |             0.966 |
+| ('all', 'not flagged')         | 2792 |               132 |      0.792 |         1.013 |      0.897 |         1.642 |     2462 |            0.405 |             0.957 |
+| ('all', 'all houses')          | 3332 |               599 |      0.79  |         1.256 |      0.896 |         1.936 |     2998 |            0.449 |             0.959 |
+| ('screened', 'flagged raised') |  540 |               467 |      0.776 |         2.514 |      0.893 |         3.454 |      536 |            0.651 |             0.966 |
+| ('screened', 'not flagged')    | 2789 |               132 |      0.793 |         1.013 |      0.898 |         1.642 |     2459 |            0.405 |             0.957 |
+| ('screened', 'all houses')     | 3329 |               599 |      0.79  |         1.256 |      0.897 |         1.936 |     2995 |            0.449 |             0.959 |
+
 ## B, E + eave estimate: cross-conformal within the area
 
 |                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
@@ -21,45 +32,76 @@
 | ('screened', 'not flagged')    | 2330 |                48 |      0.799 |         0.91  |      0.906 |         1.333 |      444 |            0.698 |             0.974 |
 | ('screened', 'all houses')     | 2520 |               193 |      0.798 |         1.517 |      0.901 |         2.093 |      589 |            0.572 |             0.97  |
 
-## B, E + eave estimate: model AND bands from C (new area)
+## A, E + eave estimate: model AND bands from B+C (new area)
 
 |                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
 |:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
-| ('all', 'flagged raised')      |   81 |                20 |      0.901 |         9.78  |      0.926 |        13.137 |        7 |            0     |               nan |
-| ('all', 'not flagged')         | 5046 |                29 |      0.497 |         0.917 |      0.733 |         1.331 |      104 |            0.625 |                 1 |
-| ('all', 'all houses')          | 5127 |                49 |      0.503 |         1.057 |      0.736 |         1.518 |      111 |            0.586 |                 1 |
-| ('screened', 'flagged raised') |   81 |                20 |      0.901 |         9.78  |      0.926 |        13.137 |        7 |            0     |               nan |
-| ('screened', 'not flagged')    | 5038 |                29 |      0.498 |         0.917 |      0.734 |         1.331 |      104 |            0.625 |                 1 |
-| ('screened', 'all houses')     | 5119 |                49 |      0.504 |         1.057 |      0.737 |         1.518 |      111 |            0.586 |                 1 |
+| ('all', 'flagged raised')      |  466 |               377 |      0.961 |         8.907 |      0.994 |        12.548 |      461 |            0     |           nan     |
+| ('all', 'not flagged')         | 2866 |               222 |      0.673 |         0.883 |      0.772 |         1.202 |     2537 |            0.648 |             0.888 |
+| ('all', 'all houses')          | 3332 |               599 |      0.714 |         2.005 |      0.803 |         2.789 |     2998 |            0.548 |             0.888 |
+| ('screened', 'flagged raised') |  466 |               377 |      0.961 |         8.907 |      0.994 |        12.548 |      461 |            0     |           nan     |
+| ('screened', 'not flagged')    | 2863 |               222 |      0.674 |         0.883 |      0.773 |         1.202 |     2534 |            0.648 |             0.888 |
+| ('screened', 'all houses')     | 3329 |               599 |      0.714 |         2.006 |      0.804 |         2.79  |     2995 |            0.548 |             0.888 |
 
-## B, E + eave estimate: model from C, 90% bands recalibrated on k random local houses (mean of 50 draws)
+## A, E + eave estimate: model from B+C, 90% bands recalibrated on k random local houses (mean of 50 draws)
 
 |                                  |   cover_all |   cover_flagged |   width_all |   BFE_decided |   decided_correct |
 |:---------------------------------|------------:|----------------:|------------:|--------------:|------------------:|
-| k = 30 local houses              |       0.841 |           0.396 |       1.709 |         0.481 |                 1 |
-| k = 50 local houses              |       0.874 |           0.407 |       1.843 |         0.447 |                 1 |
-| k = 100 local houses             |       0.871 |           0.384 |       1.719 |         0.505 |                 1 |
-| k = 30 local houses + 20 flagged |       0.843 |           0.806 |       1.654 |         0.501 |                 1 |
+| k = 30 local houses              |       0.811 |           0.614 |       2.332 |         0.347 |             0.894 |
+| k = 50 local houses              |       0.827 |           0.655 |       2.362 |         0.335 |             0.896 |
+| k = 100 local houses             |       0.861 |           0.764 |       2.696 |         0.262 |             0.9   |
+| k = 30 local houses + 20 flagged |       0.852 |           0.838 |       2.68  |         0.294 |             0.901 |
 
-## C, E + eave estimate: model AND bands from B (new area)
+## B, E + eave estimate: model AND bands from A+C (new area)
 
 |                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
 |:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
-| ('all', 'flagged raised')      |  200 |               132 |      0.45  |         1.632 |      0.505 |         2.208 |      127 |            0.937 |             0.605 |
-| ('all', 'not flagged')         | 2339 |                66 |      0.615 |         0.868 |      0.764 |         1.168 |      468 |            0.709 |             0.919 |
-| ('all', 'all houses')          | 2539 |               198 |      0.602 |         0.928 |      0.744 |         1.25  |      595 |            0.758 |             0.836 |
-| ('screened', 'flagged raised') |  198 |               131 |      0.455 |         1.632 |      0.51  |         2.208 |      126 |            0.937 |             0.61  |
-| ('screened', 'not flagged')    | 2322 |                62 |      0.62  |         0.868 |      0.77  |         1.168 |      463 |            0.711 |             0.924 |
-| ('screened', 'all houses')     | 2520 |               193 |      0.607 |         0.928 |      0.75  |         1.249 |      589 |            0.759 |             0.841 |
+| ('all', 'flagged raised')      |   34 |                16 |      0.735 |         4.017 |      0.765 |         7.406 |        6 |            0.5   |                 1 |
+| ('all', 'not flagged')         | 5093 |                33 |      0.612 |         0.967 |      0.891 |         1.482 |      105 |            0.629 |                 1 |
+| ('all', 'all houses')          | 5127 |                49 |      0.612 |         0.987 |      0.89  |         1.522 |      111 |            0.622 |                 1 |
+| ('screened', 'flagged raised') |   34 |                16 |      0.735 |         4.017 |      0.765 |         7.406 |        6 |            0.5   |                 1 |
+| ('screened', 'not flagged')    | 5085 |                33 |      0.613 |         0.967 |      0.893 |         1.482 |      105 |            0.629 |                 1 |
+| ('screened', 'all houses')     | 5119 |                49 |      0.613 |         0.987 |      0.892 |         1.522 |      111 |            0.622 |                 1 |
 
-## C, E + eave estimate: model from B, 90% bands recalibrated on k random local houses (mean of 50 draws)
+## B, E + eave estimate: model from A+C, 90% bands recalibrated on k random local houses (mean of 50 draws)
 
 |                                  |   cover_all |   cover_flagged |   width_all |   BFE_decided |   decided_correct |
 |:---------------------------------|------------:|----------------:|------------:|--------------:|------------------:|
-| k = 30 local houses              |       0.825 |           0.549 |       1.984 |         0.701 |             0.849 |
-| k = 50 local houses              |       0.835 |           0.516 |       1.511 |         0.739 |             0.841 |
-| k = 100 local houses             |       0.859 |           0.586 |       1.839 |         0.673 |             0.849 |
-| k = 30 local houses + 20 flagged |       0.862 |           0.834 |       2.656 |         0.541 |             0.9   |
+| k = 30 local houses              |       0.842 |           0.388 |       1.219 |         0.749 |             0.995 |
+| k = 50 local houses              |       0.874 |           0.388 |       1.3   |         0.746 |             0.996 |
+| k = 100 local houses             |       0.879 |           0.386 |       1.268 |         0.747 |             0.997 |
+| k = 30 local houses + 20 flagged |       0.854 |           0.814 |       1.261 |         0.721 |             0.994 |
+
+## C, E + eave estimate: model AND bands from A+B (new area)
+
+|                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
+|:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
+| ('all', 'flagged raised')      |  196 |               137 |      0.474 |         2.432 |      0.531 |         3.368 |      133 |            0.887 |             0.602 |
+| ('all', 'not flagged')         | 2343 |                61 |      0.676 |         0.909 |      0.81  |         1.276 |      462 |            0.699 |             0.923 |
+| ('all', 'all houses')          | 2539 |               198 |      0.661 |         1.026 |      0.788 |         1.438 |      595 |            0.741 |             0.837 |
+| ('screened', 'flagged raised') |  195 |               136 |      0.477 |         2.432 |      0.533 |         3.368 |      132 |            0.886 |             0.607 |
+| ('screened', 'not flagged')    | 2325 |                57 |      0.682 |         0.909 |      0.816 |         1.276 |      457 |            0.7   |             0.928 |
+| ('screened', 'all houses')     | 2520 |               193 |      0.666 |         1.027 |      0.794 |         1.438 |      589 |            0.742 |             0.842 |
+
+## C, E + eave estimate: model from A+B, 90% bands recalibrated on k random local houses (mean of 50 draws)
+
+|                                  |   cover_all |   cover_flagged |   width_all |   BFE_decided |   decided_correct |
+|:---------------------------------|------------:|----------------:|------------:|--------------:|------------------:|
+| k = 30 local houses              |       0.828 |           0.496 |       1.973 |         0.702 |             0.852 |
+| k = 50 local houses              |       0.823 |           0.447 |       1.451 |         0.754 |             0.846 |
+| k = 100 local houses             |       0.853 |           0.535 |       1.762 |         0.691 |             0.855 |
+| k = 30 local houses + 20 flagged |       0.836 |           0.81  |       2.041 |         0.599 |             0.915 |
+
+## A, F E, physical override: cross-conformal within the area
+
+|                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
+|:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
+| ('all', 'flagged raised')      |  540 |               467 |      0.796 |         5.323 |      0.889 |         7.914 |      536 |            0.103 |             0.891 |
+| ('all', 'not flagged')         | 2792 |               132 |      0.792 |         1.013 |      0.897 |         1.642 |     2462 |            0.405 |             0.957 |
+| ('all', 'all houses')          | 3332 |               599 |      0.793 |         1.711 |      0.896 |         2.658 |     2998 |            0.351 |             0.953 |
+| ('screened', 'flagged raised') |  540 |               467 |      0.796 |         5.323 |      0.889 |         7.914 |      536 |            0.103 |             0.891 |
+| ('screened', 'not flagged')    | 2789 |               132 |      0.793 |         1.013 |      0.898 |         1.642 |     2459 |            0.405 |             0.957 |
+| ('screened', 'all houses')     | 3329 |               599 |      0.794 |         1.712 |      0.896 |         2.659 |     2995 |            0.351 |             0.953 |
 
 ## B, F E, physical override: cross-conformal within the area
 
@@ -83,42 +125,62 @@
 | ('screened', 'not flagged')    | 2330 |                48 |      0.799 |         0.91  |      0.906 |         1.333 |      444 |            0.698 |             0.974 |
 | ('screened', 'all houses')     | 2520 |               193 |      0.791 |         1.688 |      0.899 |         2.349 |      589 |            0.625 |             0.962 |
 
-## B, F E, physical override: model AND bands from C (new area)
+## A, F E, physical override: model AND bands from B+C (new area)
 
 |                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
 |:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
-| ('all', 'flagged raised')      |   81 |                20 |      0.901 |        11.928 |      0.926 |        16.911 |        7 |            0     |               nan |
-| ('all', 'not flagged')         | 5046 |                29 |      0.497 |         0.917 |      0.733 |         1.331 |      104 |            0.625 |                 1 |
-| ('all', 'all houses')          | 5127 |                49 |      0.503 |         1.091 |      0.736 |         1.577 |      111 |            0.586 |                 1 |
-| ('screened', 'flagged raised') |   81 |                20 |      0.901 |        11.928 |      0.926 |        16.911 |        7 |            0     |               nan |
-| ('screened', 'not flagged')    | 5038 |                29 |      0.498 |         0.917 |      0.734 |         1.331 |      104 |            0.625 |                 1 |
-| ('screened', 'all houses')     | 5119 |                49 |      0.504 |         1.091 |      0.737 |         1.578 |      111 |            0.586 |                 1 |
+| ('all', 'flagged raised')      |  466 |               377 |      0.858 |        11.667 |      0.97  |        16.879 |      461 |            0.022 |             0.8   |
+| ('all', 'not flagged')         | 2866 |               222 |      0.673 |         0.883 |      0.772 |         1.202 |     2537 |            0.648 |             0.888 |
+| ('all', 'all houses')          | 3332 |               599 |      0.699 |         2.391 |      0.8   |         3.395 |     2998 |            0.551 |             0.887 |
+| ('screened', 'flagged raised') |  466 |               377 |      0.858 |        11.667 |      0.97  |        16.879 |      461 |            0.022 |             0.8   |
+| ('screened', 'not flagged')    | 2863 |               222 |      0.674 |         0.883 |      0.773 |         1.202 |     2534 |            0.648 |             0.888 |
+| ('screened', 'all houses')     | 3329 |               599 |      0.7   |         2.393 |      0.801 |         3.397 |     2995 |            0.551 |             0.887 |
 
-## B, F E, physical override: model from C, 90% bands recalibrated on k random local houses (mean of 50 draws)
+## A, F E, physical override: model from B+C, 90% bands recalibrated on k random local houses (mean of 50 draws)
 
 |                                  |   cover_all |   cover_flagged |   width_all |   BFE_decided |   decided_correct |
 |:---------------------------------|------------:|----------------:|------------:|--------------:|------------------:|
-| k = 30 local houses              |       0.84  |           0.313 |       1.711 |         0.481 |             1     |
-| k = 50 local houses              |       0.873 |           0.314 |       1.843 |         0.447 |             1     |
-| k = 100 local houses             |       0.869 |           0.31  |       1.72  |         0.505 |             1     |
-| k = 30 local houses + 20 flagged |       0.843 |           0.812 |       1.7   |         0.497 |             0.999 |
+| k = 30 local houses              |       0.794 |           0.494 |       2.433 |         0.381 |             0.906 |
+| k = 50 local houses              |       0.804 |           0.493 |       2.446 |         0.37  |             0.901 |
+| k = 100 local houses             |       0.86  |           0.759 |       3.25  |         0.255 |             0.891 |
+| k = 30 local houses + 20 flagged |       0.85  |           0.818 |       3.129 |         0.289 |             0.895 |
 
-## C, F E, physical override: model AND bands from B (new area)
+## B, F E, physical override: model AND bands from A+C (new area)
 
 |                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
 |:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
-| ('all', 'flagged raised')      |  200 |               132 |      0.8   |        14.514 |      0.825 |        16.599 |      127 |            0.433 |             0.836 |
-| ('all', 'not flagged')         | 2339 |                66 |      0.615 |         0.868 |      0.764 |         1.168 |      468 |            0.709 |             0.919 |
-| ('all', 'all houses')          | 2539 |               198 |      0.63  |         1.943 |      0.769 |         2.383 |      595 |            0.65  |             0.907 |
-| ('screened', 'flagged raised') |  198 |               131 |      0.803 |        14.514 |      0.828 |        16.599 |      126 |            0.429 |             0.852 |
-| ('screened', 'not flagged')    | 2322 |                62 |      0.62  |         0.868 |      0.77  |         1.168 |      463 |            0.711 |             0.924 |
-| ('screened', 'all houses')     | 2520 |               193 |      0.634 |         1.94  |      0.775 |         2.38  |      589 |            0.65  |             0.914 |
+| ('all', 'flagged raised')      |   34 |                16 |      0.765 |         7.14  |      0.824 |        10.941 |        6 |            0     |               nan |
+| ('all', 'not flagged')         | 5093 |                33 |      0.612 |         0.967 |      0.891 |         1.482 |      105 |            0.629 |                 1 |
+| ('all', 'all houses')          | 5127 |                49 |      0.613 |         1.008 |      0.891 |         1.545 |      111 |            0.595 |                 1 |
+| ('screened', 'flagged raised') |   34 |                16 |      0.765 |         7.14  |      0.824 |        10.941 |        6 |            0     |               nan |
+| ('screened', 'not flagged')    | 5085 |                33 |      0.613 |         0.967 |      0.893 |         1.482 |      105 |            0.629 |                 1 |
+| ('screened', 'all houses')     | 5119 |                49 |      0.614 |         1.008 |      0.892 |         1.545 |      111 |            0.595 |                 1 |
 
-## C, F E, physical override: model from B, 90% bands recalibrated on k random local houses (mean of 50 draws)
+## B, F E, physical override: model from A+C, 90% bands recalibrated on k random local houses (mean of 50 draws)
 
 |                                  |   cover_all |   cover_flagged |   width_all |   BFE_decided |   decided_correct |
 |:---------------------------------|------------:|----------------:|------------:|--------------:|------------------:|
-| k = 30 local houses              |       0.817 |           0.45  |       1.85  |         0.724 |             0.866 |
-| k = 50 local houses              |       0.831 |           0.461 |       1.451 |         0.742 |             0.87  |
-| k = 100 local houses             |       0.854 |           0.526 |       1.794 |         0.689 |             0.87  |
-| k = 30 local houses + 20 flagged |       0.86  |           0.815 |       2.74  |         0.591 |             0.899 |
+| k = 30 local houses              |       0.842 |           0.378 |       1.22  |         0.748 |             0.995 |
+| k = 50 local houses              |       0.874 |           0.387 |       1.3   |         0.746 |             0.996 |
+| k = 100 local houses             |       0.879 |           0.396 |       1.268 |         0.747 |             0.997 |
+| k = 30 local houses + 20 flagged |       0.854 |           0.773 |       1.285 |         0.721 |             0.994 |
+
+## C, F E, physical override: model AND bands from A+B (new area)
+
+|                                |    n |   raised_in_group |   cover_80 |   width_80_ft |   cover_90 |   width_90_ft |   SFHA_n |   BFE_decided_90 |   decided_correct |
+|:-------------------------------|-----:|------------------:|-----------:|--------------:|-----------:|--------------:|---------:|-----------------:|------------------:|
+| ('all', 'flagged raised')      |  196 |               137 |      0.668 |         5.429 |      0.755 |         8.046 |      133 |            0.504 |             0.791 |
+| ('all', 'not flagged')         | 2343 |                61 |      0.676 |         0.909 |      0.81  |         1.276 |      462 |            0.699 |             0.923 |
+| ('all', 'all houses')          | 2539 |               198 |      0.676 |         1.258 |      0.805 |         1.799 |      595 |            0.655 |             0.9   |
+| ('screened', 'flagged raised') |  195 |               136 |      0.672 |         5.429 |      0.759 |         8.046 |      132 |            0.5   |             0.803 |
+| ('screened', 'not flagged')    | 2325 |                57 |      0.682 |         0.909 |      0.816 |         1.276 |      457 |            0.7   |             0.928 |
+| ('screened', 'all houses')     | 2520 |               193 |      0.681 |         1.259 |      0.812 |         1.8   |      589 |            0.655 |             0.907 |
+
+## C, F E, physical override: model from A+B, 90% bands recalibrated on k random local houses (mean of 50 draws)
+
+|                                  |   cover_all |   cover_flagged |   width_all |   BFE_decided |   decided_correct |
+|:---------------------------------|------------:|----------------:|------------:|--------------:|------------------:|
+| k = 30 local houses              |       0.824 |           0.438 |       1.856 |         0.724 |             0.866 |
+| k = 50 local houses              |       0.822 |           0.434 |       1.4   |         0.756 |             0.872 |
+| k = 100 local houses             |       0.85  |           0.503 |       1.722 |         0.705 |             0.874 |
+| k = 30 local houses + 20 flagged |       0.837 |           0.818 |       2.165 |         0.647 |             0.912 |
