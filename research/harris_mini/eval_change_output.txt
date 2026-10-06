@@ -1,0 +1,97 @@
+
+# A: houses (all answer-key points, front door) with both flights: 6750
+
+| record                            |   ('not up', 'not') |   ('not up', 'roof & eave up > 3 ft') |   ('up > 3 ft', 'roof & eave up > 3 ft') |   ('All', '') |
+|:----------------------------------|--------------------:|--------------------------------------:|-----------------------------------------:|--------------:|
+| rebuilt (2025 year built >= 2018) |                  56 |                                   226 |                                      170 |           452 |
+| record missing                    |                  55 |                                    33 |                                       24 |           112 |
+| same building, foundation changed |                  52 |                                    20 |                                       13 |            85 |
+| same building, stories changed    |                  27 |                                     2 |                                        1 |            30 |
+| same building, unchanged          |                6004 |                                    38 |                                       29 |          6071 |
+| All                               |                6194 |                                   319 |                                      237 |          6750 |
+
+eave rise (ft) of houses up, by record class:
+
+| record                            |   count |   25% |   50% |   75% |
+|:----------------------------------|--------:|------:|------:|------:|
+| rebuilt (2025 year built >= 2018) |     170 |  11.7 |  17.4 |  20.5 |
+| record missing                    |      24 |  11.7 |  15.5 |  19.2 |
+| same building, foundation changed |      13 |   5.5 |   6   |   7.3 |
+| same building, stories changed    |       1 |   9.8 |   9.8 |   9.8 |
+| same building, unchanged          |      29 |   5.1 |   5.5 |   7.5 |
+
+rebuilt: 452; stories 2018 -> 2025: {(1.0, 1.0): 43, (1.0, 2.0): 383, (2.0, 1.0): 1, (2.0, 2.0): 25}
+rebuilt but not up: median change (ft) {'d_ridge': -3.6, 'd_roof': 14.1, 'd_eave': 11.0}
+
+scored houses, record foundation slab (2018) -> piers (2025):
+
+|              |   n |   2018 estimate split, median ft |   key door height, median ft |   key raised (> 3 ft) |
+|:-------------|----:|---------------------------------:|-----------------------------:|----------------------:|
+| lidar not up |  14 |                              1.1 |                          1.2 |                     1 |
+| lidar up     |  10 |                              0.7 |                          1   |                     0 |
+
+scorer: lidar change vs answer key, by key capture time:
+
+| key_time                        |   ('not up', 'key not raised') |   ('not up', 'key raised') |   ('up', 'key not raised') |   ('up', 'key raised') |
+|:--------------------------------|-------------------------------:|---------------------------:|---------------------------:|-----------------------:|
+| Harris County, 2019-11..2020-06 |                            959 |                        379 |                         25 |                     19 |
+| Houston, 2018-02..06            |                           1685 |                        196 |                         54 |                      1 |
+| Houston, after 2018-06          |                             10 |                          3 |                          0 |                      1 |
+
+scorer: benchmark error (5-fold by 1 km block, screened key):
+
+|                 |    n |   MAE E |   raised n |   raised MAE E |   raised MAE F |
+|:----------------|-----:|--------:|-----------:|---------------:|---------------:|
+| all             | 3329 |    0.46 |        599 |           1.11 |           1.94 |
+| not up          | 3229 |    0.45 |        578 |           1.05 |           1.9  |
+| up 2018 -> 2024 |  100 |    0.88 |         21 |           2.94 |           2.94 |
+
+scorer: up and key raised (21 houses): median abs error E 2.93, E + eave rise 13.55 (signed 13.55) ft
+
+# C: houses (all answer-key points, front door) with both flights: 3253
+
+| record                            |   ('not up', 'not') |   ('not up', 'roof & eave up > 3 ft') |   ('up > 3 ft', 'roof & eave up > 3 ft') |   ('All', '') |
+|:----------------------------------|--------------------:|--------------------------------------:|-----------------------------------------:|--------------:|
+| rebuilt (2025 year built >= 2018) |                   4 |                                     3 |                                        0 |             7 |
+| record missing                    |                  19 |                                     0 |                                        2 |            21 |
+| same building, foundation changed |                  59 |                                     3 |                                       15 |            77 |
+| same building, stories changed    |                  28 |                                     0 |                                        1 |            29 |
+| same building, unchanged          |                3067 |                                    32 |                                       20 |          3119 |
+| All                               |                3177 |                                    38 |                                       38 |          3253 |
+
+eave rise (ft) of houses up, by record class:
+
+| record                            |   count |   25% |   50% |   75% |
+|:----------------------------------|--------:|------:|------:|------:|
+| record missing                    |       2 |   9   |  10.3 |  11.7 |
+| same building, foundation changed |      15 |   9.6 |  10.5 |  11   |
+| same building, stories changed    |       1 |   6.5 |   6.5 |   6.5 |
+| same building, unchanged          |      20 |   7.4 |   9.2 |  11.1 |
+
+rebuilt: 7; stories 2018 -> 2025: {(1.0, 1.0): 5, (2.0, 1.0): 2}
+rebuilt but not up: median change (ft) {'d_ridge': -4.6, 'd_roof': 3.4, 'd_eave': 3.3}
+
+scored houses, record foundation slab (2018) -> piers (2025):
+
+|              |   n |   2018 estimate split, median ft |   key door height, median ft |   key raised (> 3 ft) |
+|:-------------|----:|---------------------------------:|-----------------------------:|----------------------:|
+| lidar not up |  17 |                              5.9 |                          8.3 |                    11 |
+| lidar up     |  15 |                              1.9 |                          2.9 |                     7 |
+
+scorer: lidar change vs answer key, by key capture time:
+
+| key_time                        |   ('not up', 'key not raised') |   ('not up', 'key raised') |   ('up', 'key not raised') |   ('up', 'key raised') |
+|:--------------------------------|-------------------------------:|---------------------------:|---------------------------:|-----------------------:|
+| Harris County, 2019-11..2020-06 |                           1078 |                        144 |                         23 |                     12 |
+| Houston, 2018-02..06            |                           1226 |                         42 |                          2 |                      0 |
+| Houston, after 2018-06          |                             12 |                          0 |                          0 |                      0 |
+
+scorer: benchmark error (5-fold by 1 km block, screened key):
+
+|                 |    n |   MAE E |   raised n |   raised MAE E |   raised MAE F |
+|:----------------|-----:|--------:|-----------:|---------------:|---------------:|
+| all             | 2520 |    0.55 |        193 |           3.27 |           3.51 |
+| not up          | 2484 |    0.53 |        182 |           3.15 |           3.37 |
+| up 2018 -> 2024 |   36 |    1.81 |         11 |           5.28 |           5.82 |
+
+scorer: up and key raised (11 houses): median abs error E 2.84, E + eave rise 1.96 (signed 1.96) ft

@@ -143,3 +143,58 @@ Slightly better on one-story houses, worse on two-story ones, and it finds a mai
 in C). The "planes reaching the ridge" rule does not isolate the second-story eave (typical two-story value 16.2 ft
 vs 19.7 ft for the histogram main eave). The split estimate stays; a better plane rule (plane adjacency, wall
 detection) would be needed to improve two-story houses.
+
+## 2018 vs 2024 lidar: what changed, and what it does to the answer key (2026-10-06)
+
+Scripts `lpc_change.py A` / `lpc_change.py C` (per house: ground = 10th pct of ground returns in a 0.5-2.5 m ring;
+ridge / roof / eave of non-ground returns over the 2017 footprint, each as height above that flight's own ground, so
+GEOID12B vs GEOID18 and subsidence cancel) and `eval_change.py A C` (output `eval_change_output.txt`). Flights:
+TX_CoastalRegion_2018_A18 (2018-01..06) and TX_Houston_B24 (2024-02..2025-01; no building class, so both flights
+use "non-ground > 2 m above ground"). Both flights read NAD83(2011) / UTM 15N; median ground shift 0.000 m (A),
+-0.010 m (C). Records: HCAD 2018 vs the 2025 roll (`hcad_buildings.py 2025`). Answer-key capture dates: the HCFCD
+`RecordedAt` field (City of Houston points, Feb-Jun 2018 for nearly all); Harris County points carry no date
+(2019-11..2020-06 per the layer description). Key and dates used by the scorer only.
+
+**What changed** ("up" = ridge, roof and eave all rose > 3 ft; houses with both flights):
+
+| | A Meyerland | C Clear Lake |
+|---|---|---|
+| houses | 6,750 | 3,253 |
+| up > 3 ft | 237 | 38 |
+| rebuilt since 2018 (2025 record: year built >= 2018) | 452 (383 of them 1 -> 2 stories) | 7 |
+| rebuilt and up | 170 (eave rise median 17.4 ft) | 0 |
+| same building, up (lift in place) | 43 (eave rise median 5.5-6 ft) | 36 (median 9.2-10.5 ft) |
+| of which the record changed foundation | 13 | 15 (all slab -> piers 8 ft+) |
+
+Meyerland's change is teardowns: one-story slab houses replaced by elevated two-story houses (eave +17 ft = a story
+plus the new floor height). Clear Lake's is lifts in place of about 10 ft. The rule misses many rebuilds because the
+"ridge" (99th pct of non-ground returns) catches overhanging trees that construction removed: 282 rebuilds in A are
+not "up", with roof +14.1 ft and eave +11.0 ft median but ridge -3.6 ft. A ridge-free rule (roof and eave > 3 ft)
+catches 396 of 452 rebuilds in A; it also flags 67 houses in A and 52 in C whose records did not change (lifts the
+appraiser missed, or trees: not resolved here).
+
+**Records lag, lidar dates the lift.** In C, 17 scored houses changed from slab (2018 record) to piers (2025) with no
+lidar rise: the 2018 point cloud already shows them raised (split estimate median 5.9 ft; key 8.3 ft, 11 of 17
+raised). The appraiser recorded a lift that happened before the 2018 flight.
+
+**The answer key is stale for changed houses.** Most A keys and the C Houston keys were captured in Feb 2018, the
+same months as the 2018 flight; Harris County keys in 2019-20. Of houses up between the flights, the key shows them
+raised for 1 of 55 (A, 2018 key) and 19 of 44 (A, 2019-20 key), 0 of 2 and 12 of 35 (C): where the key predates the
+change it describes the old house. Benchmark method E error (5-fold by 1 km block, screened):
+
+| | A: n / MAE / raised MAE | C: n / MAE / raised MAE |
+|---|---|---|
+| houses not up | 3,229 / 0.45 / 1.05 ft | 2,484 / 0.53 / 3.15 ft |
+| houses up 2018 -> 2024 | 100 / 0.88 / 2.94 ft | 36 / 1.81 / 5.28 ft |
+
+Changed houses are 3% (A) and 1.4% (C) of scored houses and carry two to three and a half times the error, but removing them moves the
+area MAE by only 0.01-0.02 ft: change since 2018 is not the main error source. Adding the eave rise to the 2018
+estimate does not give the new floor height: on changed houses whose key shows them raised it overshoots by a median
+1.96 ft in C (11 lifts; E alone 2.84 ft off) and 13.55 ft in A (21 houses, mostly rebuilds whose eave rise includes a
+new story). The rise flags the change; the new height must be measured from the new flight.
+
+**Product use.** (1) Build heights from the NEWEST flight, and run the 2018 -> 2024 comparison to flag every house
+that changed; a changed house needs a fresh estimate and a wider band. (2) The flag is evidence, not a prediction:
+a whole-house rise with an unchanged footprint record is a lift; a rise with a new year built is a rebuild. (3) As
+the user expected, it cannot see houses built raised or lifted before 2018 (C: 182 of 193 raised scored houses
+show no change); those still rest on the single-flight point cloud and records.
