@@ -49,7 +49,7 @@ def refit(tr, loc, f):
 def sample(rng, g, k, how):
     if how == "random":
         return rng.choice(len(g), k, replace=False)
-    nf = k if how == "flagged" else int(round(0.4 * k))
+    nf = k if how == "flagged" else round(0.4 * k)
     nf = min(nf, int(g.sum()) // 2)
     nr = k - nf
     a = rng.choice(np.where(g)[0], nf, replace=False)
@@ -106,7 +106,7 @@ def main():
         for k in (20, 50):
             pool = []  # residual, flag, distance bin from pseudo-experiments without the test area
             for o in others:
-                q = [x for x in others if x != o][0]
+                q = next(x for x in others if x != o)
                 for _ in range(5):
                     p, g, db, ev = experiment(a[q], a[o], k, rng)
                     pool.append(pd.DataFrame({"r": (a[o].dh.values - p)[ev], "g": g[ev], "d": db[ev]}))
