@@ -280,7 +280,7 @@ C: 862 of 2,520 (1,513 none). The Clear Lake gaps are tracts with policies but n
 | E + NFIP + 50 local houses | **0.543 / 1.27 / 0.66 / 84.5%** | **0.324 / 95.9%** | 0.611 / 3.28 / 0.74 / 83.5% |
 | within area, all labels: E / E + NFIP | 0.463 / 0.444 | 0.289 / 0.267 | 0.551 / 0.545 |
 
-Where coverage is dense (Meyerland) the statistics recover about 40% of what 50 measured houses give (MAE 0.70 ->
+Where coverage is dense (Meyerland) the statistics recover about half of what 50 measured houses give (MAE 0.70 ->
 0.63 vs 0.56) and add a little on top of them. In block groups with >= 30 records the gain is the same (A 0.73 ->
 0.65), so it is not a house's own certificate leaking in. Where coverage is thin (C) they do not move MAE, only raised
 recall. The block-group statistics describe insured certified houses, not the neighbourhood: correlation of block-
