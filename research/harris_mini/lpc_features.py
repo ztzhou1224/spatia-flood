@@ -16,7 +16,8 @@ Per house:
   ring_low_share        returns 0-3 m outside the footprint, classed building or unclassified (not vegetation), that
                         sit 2-10 ft above ground (stairs, decks, porches), as a share of all ring returns
   ring_low_p90          90th pct height of those low ring returns
-Output: data/harris_mini/<AREA>/lpc_features.parquet.  Usage: python lpc_features.py AREA
+Output: data/harris_mini/<AREA>/lpc_features.parquet, and roof_points.parquet (building returns inside each
+footprint: x, y in EPSG:6344 m, hz ft above the lowest adjacent grade) for roof_planes.py.  Usage: python lpc_features.py AREA
 """
 import glob
 import sys
@@ -78,7 +79,7 @@ def main(area):
                 buf[i].append(np.c_[x[idx], y[idx], z[idx], cls[idx]])
         print(Path(path).name, "houses touched", len(hit), flush=True)
         del las, x, y, z, cls, tree
-    rows = {}
+    rows, roof_pts = {}, []
     for i, parts in buf.items():
         if not parts:
             continue
@@ -92,6 +93,8 @@ def main(area):
         ring = shapely.contains_xy(ring3[i], px, py)
         low = ring & np.isin(pc, (1, 6)) & (hz >= 2) & (hz <= 10)  # structures, not vegetation
 
+        roof_pts.append(pd.DataFrame({"oid": h.oid[i], "x": px[ng], "y": py[ng], "hz": hz[ng].astype("float32")}))
+
         def q(v, p):
             return float(np.percentile(v, p)) if v.size >= 5 else np.nan
         rows[h.oid[i]] = dict(
@@ -103,6 +106,7 @@ def main(area):
             ground_in_share=float((core & (pc == 2)).sum() / max(core.sum(), 1)),
             ring_low_share=float(low.sum() / max(ring.sum(), 1)), ring_low_p90=q(hz[low], 90))
     out = pd.DataFrame.from_dict(rows, orient="index").rename_axis("oid").reset_index()
+    pd.concat(roof_pts, ignore_index=True).to_parquet(D / area / "roof_points.parquet", index=False)  # for roof_planes.py
     out.to_parquet(D / area / "lpc_features.parquet", index=False)
     print(f"{area}: {len(out)} of {len(h)} houses; roof seen (>= 5 returns) {out.roof_p50.notna().mean():.0%}")
     print(out.describe().T[["count", "50%", "mean"]].round(2).to_markdown())
