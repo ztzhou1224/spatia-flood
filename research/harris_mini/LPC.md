@@ -198,3 +198,63 @@ that changed; a changed house needs a fresh estimate and a wider band. (2) The f
 a whole-house rise with an unchanged footprint record is a lift; a rise with a new year built is a rebuild. (3) As
 the user expected, it cannot see houses built raised or lifted before 2018 (C: 182 of 193 raised scored houses
 show no change); those still rest on the single-flight point cloud and records.
+
+## Next round (2026-10-06): newer flight, tree-robust change, finer eave reference, local sample
+
+**Building returns without a building class.** The 2024 flight classifies only ground (2), unclassified (1),
+noise (7, 18). In 2018, 95% of class-6 (building) returns are single returns vs 8-12% of medium / tall vegetation
+(one C tile). `lpc_features.py AREA FLIGHT single` uses "non-ground single returns >= 5 ft above grade" as the
+building. On 2018 it reproduces the class-6 features (median |difference| roof_p50 0.13-0.23 ft, eave_p50 0.08-0.23,
+eave_main 0.03; `eval_flights_output.txt`) and benchmark method E (A 0.467 vs 0.463 ft, C 0.554 vs 0.551).
+
+**The newer flight is not more accurate** (`eval_flights.py A C`, E = 5-fold by 1 km block, screened key, one
+screen for all feature sets; "unchanged" = roof_p50 and eave_p50 within 1 ft between flights, label-free):
+
+| houses unchanged between flights | A: 2018 class6 / 2024 single | C: 2018 class6 / 2024 single |
+|---|---|---|
+| E MAE | 0.409 / 0.412 ft (2,778) | 0.494 / 0.513 ft (2,219) |
+| E raised MAE | 0.90 / 0.94 ft | 3.21 / 3.72 ft |
+| E BFE side | 87.5% / 87.8% | 86.2% / 86.2% |
+| same, key captured 2019-20 (nearer 2024) | 0.437 / 0.440 ft (1,131) | 0.658 / 0.696 ft (1,030) |
+
+QL1 density (2024) does not improve heights of houses that did not change; point density is not the limit. Use
+the newest flight to refresh the houses that changed, not as a better measurement of the others.
+
+**Change from single-return roofs** (`eval_flights_output.txt`; "up" = roof_p50 and eave_p50 both up > 3 ft; no
+ridge, so trees cleared for construction no longer hide a rebuild):
+
+| | A: single-return roofs / lpc_change rule | C: single-return roofs / lpc_change rule |
+|---|---|---|
+| rebuilt since 2018 caught | **421 / 170** of 461 | 3 / 0 of 7 |
+| same building, foundation changed, up | 39 / 13 | 20 / 15 |
+| same building, record unchanged, up | 86 / 29 of 6,072 | 32 / 20 of 3,123 |
+
+The single-return rule catches 91% of Meyerland rebuilds (37% before). It also flags more houses whose records did
+not change (1.4% in A, 1.0% in C); whether those are lifts the appraiser missed or noise is not resolved here (an
+image check of a sample would settle it).
+
+**A finer reference for eave-minus-stories does not help raised houses** (`eval_eave.py`, output
+`eval_eave_output.txt`). Typical slab-house eave per story count over the whole area (as now) vs per year-built band
+vs the 15 nearest reference houses: the nearest-neighbour reference tightens the reference spread (IQR 1.4-1.7 ->
+0.95-1.2 ft) and the all-house MAE slightly, but raised houses get worse (C median abs 2.02 -> 2.89 ft, biased
+-1.6 ft): in raised neighbourhoods the "slab" reference houses are raised too and absorb the lift. Meyerland's raised
+houses are mostly two-story crawl-space houses (326 of 583 screened), overestimated by about 1 ft (newer, taller
+walls than the reference), and one-story "slab" houses (62) underestimated by 2.6 ft: wall-height variation
+(+-1.5 ft) is as large as a 3-5 ft lift, and no label-free reference removes it.
+
+**What does: about 50 measured local houses** (`eval_local.py`, output `eval_local_output.txt`). Model from the
+other two areas, refit with a local sample of 30 random unflagged + 20 flagged houses (label-free choice, as for the
+bands) weighted 10x; scored on the area's other houses, mean of 20 draws:
+
+| | A: MAE / raised MAE / recall / BFE side | B: MAE / BFE side | C: MAE / raised MAE / recall / BFE side |
+|---|---|---|---|
+| other areas only (benchmark E) | 0.70 / 2.12 / 0.28 / 78.3% | 0.44 / 87.4% | 0.72 / 4.95 / 0.55 / 82.0% |
+| + physical override (benchmark F) | 0.81 / 2.44 / 0.55 / 82.3% | 0.46 / 87.4% | 0.68 / 3.58 / 0.68 / 84.0% |
+| + 50 local houses (W 10) | **0.56 / 1.42 / 0.63 / 84.2%** | **0.37 / 92.4%** | **0.60 / 3.44 / 0.70 / 84.4%** |
+| + 200 local houses (W 10) | 0.50 / 1.29 / 0.65 / 85.6% | 0.31 / 95.5% | 0.51 / 2.99 / 0.65 / 87.5% |
+| within area, all labels (benchmark E) | 0.46 / 1.11 / 0.76 / 86.9% | 0.29 / 94.6% | 0.55 / 3.27 / 0.69 / 86.1% |
+
+Fifty local houses close most of the gap to a model trained on the whole area, in all three areas; 200 match it.
+Equal weight (W 1) helps much less; a model on the local sample alone does almost as well as W 10 on raised houses.
+With local houses the physical override no longer improves MAE (it still adds 1-2 points of BFE side in C). The
+same 50 houses calibrate the bands (BANDS.md): one survey sample per new area serves both.
