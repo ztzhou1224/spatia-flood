@@ -306,6 +306,7 @@ areas, the west half of the area measured, the east half scored by distance from
 Measured houses next door help where the next stretch holds the same kind of houses (Meyerland: everywhere in the
 area). They do not help, or hurt, where it does not: Clear Lake's waterfront east, where most raised houses are,
 gains nothing from about 1,260 measured houses in the west half, while 50 houses spread over the whole area (30
-random + 20 flagged, eval_local.py) cut raised MAE there from 4.95 to 3.44 ft. Similarity of houses, not distance,
+random + 20 flagged, eval_local.py) cut raised MAE over the whole area from 4.95 to 3.44 ft (different scored
+sets, so a rough comparison). Similarity of houses, not distance,
 carries the labels; a sample spread over the kinds of houses beats a contiguous measured patch. Stepping onward with
 modelled values in the overlap adds no information (the model would be checked against itself).
