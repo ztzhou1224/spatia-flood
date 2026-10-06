@@ -1,0 +1,28 @@
+
+## C: deck / landing height vs target (screened)
+
+|                 |    n |   deck found |   median signed |   median abs |   within 1 ft |
+|:----------------|-----:|-------------:|----------------:|-------------:|--------------:|
+| raised (> 3 ft) |  193 |        0.181 |           0.209 |        2.822 |         0.286 |
+| not raised      | 2327 |        0.159 |           8.051 |        8.051 |         0.005 |
+
+## C: method E within the area, with and without the deck features
+
+|          |   MAE |   raised MAE |   raised recall |
+|:---------|------:|-------------:|----------------:|
+| E        | 0.551 |        3.271 |           0.694 |
+| E + deck | 0.554 |        3.297 |           0.699 |
+
+## P: deck / landing height vs target (screened)
+
+|                 |   n |   deck found |   median signed |   median abs |   within 1 ft |
+|:----------------|----:|-------------:|----------------:|-------------:|--------------:|
+| raised (> 3 ft) | 168 |        0.524 |          -0.045 |        2.566 |         0.273 |
+| not raised      | 702 |        0.625 |           7.36  |        7.36  |         0.032 |
+
+## P: method E within the area, with and without the deck features
+
+|          |   MAE |   raised MAE |   raised recall |
+|:---------|------:|-------------:|----------------:|
+| E        | 0.812 |        2.495 |           0.685 |
+| E + deck | 0.82  |        2.521 |           0.679 |

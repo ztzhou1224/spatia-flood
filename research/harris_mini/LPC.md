@@ -431,3 +431,13 @@ here: the point cloud does the work the Harris records did. (3) Elevated / enclo
 have made confident wrong calls; a new state needs local calibration labels before any band is shown. Limits: one
 Florida area (870 houses, 140 elevated); target is the certificate's living floor, not a front door; 50-certificate
 draws are scored on 821 houses on average.
+
+## Decks and landings as direct floor evidence: negative (2026-10-06)
+
+`lpc_ring.py` (flat 1 m cells of single-return building / unclassified points 0.3-4 m outside the footprint, lowest
+cluster 2.5-16 ft above grade) and `eval_ring.py C P` (output `eval_ring_output.txt`). A surface is found for 18% (C)
+/ 52% (P) of raised houses, but also for 16% / 62% of the others, where it sits about 8 ft (C 8.05, P 7.36 ft median)
+above the floor: flat carport, porch and lanai roofs, not decks. On raised houses its median absolute difference from
+the floor is 2.8 / 2.6 ft. As model features (method E within the area) it changes nothing (C 0.551 -> 0.554 ft, P
+0.812 -> 0.820). The aerial point cloud does not isolate a floor-level surface; elevated houses stay the weak part.
+Narrower bands did work: BANDS.md, "normalised conformal".
