@@ -287,3 +287,25 @@ recall. The block-group statistics describe insured certified houses, not the ne
 group share elevated (NFIP) with share of doors > 3 ft (key) is 0.31 (A, 24 block groups) and 0.35 (C, 6).
 Reading: a free partial substitute in dense flood-zone neighbourhoods, a useful extra feature everywhere it exists,
 not a replacement for a local sample. The licence question in NFIP.md ("solely for statistical research") stands.
+
+## How far does a measured house reach? (the overlapping-circles idea, 2026-10-06)
+
+`eval_reach.py` (output `eval_reach_output.txt`). (1) Out-of-fold residuals of method E are correlated between
+houses only nearby: 0.18 / 0.37 / 0.22 (A / B / C) within 100 m, 0.06 / 0.17 / 0.02 at 250-500 m, about 0 beyond
+1 km. Adding the mean residual of measured neighbours (other 1 km blocks) does not lower MAE within an area
+(A 0.463 -> 0.47-0.52, C 0.551 -> 0.59-0.67; B 0.289 -> 0.27-0.29). (2) The circles case: model from the other two
+areas, the west half of the area measured, the east half scored by distance from the measured half:
+
+| east-half houses | A: pooled / refit with west half | B: pooled / refit | C: pooled / refit |
+|---|---|---|---|
+| 0-500 m away, MAE | 1.15 / 0.74 | 0.36 / 0.33 | 0.49 / 0.50 |
+| 1-2 km away, MAE | 0.69 / 0.52 | 0.29 / 0.35 | 0.84 / 0.83 |
+| > 2 km away, MAE | 0.39 / 0.34 (55 houses) | 0.27 / 0.45 | 1.75 / 1.84 |
+| > 2 km away, raised MAE | 1.55 / 0.63 (2 raised) | 1.24 / 1.23 | 6.15 / 6.60 (110 raised) |
+
+Measured houses next door help where the next stretch holds the same kind of houses (Meyerland: everywhere in the
+area). They do not help, or hurt, where it does not: Clear Lake's waterfront east, where most raised houses are,
+gains nothing from about 1,260 measured houses in the west half, while 50 houses spread over the whole area (30
+random + 20 flagged, eval_local.py) cut raised MAE there from 4.95 to 3.44 ft. Similarity of houses, not distance,
+carries the labels; a sample spread over the kinds of houses beats a contiguous measured patch. Stepping onward with
+modelled values in the overlap adds no information (the model would be checked against itself).

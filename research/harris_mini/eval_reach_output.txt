@@ -1,0 +1,90 @@
+
+## A: model from the other areas, west half measured, east half scored
+
+|                                    |   houses |   raised |   MAE pooled |   MAE refit with west half |   MAE pooled + neighbour residual |   raised MAE pooled |   raised MAE refit |   raised MAE + neighbour residual |
+|:-----------------------------------|---------:|---------:|-------------:|---------------------------:|----------------------------------:|--------------------:|-------------------:|----------------------------------:|
+| 0-500 m from the measured half     |      181 |       53 |        1.148 |                      0.736 |                             1.106 |               2.813 |              1.674 |                             2.444 |
+| 500-1000 m from the measured half  |      290 |       85 |        0.936 |                      0.624 |                             0.939 |               2.195 |              1.357 |                             1.705 |
+| 1000-2000 m from the measured half |     1139 |      172 |        0.69  |                      0.519 |                             0.69  |               2.173 |              1.348 |                             2.173 |
+| 2000-max m from the measured half  |       55 |        2 |        0.387 |                      0.339 |                             0.387 |               1.552 |              0.63  |                             1.552 |
+
+## B: model from the other areas, west half measured, east half scored
+
+|                                    |   houses |   raised |   MAE pooled |   MAE refit with west half |   MAE pooled + neighbour residual |   raised MAE pooled |   raised MAE refit |   raised MAE + neighbour residual |
+|:-----------------------------------|---------:|---------:|-------------:|---------------------------:|----------------------------------:|--------------------:|-------------------:|----------------------------------:|
+| 0-500 m from the measured half     |      330 |        0 |        0.358 |                      0.334 |                             0.24  |             nan     |            nan     |                           nan     |
+| 500-1000 m from the measured half  |      306 |        0 |        0.319 |                      0.359 |                             0.385 |             nan     |            nan     |                           nan     |
+| 1000-2000 m from the measured half |      855 |       13 |        0.288 |                      0.35  |                             0.288 |               0.732 |              0.619 |                             0.732 |
+| 2000-max m from the measured half  |     1069 |       17 |        0.273 |                      0.45  |                             0.273 |               1.241 |              1.233 |                             1.241 |
+
+## C: model from the other areas, west half measured, east half scored
+
+|                                    |   houses |   raised |   MAE pooled |   MAE refit with west half |   MAE pooled + neighbour residual |   raised MAE pooled |   raised MAE refit |   raised MAE + neighbour residual |
+|:-----------------------------------|---------:|---------:|-------------:|---------------------------:|----------------------------------:|--------------------:|-------------------:|----------------------------------:|
+| 0-500 m from the measured half     |      266 |       30 |        0.485 |                      0.496 |                             0.437 |               1.237 |              1.69  |                             1.364 |
+| 500-1000 m from the measured half  |      117 |        3 |        0.417 |                      0.39  |                             0.285 |               0.638 |              1.037 |                             1.014 |
+| 1000-2000 m from the measured half |      428 |       31 |        0.842 |                      0.834 |                             0.842 |               6.141 |              6.56  |                             6.141 |
+| 2000-max m from the measured half  |      449 |      110 |        1.749 |                      1.835 |                             1.749 |               6.148 |              6.603 |                             6.148 |
+
+## A: residual of method E between two houses, by distance (screened key, 3329 houses)
+
+|             |            pairs |   corr of residuals |   corr of raised (door > 3 ft) |
+|:------------|-----------------:|--------------------:|-------------------------------:|
+| 0-100 m     |  33393           |               0.176 |                          0.155 |
+| 100-250 m   | 113020           |               0.103 |                          0.098 |
+| 250-500 m   | 248480           |               0.057 |                          0.078 |
+| 500-1000 m  | 578939           |               0.022 |                          0.043 |
+| 1000-2000 m |      1.53774e+06 |              -0.017 |                          0.011 |
+| 2000-4000 m |      2.90114e+06 |              -0.008 |                         -0.034 |
+
+## A: neighbour correction
+
+|                                                                   |   MAE |   raised MAE |   corrected share |
+|:------------------------------------------------------------------|------:|-------------:|------------------:|
+| E alone                                                           | 0.463 |        1.112 |             0     |
+| E + mean residual of measured houses within 250 m (other blocks)  | 0.513 |        1.043 |             0.687 |
+| E + mean residual of measured houses within 500 m (other blocks)  | 0.517 |        1.046 |             0.974 |
+| E + mean residual of measured houses within 1000 m (other blocks) | 0.473 |        1.047 |             1     |
+| E + mean residual of measured houses within 2000 m (other blocks) | 0.487 |        1.085 |             1     |
+
+## B: residual of method E between two houses, by distance (screened key, 5119 houses)
+
+|             |            pairs |   corr of residuals |   corr of raised (door > 3 ft) |
+|:------------|-----------------:|--------------------:|-------------------------------:|
+| 0-100 m     |  65522           |               0.373 |                          0.082 |
+| 100-250 m   | 248765           |               0.283 |                          0.014 |
+| 250-500 m   | 645296           |               0.172 |                          0.001 |
+| 500-1000 m  |      1.87166e+06 |               0.096 |                         -0     |
+| 1000-2000 m |      3.56444e+06 |              -0.015 |                          0.001 |
+| 2000-4000 m |      4.85603e+06 |              -0.042 |                         -0.002 |
+
+## B: neighbour correction
+
+|                                                                   |   MAE |   raised MAE |   corrected share |
+|:------------------------------------------------------------------|------:|-------------:|------------------:|
+| E alone                                                           | 0.289 |        1.343 |             0     |
+| E + mean residual of measured houses within 250 m (other blocks)  | 0.285 |        1.335 |             0.649 |
+| E + mean residual of measured houses within 500 m (other blocks)  | 0.277 |        1.385 |             0.983 |
+| E + mean residual of measured houses within 1000 m (other blocks) | 0.272 |        1.344 |             0.998 |
+| E + mean residual of measured houses within 2000 m (other blocks) | 0.287 |        1.377 |             1     |
+
+## C: residual of method E between two houses, by distance (screened key, 2520 houses)
+
+|             |            pairs |   corr of residuals |   corr of raised (door > 3 ft) |
+|:------------|-----------------:|--------------------:|-------------------------------:|
+| 0-100 m     |  22173           |               0.217 |                          0.444 |
+| 100-250 m   |  78383           |               0.06  |                          0.216 |
+| 250-500 m   | 173046           |               0.023 |                          0.093 |
+| 500-1000 m  | 308109           |              -0.005 |                          0.024 |
+| 1000-2000 m | 656743           |               0.006 |                          0.047 |
+| 2000-4000 m |      1.54059e+06 |              -0.005 |                         -0.01  |
+
+## C: neighbour correction
+
+|                                                                   |   MAE |   raised MAE |   corrected share |
+|:------------------------------------------------------------------|------:|-------------:|------------------:|
+| E alone                                                           | 0.551 |        3.271 |             0     |
+| E + mean residual of measured houses within 250 m (other blocks)  | 0.655 |        3.129 |             0.702 |
+| E + mean residual of measured houses within 500 m (other blocks)  | 0.672 |        3.093 |             0.986 |
+| E + mean residual of measured houses within 1000 m (other blocks) | 0.598 |        3.098 |             1     |
+| E + mean residual of measured houses within 2000 m (other blocks) | 0.585 |        3.138 |             1     |
