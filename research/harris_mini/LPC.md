@@ -127,3 +127,19 @@ for every house it stays noisy (MAE 1.7-1.9 ft: it is for houses already flagged
 **The trained model does not transfer.** C -> B: MAE 0.502 (DEM + NSI) vs 0.540 ft with the point cloud (precision
 of the raised flag 0.15 -> 0.34, recall 0.45 -> 0.37). B -> C: 0.795 vs 0.796 ft, raised MAE 5.45 ft either way: B has
 49 raised houses, too few to learn them. A model needs local labels; the physical eave measurement does not.
+
+## Roof planes instead of a histogram (2026-10-06): not better
+
+Script `roof_planes.py C B` (output `roof_planes_output.txt`): sequential RANSAC roof planes on each house's building
+returns; main eave = lowest edge of the planes reaching within 1.5 ft of the ridge. Raised houses passing the screen,
+median absolute error (n):
+
+| | C one-story | C two-story | B one-story | B two-story |
+|---|---|---|---|---|
+| split (p50 / main eave), as above | 1.14 (77) | **2.59** (111) | 1.42 (22) | **2.40** (26) |
+| roof-plane eave | **0.97** (74) | 4.14 (95) | **0.78** (13) | 3.11 (17) |
+
+Slightly better on one-story houses, worse on two-story ones, and it finds a main roof for only 66% of B houses (96%
+in C). The "planes reaching the ridge" rule does not isolate the second-story eave (typical two-story value 16.2 ft
+vs 19.7 ft for the histogram main eave). The split estimate stays; a better plane rule (plane adjacency, wall
+detection) would be needed to improve two-story houses.
