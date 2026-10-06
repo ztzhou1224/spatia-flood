@@ -30,6 +30,7 @@ from eval_transfer import load  # noqa: E402
 COLS = SETS["E + eave estimate"]
 SIZES = ((30, 20), (60, 40), (120, 80))
 DRAWS = 20
+P1 = {**el.P, "n_jobs": 1}  # one thread: 0.6 s per fit vs 71 s with the default on a loaded 4-core machine
 
 
 def override(f, p):
@@ -52,7 +53,7 @@ def main():
     rng = np.random.default_rng(20261006)
     for te, f in a.items():
         tr = pd.concat([a[o] for o in a if o != te], ignore_index=True)
-        p0 = lgb.LGBMRegressor(**el.P).fit(tr[COLS], tr.dh).predict(f[COLS])
+        p0 = lgb.LGBMRegressor(**P1).fit(tr[COLS], tr.dh).predict(f[COLS])
         g = flag_raised(f, p0)
         ok = f.key_ok.values
         res = {}
@@ -72,8 +73,8 @@ def main():
                     x = pd.concat([tr[COLS], loc[COLS]], ignore_index=True)
                     y = np.r_[tr.dh.values, loc.dh.values]
                     sw = np.r_[np.ones(len(tr)), np.full(len(loc), float(w))]
-                    preds[f"pooled + local (W {w})"] = lgb.LGBMRegressor(**el.P).fit(x, y, sample_weight=sw).predict(f[COLS])
-                preds["local only"] = lgb.LGBMRegressor(**{**el.P, "min_child_samples": 5}).fit(loc[COLS], loc.dh).predict(f[COLS])
+                    preds[f"pooled + local (W {w})"] = lgb.LGBMRegressor(**P1).fit(x, y, sample_weight=sw).predict(f[COLS])
+                preds["local only"] = lgb.LGBMRegressor(**{**P1, "min_child_samples": 5}).fit(loc[COLS], loc.dh).predict(f[COLS])
                 for nm in list(preds):
                     preds[f"{nm} + override"] = override(f, preds[nm])
                 for nm, p in preds.items():
