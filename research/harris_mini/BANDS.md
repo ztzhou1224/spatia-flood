@@ -79,7 +79,7 @@ quantile per flag group. Mean of 20 draws, held-out screened houses:
 | P Florida | per-group | 0.94 / 0.93 / 0.94 | 6.4 ft / inf | 45% | 95% |
 | P Florida | **normalised** | 0.89 / 0.90 / 0.88 | **2.3** / 9.4 ft | **68%** | 96% |
 
-The normalised band cuts the width for ordinary houses by 60-70% and raises the share of flood-zone houses with a
+The normalised band cuts the width for ordinary houses by 58-66% and raises the share of flood-zone houses with a
 decided BFE side to 38-68%, with 95-100% of those calls right. Coverage is close to nominal but slightly under it in
 three areas (0.886-0.894; the 50 labels are a stratified, not a random, sample of the area), and in Clear Lake the
 flagged group is under-covered (0.79). Rule: normalised bands for unflagged houses; for flagged houses keep the
