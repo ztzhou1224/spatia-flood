@@ -393,3 +393,41 @@ two-story crawl space) has precision / recall A 0.89 / 0.55 (369 houses), B 0.08
 (93 houses); eave_p50 AUC for raised houses A 0.87, B 0.76, C 0.91. Where raised houses are rare (B) the record flag
 is noise; the model part of the flag (estimate > 3 ft) carries the rest. Any sampling design that relies on the flag
 must be checked against the area's own records schema and raised share.
+
+## Out-of-county test: Florida certificates, St. Petersburg (2026-10-06)
+
+`fl_build.py` + `lpc_features.py P` + `fl_eval.py` (output `fl_eval_output.txt`; scripts committed before the first
+run, 11cbd79). Area P: -82.64, 27.78 -> -82.60, 27.84 (Pinellas County). Answer key (scorer only): FDEM public
+elevation certificates, NAVD88, residential, latest per property, matched to an Overture footprint: 902 houses, 870
+pass the screen; 892 in the SFHA. Target = first LIVING floor (bottom floor for diagrams 1A / 1B / 5, next higher
+floor for 2-4 and 6-9) minus the 1 m DEM lowest adjacent grade: close to, not the same as, Harris's front-door floor.
+Inputs as in Harris: 1 m DEM (FL_Peninsular_2018_D18, EPSG:26917), 2018 point cloud of the same project
+(NAD83(2011) Florida West, US survey feet; scaled to metres in `lpc_features.py`; class 6 = building; median eave
+10.5 ft vs Clear Lake 10.4), NSI, and Florida DOR NAL records, which have no stories / foundation / lower-level fields.
+The Harris model is trained on A + B + C and never sees a Florida label unless stated.
+
+| P, screened (870 houses; 168 > 3 ft) | MAE | within 1 ft | raised MAE / recall | BFE side |
+|---|---|---|---|---|
+| NSI default height | 1.73 | 49% | 5.04 / 0.01 | 80.9% |
+| Harris model, national inputs (DEM, NSI) | 1.22 | 69% | 3.89 / 0.20 | 81.9% |
+| Harris model, + point cloud + eave estimate, records missing | **1.00** | 70% | 2.96 / 0.47 | **87.0%** |
+| same, records mapped (NSI stories, NAL living area) | 1.01 | 70% | 2.97 / 0.47 | 87.1% |
+| Florida model, 5-fold by 1 km block (all local labels; best case) | 0.81 | 83% | 2.50 / 0.69 | 89.0% |
+
+By diagram: slab / raised slab (1A, 1B; 728 houses) 0.73 ft MAE, 91.1% BFE side with the Harris model (Florida model
+0.57 ft, 91.5%); elevated or enclosed (5-9; 140 houses) 2.40 ft, 65.2% (Florida model 2.04 ft, 75.4%).
+
++ 50 local certificates (30 unflagged + 20 flagged, W 10, 20 draws, same held-out houses): MAE 0.98 -> 0.88 ft,
+raised recall 0.42 -> 0.57, BFE side unchanged (87.3%); local-only 0.99 ft (raised recall 0.74).
+
+Bands, 90%: borrowed from Harris (cross-area pool) cover only **0.74** in Florida (flagged 0.79, not flagged 0.73)
+while deciding 80% of SFHA houses (93% of those right); from the 50 local certificates (cross-fitted) they cover 0.95
+but are wide (unflagged median 7.5 ft; flagged mostly infinite), deciding 37% (95% right).
+
+Reading: (1) The point-cloud method carries across states without retraining: Harris model 1.00 ft vs NSI 1.73 ft and
+a Florida-trained model 0.81 ft; BFE side 87.0% vs 89.0%. (2) A different assessor schema costs nothing measurable
+here: the point cloud does the work the Harris records did. (3) Elevated / enclosed houses remain the weak part
+(BFE side 65%). (4) Bands do NOT carry across states: Harris-calibrated bands under-cover badly in Florida and would
+have made confident wrong calls; a new state needs local calibration labels before any band is shown. Limits: one
+Florida area (870 houses, 140 elevated); target is the certificate's living floor, not a front door; 50-certificate
+draws are scored on 821 houses on average.
