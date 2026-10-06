@@ -28,6 +28,8 @@ Options (python lpc_features.py AREA FLIGHT RULE; defaults 2018 class6 = the out
                 in 2018, 95% of class-6 returns are single returns vs 8-12% of medium / tall vegetation (one C tile).
                 ring_low then uses all non-ground classes.
   Output names gain _<FLIGHT>_<RULE> unless both are the defaults.
+Units: tiles whose CRS is in US survey feet (Florida area P: NAD83(2011) / Florida West ftUS + NAVD88 US ft) are
+scaled to metres on read, so footprints must be in the metric twin of that CRS (P: EPSG:6442; fl_build.py).
 """
 import glob
 import sys
@@ -83,11 +85,14 @@ def main(area, flight="2018", rule="class6"):
     buf = {i: [] for i in range(len(h))}  # points of each house's search disc, gathered across tile edges
     for path in sorted(glob.glob(str(D / area / f"lpc{flight}" / "*.laz"))):
         las = laspy.read(path)
+        c = las.header.parse_crs()
+        # tiles in US survey feet (e.g. Florida State Plane ftUS): x, y, z to metres, i.e. the metric twin of the CRS
+        sc = USFT if c is not None and c.axis_info and "foot" in c.axis_info[0].unit_name.lower() else 1.0
         cls = np.asarray(las.classification)
         keep = ~np.isin(cls, DROP)
         # single returns carried in the class column as 100 + class (no other code reads it)
         cls = np.where(np.asarray(las.number_of_returns) == 1, cls + 100, cls)[keep]
-        x, y, z = np.asarray(las.x)[keep], np.asarray(las.y)[keep], np.asarray(las.z)[keep]
+        x, y, z = np.asarray(las.x)[keep] * sc, np.asarray(las.y)[keep] * sc, np.asarray(las.z)[keep] * sc
         hit = np.where((cx + rad > x.min()) & (cx - rad < x.max()) & (cy + rad > y.min()) & (cy - rad < y.max()))[0]
         tree = cKDTree(np.c_[x, y])
         for i in hit:

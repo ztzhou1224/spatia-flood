@@ -80,6 +80,12 @@ def main():
         crs = f.header.parse_crs()
     hcrs = crs.sub_crs_list[0] if crs.is_compound else crs
     epsg = hcrs.to_epsg()
+    # lpc_features.py scales US-survey-foot tiles to metres, so footprints go in the metric twin of the tile CRS
+    metric = {6443: 6442}  # NAD83(2011) / Florida West ftUS -> metres (checked: scaled coordinates agree to 0.1 mm)
+    if "foot" in hcrs.axis_info[0].unit_name.lower():
+        if epsg not in metric:
+            raise SystemExit(f"no metric twin known for EPSG:{epsg}")
+        epsg = metric[epsg]
     to_crs = f"EPSG:{epsg}"
     print(f"point-cloud CRS: {crs.name} -> footprints in {to_crs}", flush=True)
     ec = certificates()
