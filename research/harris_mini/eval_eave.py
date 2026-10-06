@@ -88,6 +88,11 @@ def main(tag=""):
                 rows[how][f"raised {st}-story median abs"] = e[rr].abs().median()
         print(f"\n## {area}{' ' + tag if tag else ''}: eave-minus-stories height by reference (screened key)\n")
         print(pd.DataFrame(rows).T.round(2).to_markdown())
+        r = f[f.key_ok & (f.dh > 3)].assign(err=lambda x: x.est_area - x.dh)
+        print(f"\n{area}: raised houses (screened) by HCAD 2018 stories and foundation, area reference:\n")
+        print(r.groupby(["stories", "foundation"]).agg(n=("dh", "size"), key_median=("dh", "median"),
+              est_median=("est_area", "median"), median_abs=("err", lambda e: e.abs().median()),
+              median_signed=("err", "median")).round(2).to_markdown())
 
 
 if __name__ == "__main__":

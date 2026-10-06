@@ -254,7 +254,8 @@ bands) weighted 10x; scored on the area's other houses, mean of 20 draws:
 | + 200 local houses (W 10) | 0.50 / 1.29 / 0.65 / 85.6% | 0.31 / 95.5% | 0.51 / 2.99 / 0.65 / 87.5% |
 | within area, all labels (benchmark E) | 0.46 / 1.11 / 0.76 / 86.9% | 0.29 / 94.6% | 0.55 / 3.27 / 0.69 / 86.1% |
 
-Fifty local houses close most of the gap to a model trained on the whole area, in all three areas; 200 match it.
-Equal weight (W 1) helps much less; a model on the local sample alone does almost as well as W 10 on raised houses.
+Fifty local houses close most of the gap to a model trained on the whole area, in all three areas; 200 come within
+0.04 ft of it (C: better). Equal weight (W 1) helps much less; a model on the local sample alone is better on raised
+houses (A 1.25, C 3.23 ft raised MAE) but worse overall in C (0.75 ft).
 With local houses the physical override no longer improves MAE (it still adds 1-2 points of BFE side in C). The
 same 50 houses calibrate the bands (BANDS.md): one survey sample per new area serves both.
