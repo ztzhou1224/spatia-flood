@@ -23,7 +23,8 @@ DEM = ["year_built", "fp_area_m2", "g_p10", "g_med", "g_hag", "g_inside", "g_far
 REC = ["stories", "upper_base", "lower_any", "lower_base", "lower_garage", "basement", "fnd_crawl", "im_sq_ft", "base_ar"]
 
 
-def load(area):
+def load(area, feats="lpc_features"):
+    """feats: lpc_features file stem (lpc_features.py output; e.g. lpc_features_2024_single)."""
     f = pd.read_parquet(D / "harris_mini" / area / "coverage_features.parquet")
     f = f[f.prec <= 6].copy()
     f["dh"] = f.ffe - f.e2018_lag  # scorer only
@@ -32,7 +33,7 @@ def load(area):
     f["nsi_ft"] = f.nsi_found_type.map(el.FT)
     for c in ("nsi_found_ht", "nsi_stories", "year_built"):
         f[c] = pd.to_numeric(f[c], errors="coerce")
-    f = f.merge(pd.read_parquet(D / "harris_mini" / area / "lpc_features.parquet"), on="oid", how="left")
+    f = f.merge(pd.read_parquet(D / "harris_mini" / area / f"{feats}.parquet"), on="oid", how="left")
     f = f.merge(pd.read_parquet(D / "hcad" / "bld_2018.parquet").rename(columns={"acct": "hcad"}), on="hcad", how="left")
     f["has_lower"] = (f.lower_any > 0).astype(float).where(f.stories.notna())
     f["fnd_crawl"] = (f.foundation == "Crawl Space").astype(float).where(f.foundation.notna())

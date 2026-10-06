@@ -18,6 +18,16 @@ Per house:
   ring_low_p90          90th pct height of those low ring returns
 Output: data/harris_mini/<AREA>/lpc_features.parquet, and roof_points.parquet (building returns inside each
 footprint: x, y in EPSG:6344 m, hz ft above the lowest adjacent grade) for roof_planes.py.  Usage: python lpc_features.py AREA
+
+Options (python lpc_features.py AREA FLIGHT RULE; defaults 2018 class6 = the outputs above):
+  FLIGHT 2024   TX_Houston_B24 tiles in <AREA>/lpc2024 (NAD83(2011) UTM 15N, NAVD88 GEOID18). Heights stay relative
+                to e2018_lag, minus the area's median ground shift 2024 - 2018 from lpc_change.parquet (rings outside
+                each footprint; A 0.000 m, C -0.010 m), so GEOID18 vs GEOID12B and subsidence are removed per area.
+  RULE single   "building" = non-ground single returns (number_of_returns == 1) at least 5 ft above the lowest
+                adjacent grade, instead of class 6. The 2024 flight has no building class (classes 1, 2, 7, 18 only);
+                in 2018, 95% of class-6 returns are single returns vs 8-12% of medium / tall vegetation (one C tile).
+                ring_low then uses all non-ground classes.
+  Output names gain _<FLIGHT>_<RULE> unless both are the defaults.
 """
 import glob
 import sys
@@ -54,7 +64,8 @@ def main_eave(v, bin_ft=0.5, share=0.15):
     return float(np.median(v[np.abs(v - c) <= 1.0]))
 
 
-def main(area):
+def main(area, flight="2018", rule="class6"):
+    tag = "" if (flight, rule) == ("2018", "class6") else f"_{flight}_{rule}"
     h = pd.read_parquet(D / area / "houses.parquet", columns=["oid", "loc", "x", "y", "fp_wkt", "e2018_lag"])
     h = h[(h["loc"] == "Front Door") & h.e2018_lag.notna()].reset_index(drop=True)
     fps = [swkt.loads(w) for w in h.fp_wkt]
@@ -65,12 +76,18 @@ def main(area):
     cx = np.array([f.centroid.x for f in fps])
     cy = np.array([f.centroid.y for f in fps])
     lag_m = h.e2018_lag.values * USFT
+    if flight != "2018":  # datum + subsidence: area median ground shift measured by lpc_change.py
+        shift = float(pd.read_parquet(D / area / "lpc_change.parquet").d_ground_m.median())
+        lag_m = lag_m + shift
+        print(f"{area} {flight}: ground shift vs 2018 applied {shift:+.3f} m", flush=True)
     buf = {i: [] for i in range(len(h))}  # points of each house's search disc, gathered across tile edges
-    for path in sorted(glob.glob(str(D / area / "lpc2018" / "*.laz"))):
+    for path in sorted(glob.glob(str(D / area / f"lpc{flight}" / "*.laz"))):
         las = laspy.read(path)
         cls = np.asarray(las.classification)
         keep = ~np.isin(cls, DROP)
-        x, y, z, cls = np.asarray(las.x)[keep], np.asarray(las.y)[keep], np.asarray(las.z)[keep], cls[keep]
+        # single returns carried in the class column as 100 + class (no other code reads it)
+        cls = np.where(np.asarray(las.number_of_returns) == 1, cls + 100, cls)[keep]
+        x, y, z = np.asarray(las.x)[keep], np.asarray(las.y)[keep], np.asarray(las.z)[keep]
         hit = np.where((cx + rad > x.min()) & (cx - rad < x.max()) & (cy + rad > y.min()) & (cy - rad < y.max()))[0]
         tree = cKDTree(np.c_[x, y])
         for i in hit:
@@ -84,14 +101,18 @@ def main(area):
         if not parts:
             continue
         a_ = np.vstack(parts)  # overlapping tiles hold different returns (none identical), so keep all
-        px, py, pz, pc = a_[:, 0], a_[:, 1], a_[:, 2], a_[:, 3].astype(int)
+        px, py, pz, pc1 = a_[:, 0], a_[:, 1], a_[:, 2], a_[:, 3].astype(int)
+        single, pc = pc1 >= 100, pc1 % 100
         hz = (pz - lag_m[i]) / USFT  # ft above the lowest adjacent grade
         ins = shapely.contains_xy(inner03[i], px, py)
-        ng = ins & (pc == 6)  # building returns (vegetation 3-5 over the roof excluded)
+        if rule == "class6":
+            ng = ins & (pc == 6)  # building returns (vegetation 3-5 over the roof excluded)
+        else:
+            ng = ins & (pc != 2) & single & (hz >= 5)
         core = shapely.contains_xy(inner1[i], px, py) if not inner1[i].is_empty else ins
         edge = ng & ~core
         ring = shapely.contains_xy(ring3[i], px, py)
-        low = ring & np.isin(pc, (1, 6)) & (hz >= 2) & (hz <= 10)  # structures, not vegetation
+        low = ring & (np.isin(pc, (1, 6)) if rule == "class6" else (pc != 2)) & (hz >= 2) & (hz <= 10)  # structures
 
         roof_pts.append(pd.DataFrame({"oid": h.oid[i], "x": px[ng], "y": py[ng], "hz": hz[ng].astype("float32")}))
 
@@ -106,11 +127,11 @@ def main(area):
             ground_in_share=float((core & (pc == 2)).sum() / max(core.sum(), 1)),
             ring_low_share=float(low.sum() / max(ring.sum(), 1)), ring_low_p90=q(hz[low], 90))
     out = pd.DataFrame.from_dict(rows, orient="index").rename_axis("oid").reset_index()
-    pd.concat(roof_pts, ignore_index=True).to_parquet(D / area / "roof_points.parquet", index=False)  # for roof_planes.py
-    out.to_parquet(D / area / "lpc_features.parquet", index=False)
-    print(f"{area}: {len(out)} of {len(h)} houses; roof seen (>= 5 returns) {out.roof_p50.notna().mean():.0%}")
+    pd.concat(roof_pts, ignore_index=True).to_parquet(D / area / f"roof_points{tag}.parquet", index=False)  # roof_planes.py
+    out.to_parquet(D / area / f"lpc_features{tag}.parquet", index=False)
+    print(f"{area} {flight} {rule}: {len(out)} of {len(h)} houses; roof seen (>= 5 returns) {out.roof_p50.notna().mean():.0%}")
     print(out.describe().T[["count", "50%", "mean"]].round(2).to_markdown())
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(*sys.argv[1:4])
