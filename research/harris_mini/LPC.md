@@ -259,3 +259,31 @@ Fifty local houses close most of the gap to a model trained on the whole area, i
 houses (A 1.25, C 3.23 ft raised MAE) but worse overall in C (0.75 ft).
 With local houses the physical override no longer improves MAE (it still adds 1-2 points of BFE side in C). The
 same 50 houses calibrate the bands (BANDS.md): one survey sample per new area serves both.
+
+## FEMA flood-insurance statistics instead of (or with) the 50 local houses (2026-10-06)
+
+`eval_nfip.py` (output `eval_nfip_output.txt`). OpenFEMA NFIP policies, Harris County, single-family, effective
+since 2024, with the elevation-certificate lowest floor and lowest adjacent grade (`coverage/fetch_nfip.py`; 76,780
+rows after cleaning, 1,136 block groups). Each house gets only the statistics of its 2020 block group (tract if the
+block group has < 10 records): median / p25 / p75 of LFE - LAG, share elevated, crawlspace, basement, record count.
+No record is matched to a house (OpenFEMA terms, `coverage/NFIP.md`).
+
+Coverage decides it. A: 3,140 of 3,329 scored houses have block-group statistics; B: 1,209 of 5,119 (1,221 none);
+C: 862 of 2,520 (1,513 none). The Clear Lake gaps are tracts with policies but no certificate elevations (tract
+48201340701: 878 policies effective since 2024, 0 with a lowest floor; OpenFEMA API count, 2026-10-06).
+
+| model from the other two areas | A: MAE / raised MAE / recall / BFE side | B: MAE / BFE side | C: MAE / raised MAE / recall / BFE side |
+|---|---|---|---|
+| E | 0.704 / 2.12 / 0.28 / 78.3% | 0.443 / 87.4% | 0.721 / 4.95 / 0.55 / 82.0% |
+| E + NFIP statistics | **0.626 / 1.74 / 0.42 / 80.8%** | 0.437 / 89.2% | 0.729 / 4.72 / 0.65 / 81.2% |
+| E + 50 local houses (W 10) | 0.555 / 1.42 / 0.63 / 84.2% | 0.370 / 91.9% | 0.604 / 3.43 / 0.69 / 84.2% |
+| E + NFIP + 50 local houses | **0.543 / 1.27 / 0.66 / 84.5%** | **0.324 / 95.9%** | 0.611 / 3.28 / 0.74 / 83.5% |
+| within area, all labels: E / E + NFIP | 0.463 / 0.444 | 0.289 / 0.267 | 0.551 / 0.545 |
+
+Where coverage is dense (Meyerland) the statistics recover about 40% of what 50 measured houses give (MAE 0.70 ->
+0.63 vs 0.56) and add a little on top of them. In block groups with >= 30 records the gain is the same (A 0.73 ->
+0.65), so it is not a house's own certificate leaking in. Where coverage is thin (C) they do not move MAE, only raised
+recall. The block-group statistics describe insured certified houses, not the neighbourhood: correlation of block-
+group share elevated (NFIP) with share of doors > 3 ft (key) is 0.31 (A, 24 block groups) and 0.35 (C, 6).
+Reading: a free partial substitute in dense flood-zone neighbourhoods, a useful extra feature everywhere it exists,
+not a replacement for a local sample. The licence question in NFIP.md ("solely for statistical research") stands.

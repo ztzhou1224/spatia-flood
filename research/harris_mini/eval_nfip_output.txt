@@ -1,0 +1,48 @@
+NFIP Harris records used 76780; block groups 1136; LFE - LAG q10/50/90 [0.7, 1.3, 5.0] ft; share elevated (foundation 4-6) 0.111
+
+## 0) coverage and agreement with the neighbourhood (answer key aggregated per block group)
+
+|    |   houses |   prior: block group |   prior: tract |   prior: none |   block groups compared |   corr share raised (key) vs share elevated (NFIP) |   corr median door (key) vs median LFE-LAG (NFIP) |   median key share raised |   median NFIP share elevated |   median key door ft |   median NFIP LFE-LAG ft |
+|:---|---------:|---------------------:|---------------:|--------------:|------------------------:|---------------------------------------------------:|--------------------------------------------------:|--------------------------:|-----------------------------:|---------------------:|-------------------------:|
+| A  |     3329 |                 3140 |            189 |             0 |                      24 |                                              0.312 |                                             0.22  |                     0.123 |                        0.056 |                1.257 |                     1.35 |
+| B  |     5119 |                 1209 |           2689 |          1221 |                       7 |                                            nan     |                                            -0.362 |                     0.034 |                        0     |                1.499 |                     1.1  |
+| C  |     2520 |                  862 |            145 |          1513 |                       6 |                                              0.345 |                                             0.098 |                     0.189 |                        0.247 |                1.253 |                     1.35 |
+
+## A: model from B+C (screened key)
+
+|                                                              |      n |   MAE |   raised MAE |   raised recall |   BFE side |
+|:-------------------------------------------------------------|-------:|------:|-------------:|----------------:|-----------:|
+| ('E', 'other areas only')                                    | 3329   | 0.704 |        2.121 |           0.282 |      0.783 |
+| ('E', 'other areas only; block groups >= 30 records')        | 3038   | 0.73  |        2.121 |           0.282 |      0.783 |
+| ('E + NFIP', 'other areas only')                             | 3329   | 0.626 |        1.742 |           0.422 |      0.808 |
+| ('E + NFIP', 'other areas only; block groups >= 30 records') | 3038   | 0.647 |        1.742 |           0.422 |      0.808 |
+| ('E', '+ 50 local houses (W 10)')                            | 3279.1 | 0.555 |        1.418 |           0.626 |      0.842 |
+| ('E + NFIP', '+ 50 local houses (W 10)')                     | 3279.1 | 0.543 |        1.267 |           0.663 |      0.845 |
+| ('E', 'within area, 5-fold by 1 km block')                   | 3329   | 0.463 |        1.112 |           0.765 |      0.869 |
+| ('E + NFIP', 'within area, 5-fold by 1 km block')            | 3329   | 0.444 |        1.043 |           0.78  |      0.88  |
+
+## B: model from A+C (screened key)
+
+|                                                              |    n |   MAE |   raised MAE |   raised recall |   BFE side |
+|:-------------------------------------------------------------|-----:|------:|-------------:|----------------:|-----------:|
+| ('E', 'other areas only')                                    | 5119 | 0.443 |        1.232 |           0.327 |      0.874 |
+| ('E', 'other areas only; block groups >= 30 records')        |  947 | 0.472 |        1.98  |           0.25  |      0.889 |
+| ('E + NFIP', 'other areas only')                             | 5119 | 0.437 |        1.305 |           0.245 |      0.892 |
+| ('E + NFIP', 'other areas only; block groups >= 30 records') |  947 | 0.459 |        1.927 |           0.25  |      0.911 |
+| ('E', '+ 50 local houses (W 10)')                            | 5072 | 0.37  |        1.195 |           0.216 |      0.919 |
+| ('E + NFIP', '+ 50 local houses (W 10)')                     | 5072 | 0.324 |        1.166 |           0.229 |      0.959 |
+| ('E', 'within area, 5-fold by 1 km block')                   | 5119 | 0.289 |        1.343 |           0.102 |      0.946 |
+| ('E + NFIP', 'within area, 5-fold by 1 km block')            | 5119 | 0.267 |        1.343 |           0.102 |      0.946 |
+
+## C: model from A+B (screened key)
+
+|                                                              |       n |   MAE |   raised MAE |   raised recall |   BFE side |
+|:-------------------------------------------------------------|--------:|------:|-------------:|----------------:|-----------:|
+| ('E', 'other areas only')                                    | 2520    | 0.721 |        4.945 |           0.549 |      0.82  |
+| ('E', 'other areas only; block groups >= 30 records')        |  846    | 1.182 |        5.75  |           0.63  |      0.839 |
+| ('E + NFIP', 'other areas only')                             | 2520    | 0.729 |        4.72  |           0.648 |      0.812 |
+| ('E + NFIP', 'other areas only; block groups >= 30 records') |  846    | 1.181 |        5.452 |           0.756 |      0.832 |
+| ('E', '+ 50 local houses (W 10)')                            | 2470.35 | 0.604 |        3.433 |           0.689 |      0.842 |
+| ('E + NFIP', '+ 50 local houses (W 10)')                     | 2470.35 | 0.611 |        3.283 |           0.735 |      0.835 |
+| ('E', 'within area, 5-fold by 1 km block')                   | 2520    | 0.551 |        3.271 |           0.694 |      0.861 |
+| ('E + NFIP', 'within area, 5-fold by 1 km block')            | 2520    | 0.545 |        3.212 |           0.715 |      0.871 |
