@@ -2,7 +2,8 @@
 
 Per house (HCAD 2017 footprint) and per flight (data/harris_mini/<AREA>/lpc2018, lpc2024): ground = 10th pct of
 ground returns (class 2) in a 0.5-2.5 m ring outside the footprint; ridge = 99th pct and roof = 50th pct of building
-returns (class 6) inside the footprint shrunk 0.3 m; eave = median of building returns within 1 m of the edge. All as
+returns inside the footprint shrunk 0.3 m (all non-ground returns > 2 m above that ground: the 2024 flight has no
+building class, so both flights use this rule); eave = median of those returns within 1 m of the edge. All as
 metres above that flight's ground, so the vertical datum (GEOID12B vs GEOID18) and subsidence cancel. Both flights
 must share the horizontal CRS (checked; EPSG:6344 expected). A whole-house lift raises ridge, roof and eave together;
 a rebuild or an added story changes them unevenly or changes the return count.
@@ -32,7 +33,7 @@ def epoch(area, sub, h, fps, rings, inner, rad, cx, cy):
         c = las.header.parse_crs()
         crs.add(str(c.to_epsg()) if c is not None and c.to_epsg() else (c.name if c is not None else "none"))
         cls = np.asarray(las.classification)
-        keep = np.isin(cls, (2, 6))
+        keep = np.isin(cls, (1, 2, 3, 4, 5, 6))  # 2024 has no building class: buildings are in class 1
         x, y, z, cls = np.asarray(las.x)[keep], np.asarray(las.y)[keep], np.asarray(las.z)[keep], cls[keep]
         hit = np.where((cx + rad > x.min()) & (cx - rad < x.max()) & (cy + rad > y.min()) & (cy - rad < y.max()))[0]
         tree = cKDTree(np.c_[x, y])
@@ -48,10 +49,15 @@ def epoch(area, sub, h, fps, rings, inner, rad, cx, cy):
             a = np.vstack(parts)
             px, py, pz, pc = a[:, 0], a[:, 1], a[:, 2], a[:, 3].astype(int)
             g = shapely.contains_xy(rings[i], px, py) & (pc == 2)
-            ins = shapely.contains_xy(inner[i], px, py) & (pc == 6)
+            if g.sum() < 5:
+                rows.append(rec)
+                continue
+            g0 = np.percentile(pz[g], 10)
+            # same rule in both flights: non-ground returns inside the footprint more than 2 m above that flight's
+            # ground (the 2024 flight classifies no buildings; trees over a roof add noise in both years)
+            ins = shapely.contains_xy(inner[i], px, py) & (pc != 2) & (pz - g0 > 2.0)
             edge = ins & ~shapely.contains_xy(fps[i].buffer(-1.0), px, py)
-            if g.sum() >= 5 and ins.sum() >= 20:
-                g0 = np.percentile(pz[g], 10)
+            if ins.sum() >= 20:
                 rec.update(ground=g0, ridge=(np.percentile(pz[ins], 99) - g0) * FT, roof=(np.median(pz[ins]) - g0) * FT,
                            eave=(np.median(pz[edge]) - g0) * FT if edge.sum() >= 5 else np.nan, n_bldg=int(ins.sum()),
                            bldg_m2=ins.sum() / max(inner[i].area, 1.0))
