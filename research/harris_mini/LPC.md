@@ -325,8 +325,8 @@ area (weight 10), scored on the area's other houses (screened), mean of 20 draws
 | 20 | 0.62 / 0.47, 0.58 / 0.58 | 0.40, 0.42 | 4.75, **3.53** |
 | 50 | 0.58 / 0.54, 0.56 / 0.59 | 0.35, 0.36 | 4.26, **3.15** |
 
-A handful of labels already moves the model, and every step helps BFE side (A 78.3% -> 80-84%, B 87.4% -> 89-93%,
-C 82.0% -> 82-86%). Which houses are labelled matters as much as how many: in Clear Lake random labels barely help
+A handful of labels already moves the model, and BFE side improves in all but one setting (A 78.3% -> 80-84%, B 87.4% -> 89-93%,
+C 82.0% -> 81.8-85.7%; 5 random labels in C: 81.8%). Which houses are labelled matters as much as how many: in Clear Lake random labels barely help
 raised houses until k = 50 (few random picks are raised), while 5 labels on flagged houses cut raised MAE from 4.95
 to 4.18 ft and 50 to 3.15 ft. In Cypress Creek (few raised houses) flagged-only labels lower raised recall (0.33 ->
 0.19-0.29): labels should match the houses that matter in the area.
@@ -336,7 +336,7 @@ the nearest label (< 250 m, 250-1,000 m, > 1,000 m), residual pool from pseudo-e
 coverage and width hardly change with distance (e.g. A not flagged 0.84 / 0.86 / 0.94-0.95 coverage, width
 1.55-1.72 ft, at k = 20), consistent with residual correlation vanishing beyond a few hundred metres
 (`eval_reach.py`). The flag dominates, and the flagged group is where borrowed bands fail: A flagged bands are
-12.5-17.8 ft wide (almost nothing decided), C flagged bands cover only 0.54-0.61 and their BFE calls are right only
+12.5-17.8 ft wide (almost nothing decided), C flagged bands cover only 0.53-0.61 and their BFE calls are right only
 55-74%. Raised-house error depends on the area's own history; only local labels on flagged houses calibrate it
 (BANDS.md: 30 + 20 flagged local houses -> flagged coverage 0.81-0.84, decided calls right 90-92%).
 
