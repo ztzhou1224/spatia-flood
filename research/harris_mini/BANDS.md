@@ -58,3 +58,30 @@ ordinary houses can carry bands borrowed from other areas (coverage 0.86-0.99 he
 (likely raised) houses get "too close to call" on the BFE until enough local labels on flagged houses exist; a
 local sample of ~50 gives honest but wide bands, and narrow honest bands need on the order of 100+ local labels per
 group. Limits: three areas in one county; B has 34 flagged houses and 111 SFHA houses; 50 draws per setting.
+
+## Narrower honest bands: normalised conformal (2026-10-06)
+
+`eval_bands2.py` (committed before its first run; output `eval_bands2_output.txt`). Same setting as the pre-registered
+design (model from the other areas + 50 local labels, 30 unflagged + 20 flagged, W 10; the labels' residuals
+cross-fitted). A difficulty model s(x) (LightGBM predicting |residual| from method E features and the estimate,
+trained only on cross-area pseudo-experiment residuals of the training areas; label-free at application) scales the
+band: p +- q s(x), with ONE scale q from all 50 labels (finite-sample order statistic) instead of one extreme
+quantile per flag group. Mean of 20 draws, held-out screened houses:
+
+| area | method | coverage all / flagged / not flagged | median width not flagged / flagged | SFHA decided | decided correct |
+|---|---|---|---|---|---|
+| A | per-group (current) | 0.93 / 0.95 / 0.92 | 3.4 ft / inf | 22% | 93% |
+| A | **normalised** | 0.89 / 0.94 / 0.89 | **1.4** / 10.2 ft | **38%** | 95% |
+| B | per-group | 0.98 / 1.00 / 0.98 | 4.6 ft / inf | 3% | 100% |
+| B | **normalised** | 0.89 / 0.97 / 0.89 | **1.6** / 5.3 ft | **61%** | 100% |
+| C | per-group | 0.96 / 0.99 / 0.96 | 5.1 ft / inf | 39% | 96% |
+| C | **normalised** | 0.94 / **0.79** / 0.95 | **1.9** / 8.9 ft | **53%** | 95% |
+| P Florida | per-group | 0.94 / 0.93 / 0.94 | 6.4 ft / inf | 45% | 95% |
+| P Florida | **normalised** | 0.89 / 0.90 / 0.88 | **2.3** / 9.4 ft | **68%** | 96% |
+
+The normalised band cuts the width for ordinary houses by 60-70% and raises the share of flood-zone houses with a
+decided BFE side to 38-68%, with 95-100% of those calls right. Coverage is close to nominal but slightly under it in
+three areas (0.886-0.894; the 50 labels are a stratified, not a random, sample of the area), and in Clear Lake the
+flagged group is under-covered (0.79). Rule: normalised bands for unflagged houses; for flagged houses keep the
+per-group band (honest, often "too close to call") until the area has enough flagged labels to check the normalised
+one. "norm+flag" (scale per flag group when >= 19 labels) does not fix C's flagged group (0.79).
