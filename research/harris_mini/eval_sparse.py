@@ -13,6 +13,9 @@ area's other houses, screened answer key (scorer only; the k labels stand for wh
    so the pool comes from the same situation one level down (one training area instead of two: conservative).
    Compared with bands by flag only from the same pool. Coverage, width, BFE decided and decided-correct per group
    (10 draws).
+Review fixes (2026-10-06): every k > 0 row also scores the pooled model on the SAME held-out set ("(k = 0, same
+set)" columns); "flagged in sample" gives the flagged houses actually drawn (B has 34 flagged houses, at most 17 are
+drawn, the rest of a "flagged" sample is random); bands use the finite-sample conformal quantile (bands.conf_q).
 Usage: python eval_sparse.py
 """
 import sys
@@ -26,7 +29,7 @@ from scipy.spatial import cKDTree
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import eval_lpc as el  # noqa: E402
-from bands import flag_raised  # noqa: E402
+from bands import conf_q, flag_raised  # noqa: E402
 from benchmark import SETS  # noqa: E402
 from eval_transfer import load  # noqa: E402
 
@@ -98,7 +101,9 @@ def main():
                     cal = sample(rng, g0, k, how)
                     ev = ok.copy()
                     ev[cal] = False
-                    acc.append(score(f, refit(tr, f.iloc[cal], f), ev))
+                    sk, s0 = score(f, refit(tr, f.iloc[cal], f), ev), score(f, p0, ev)
+                    acc.append({**sk, **{f"{c} (k = 0, same set)": v for c, v in s0.items()},
+                                "flagged in sample": int(g0[cal].sum())})
                 res[(how, f"k = {k}")] = pd.DataFrame(acc).mean().to_dict()
         print(f"\n## {te}: model from {'+'.join(others)} plus k scattered labels (weight 10; mean of 20 draws; screened)\n")
         print(pd.DataFrame(res).T.round(3).to_markdown())
@@ -123,7 +128,8 @@ def main():
                             r = pool[(pool.g == gg) & ((pool.d == d) if scheme == "flag x distance" else True)].r
                             if len(r) < 30:
                                 r = pool[pool.g == gg].r
-                            lo[idx], hi[idx] = p[idx] + np.quantile(r, (1 - C) / 2), p[idx] + np.quantile(r, (1 + C) / 2)
+                            ql, qh = conf_q(r, C)
+                            lo[idx], hi[idx] = p[idx] + ql, p[idx] + qh
                     for gg in (True, False):
                         for d in (0, 1, 2):
                             m = ev & (g == gg) & (db == d)

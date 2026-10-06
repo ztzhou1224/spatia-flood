@@ -9,7 +9,10 @@ fixed before scoring:
                     (W = 1 and W = 10 both reported)
   local only        LightGBM on the local sample alone (min_child_samples 5)
   + override        any of the above with benchmark method F's physical override on flagged houses
-Scored on the area's other houses (screened answer key): MAE, raised (door > 3 ft) MAE and recall, BFE side; mean of
+Scored on the area's other houses (screened answer key); the pooled model is also scored on the SAME held-out set
+of every draw ("pooled (no local labels), same scored set"), so k = 0 and k > 0 compare like for like (review fix,
+2026-10-06: the k = 0 row alone is scored on all houses, including the sampled ones). In B only 34 houses are flagged,
+so at most 17 are sampled; row labels give the counts actually used: MAE, raised (door > 3 ft) MAE and recall, BFE side; mean of
 20 draws. Answer key: scorer, and the local sample's measured heights (as a surveyor would supply).
 Usage: python eval_local.py
 """
@@ -68,7 +71,7 @@ def main():
                 ev = ok.copy()
                 ev[cal] = False
                 loc = f.iloc[cal]
-                preds = {}
+                preds = {"pooled (no local labels), same scored set": p0}
                 for w in (1, 10):
                     x = pd.concat([tr[COLS], loc[COLS]], ignore_index=True)
                     y = np.r_[tr.dh.values, loc.dh.values]
@@ -79,8 +82,9 @@ def main():
                     preds[f"{nm} + override"] = override(f, preds[nm])
                 for nm, p in preds.items():
                     acc.setdefault(nm, []).append(score(f, p, ev))
+            nf = min(n_flag, int(g.sum()) // 2)
             for nm, v in acc.items():
-                res[(nm, f"k = {n_unf} + {n_flag} flagged")] = pd.DataFrame(v).mean().to_dict()
+                res[(nm, f"k = {n_unf} unflagged + {nf} flagged")] = pd.DataFrame(v).mean().to_dict()
         print(f"\n## {te}: model from {'+'.join(o for o in a if o != te)} plus k measured local houses "
               f"(screened key; flagged houses in the area {int(g.sum())}; mean of {DRAWS} draws)\n")
         print(pd.DataFrame(res).T.round(3).to_markdown())
