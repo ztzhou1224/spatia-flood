@@ -4,7 +4,7 @@ Point estimate: method E or F of benchmark.py (out-of-fold, 5 folds by 1 km bloc
 is p + [q_lo, q_hi], where q_lo / q_hi are the (1-c)/2 and (1+c)/2 quantiles of the signed out-of-fold residuals
 (truth - estimate) of the houses in the OTHER folds of the same group. Groups (Mondrian, label-free): flagged raised
 (record basement / lower level / two-story crawl space, or estimate > 3 ft) vs not flagged. For a new area, the
-residuals come from the training area (its own out-of-fold estimates) and are applied unchanged.
+residuals come from the other two areas pooled (each area's own out-of-fold estimates) and are applied unchanged.
 Reported per group: empirical coverage of the 80% and 90% bands and their mean width; for SFHA houses with a BFE:
 share of houses whose 90% band lies entirely above or below the BFE ("decided"), and the share of decided houses
 on the correct side. Answer key = scorer only; results with all houses and with the screened answer key.
@@ -121,7 +121,7 @@ def local_calibration(fte, pte, sizes=(30, 50, 100), draws=50, c=0.9, n_flagged=
 
 
 def main():
-    a = {k: load(k) for k in ("B", "C")}
+    a = {k: load(k) for k in ("A", "B", "C")}
     for f in a.values():
         f["block"] = (f.x // 1000).astype(int).astype(str) + "_" + (f.y // 1000).astype(int).astype(str)
     oof = {k: predictions(a[k], a[k], True) for k in a}
@@ -130,12 +130,15 @@ def main():
             p = oof[k][meth]
             g, lo, hi = bands_same_area(f, p)
             report(f, p, g, lo, hi, f"{k}, {meth}: cross-conformal within the area")
-        for tr, te in (("C", "B"), ("B", "C")):
-            pte = predictions(a[tr], a[te], False)[meth]
-            g, lo, hi = bands_new_area(a[tr], oof[tr][meth], a[te], pte)
-            report(a[te], pte, g, lo, hi, f"{te}, {meth}: model AND bands from {tr} (new area)")
+        for te, fte in a.items():
+            others = [o for o in a if o != te]
+            tr = "+".join(others)
+            ftr = pd.concat([a[o] for o in others], ignore_index=True)
+            pte = predictions(ftr, fte, False)[meth]
+            g, lo, hi = bands_new_area(ftr, np.concatenate([oof[o][meth] for o in others]), fte, pte)
+            report(fte, pte, g, lo, hi, f"{te}, {meth}: model AND bands from {tr} (new area)")
             print(f"\n## {te}, {meth}: model from {tr}, 90% bands recalibrated on k random local houses (mean of 50 draws)\n")
-            print(pd.concat([local_calibration(a[te], pte), local_calibration(a[te], pte, sizes=(30,), n_flagged=20)]).round(3).to_markdown())
+            print(pd.concat([local_calibration(fte, pte), local_calibration(fte, pte, sizes=(30,), n_flagged=20)]).round(3).to_markdown())
 
 
 if __name__ == "__main__":
