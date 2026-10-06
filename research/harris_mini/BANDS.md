@@ -85,3 +85,21 @@ three areas (0.886-0.894; the 50 labels are a stratified, not a random, sample o
 flagged group is under-covered (0.79). Rule: normalised bands for unflagged houses; for flagged houses keep the
 per-group band (honest, often "too close to call") until the area has enough flagged labels to check the normalised
 one. "norm+flag" (scale per flag group when >= 19 labels) does not fix C's flagged group (0.79).
+
+**The lead-list view: houses confidently below the BFE** (same run, `eval_bands2_output.txt`, normalised bands,
+SFHA houses with a BFE, held-out houses, mean of 20 draws; scorer only):
+
+| area | SFHA houses | truly below BFE (base rate) | called below | below precision | below recall | called above (precision) |
+|---|---|---|---|---|---|---|
+| A Meyerland | 2,949 | 63.6% | 35.5% | **94.8%** | 52.9% | 2.4% (96.4%) |
+| B Cypress Creek | 108 | 10.2% | 4.8% (~5 houses) | 100% | 47.0% | 56.4% (100%) |
+| C Clear Lake | 570 | 77.4% | 50.8% | **94.9%** | 62.3% | 1.8% (100%) |
+| P Florida | 811 | 80.5% | 67.6% | **96.2%** | 80.8% | 0.3% (98.9%) |
+
+A "floor below the BFE" list from 50 local labels is right about 95-96% of the time (B: 100% on ~5 houses per draw)
+and finds about half to four fifths of the houses that are truly below. Context: in these flood-zone areas most
+houses are below the BFE anyway (64-80% except B), so "every SFHA house" is a 64-80% precise list; the bands lift it
+to ~95% at the cost of leaving the uncertain houses off. In B most SFHA houses are above the BFE and the bands mostly
+call "above" (56%, all right). With the earlier per-group bands the below list was smaller (A 17%, C 38%, P 44% of SFHA
+houses) at similar precision (92-96%). Limits: four areas; ~5% of "below" calls are wrong, which matters if the list
+drives offers to homeowners.
