@@ -1,6 +1,7 @@
 # Plan: flood layer v1 (Florida statewide + Harris accuracy proof)
 
-Status: **approved by the owner 2026-10-07 (answers to §8 below); phase 0 started.** Decisions below are the owner's answers of
+Status: **approved by the owner 2026-10-07 (answers to §8 below); phase 0 done, phase 1 in progress: see
+`docs/05-handoff-2026-10-07.md` for the current state and next steps.** Decisions below are the owner's answers of
 2026-10-07 to the 19 design questions (chat), unless marked *open*. Research evidence: `research/SUMMARY_2026-10-06.md`,
 `research/harris_mini/LPC.md`, `research/harris_mini/BANDS.md`. Every number here names its source; costs from
 vendor pages are as read on 2026-10-06/07.
