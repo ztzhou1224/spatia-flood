@@ -24,6 +24,7 @@ import time
 from pathlib import Path
 
 import boto3
+import pandas as pd
 import requests
 import shapely
 from shapely import wkt as swkt
@@ -65,6 +66,43 @@ def tnm(dataset: str, bbox, area, project: str) -> list[dict]:
     return sorted(out.values(), key=lambda t: t["url"])
 
 
+def ept_plan(base: str, bl: pd.DataFrame, metric: str, depth: int = 7, pad: float = 60.0) -> dict:
+    """Chunks (depth-`depth` cells of the EPT octree, ~570 m at Pinellas) that any building's search disc can
+    touch (footprint box in EPSG:3857 padded by `pad` units, > the 40 m disc + Mercator scale ~1.13), and the
+    nodes they need: deeper nodes inside them and the coarser nodes covering them."""
+    import numpy as np
+    from ept import hierarchy
+    from pyproj import Transformer
+    g = shapely.from_wkb(bl.wkb.values)
+    tr = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
+    g = shapely.transform(g, lambda xy: np.c_[tr.transform(xy[:, 0], xy[:, 1])])
+    b = shapely.bounds(g)
+    bbox = (b[:, 0].min() - pad, b[:, 1].min() - pad, b[:, 2].max() + pad, b[:, 3].max() + pad)
+    nodes, meta = hierarchy(base, bbox)
+    cube = meta["bounds"]
+    size = (cube[3] - cube[0]) / 2 ** depth
+    cells = set()
+    for x0, y0, x1, y1 in b:
+        for cx in range(int((x0 - pad - cube[0]) // size), int((x1 + pad - cube[0]) // size) + 1):
+            for cy in range(int((y0 - pad - cube[1]) // size), int((y1 + pad - cube[1]) // size) + 1):
+                cells.add((cx, cy))
+    keep = {}
+    for k, n in nodes.items():
+        d, x, y, _ = map(int, k.split("-"))
+        if d >= depth and (x >> (d - depth), y >> (d - depth)) in cells:
+            keep[k] = n
+        elif d < depth and any((cx >> (depth - d), cy >> (depth - d)) == (x, y) for cx, cy in cells):
+            keep[k] = n
+    have = set()  # cells holding at least one deep node (cells with only coarse points carry no detail)
+    for k in keep:
+        d, x, y, _ = map(int, k.split("-"))
+        if d >= depth:
+            have.add((x >> (d - depth), y >> (d - depth)))
+    return {"base": base, "cube": cube, "srs": meta.get("srs", {}).get("horizontal"), "chunk_depth": depth,
+            "chunks": sorted(cells & have), "nodes": keep, "metric_crs": metric,
+            "vertical": "NAVD88 metres (EPT z; matches the source LAZ NAVD88 ftUS heights to 5 mm, 99th pct)"}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("run")
@@ -72,6 +110,8 @@ def main() -> None:
     ap.add_argument("--bbox")
     ap.add_argument("--project", default="FL_Peninsular_2018_D18")
     ap.add_argument("--local")
+    ap.add_argument("--ept", help="EPT base URL: read the point cloud from this EPT copy instead of the LAZ tiles")
+    ap.add_argument("--metric-crs", default="EPSG:6442", help="metric CRS for footprints and points with --ept")
     a = ap.parse_args()
     out = ROOT / "data" / "flood_v1" / "lidar" / a.run
     out.mkdir(parents=True, exist_ok=True)
@@ -92,6 +132,10 @@ def main() -> None:
     area = swkt.loads(wkt)
     tiles = {k: tnm(v, (x0, y0, x1, y1), area, a.project) for k, v in DATASETS.items()}
     tiles["project"] = a.project
+    if a.ept:
+        tiles["ept"] = ept_plan(a.ept, bl, a.metric_crs)
+        print(f"EPT: {len(tiles['ept']['chunks'])} chunks of depth {tiles['ept']['chunk_depth']}, "
+              f"{len(tiles['ept']['nodes'])} nodes, {sum(tiles['ept']['nodes'].values()):,} points")
     (out / "tiles.json").write_text(json.dumps(tiles, indent=1))
     gb = sum(t["bytes"] or 0 for t in tiles["lpc"] + tiles["dem"]) / 1e9
     print(f"{a.run}: {len(bl)} buildings ({time.time() - t0:.0f} s); {len(tiles['lpc'])} LPC + {len(tiles['dem'])} "
@@ -119,7 +163,7 @@ def main() -> None:
     bucket, pre = os.environ["CLOUDFLARE_R2_BUCKET"], f"_flood/lidar/{a.run}"
     code = io.BytesIO()
     with tarfile.open(fileobj=code, mode="w:gz") as tar:
-        for f in ("features.py", "job.py", "run.sh"):
+        for f in ("features.py", "job.py", "ept.py", "run.sh"):
             tar.add(Path(__file__).parent / f, arcname=f)
     s3.put_object(Bucket=bucket, Key=f"{pre}/inputs/code.tgz", Body=code.getvalue())
     s3.upload_file(str(out / "buildings.parquet"), bucket, f"{pre}/inputs/buildings.parquet")

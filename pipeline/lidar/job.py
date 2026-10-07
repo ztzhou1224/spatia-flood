@@ -38,6 +38,7 @@ from rasterio.windows import from_bounds
 from scipy.spatial import cKDTree
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ept import node_box  # noqa: E402
 from features import DROP, LPC_COLS, MAX_AREA_M2, USFT, disc_radius, ground_stats, lpc_stats  # noqa: E402
 
 METRIC_TWIN = {6443: 6442, 6438: 6437, 6441: 6440}  # NAD83(2011) Florida West / East / North: ftUS -> metres
@@ -184,16 +185,59 @@ def ground(fp_dem: list, dem_paths: list[Path], workers: int) -> pd.DataFrame:
 
 # ---------------------------------------------------------------- point cloud
 
+def load_points(src: tuple) -> tuple[np.ndarray, ...]:
+    """x, y, z in metres (metric CRS) and class (+100 for single returns), classes in DROP removed.
+
+    ("laz", path, scale): one LAZ tile, US-foot tiles scaled to metres (the metric twin CRS).
+    ("ept", base, box, keys, metric): one EPT chunk: the listed nodes, points clipped to box (EPSG:3857,
+    half-open, so a point belongs to one chunk only), x / y transformed 3857 -> metric with the 'EPSG:3857' tag
+    (always_xy); z is already metres NAVD88 in the EPT build (checked against the LAZ tiles: ept.py docstring)."""
+    if src[0] == "laz":
+        _, path, scale = src
+        las = laspy.read(path)
+        cls = np.asarray(las.classification)
+        keep = ~np.isin(cls, DROP)
+        x = np.asarray(las.x)[keep] * scale
+        y = np.asarray(las.y)[keep] * scale
+        z = np.asarray(las.z)[keep] * scale
+        c = np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16)
+        return x, y, z, c
+    _, base, box, keys, metric = src
+    xs, ys, zs, cs = [], [], [], []
+    for k in keys:
+        if base.startswith("file://"):
+            las = laspy.read(f"{base[7:]}/ept-data/{k}.laz")
+        else:
+            las = laspy.read(io.BytesIO(fetch_retry(f"{base}/ept-data/{k}.laz")))
+        x, y = np.asarray(las.x), np.asarray(las.y)
+        cls = np.asarray(las.classification)
+        keep = (x >= box[0]) & (x < box[2]) & (y >= box[1]) & (y < box[3]) & ~np.isin(cls, DROP)
+        xs.append(x[keep])
+        ys.append(y[keep])
+        zs.append(np.asarray(las.z)[keep])
+        cs.append(np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16))
+    x, y = np.concatenate(xs), np.concatenate(ys)
+    if len(x):
+        x, y = Transformer.from_crs("EPSG:3857", metric, always_xy=True).transform(x, y)
+    return np.asarray(x), np.asarray(y), np.concatenate(zs), np.concatenate(cs)
+
+
+def fetch_retry(url: str) -> bytes:
+    for attempt in range(8):
+        try:
+            r = requests.get(url, timeout=(30, 300))
+            r.raise_for_status()
+            return r.content
+        except requests.RequestException:
+            time.sleep(2 ** attempt)
+    raise RuntimeError(f"fetch failed: {url}")
+
+
 def _lpc_worker(args):
-    path, scale, items = args  # items: (i, cx, cy, r, fp, lag_ft, complete_here)
-    las = laspy.read(path)
-    cls = np.asarray(las.classification)
-    keep = ~np.isin(cls, DROP)
-    x = np.asarray(las.x)[keep] * scale
-    y = np.asarray(las.y)[keep] * scale
-    z = np.asarray(las.z)[keep] * scale
-    c = np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16)
-    del las, cls, keep
+    name, src, items = args  # items: (i, cx, cy, r, fp, lag_ft, complete_here)
+    x, y, z, c = load_points(src)
+    if not len(x):
+        return name, [(i, None) for i, *_, done in items if done], [(i, np.empty((0, 4))) for i, *_, done in items if not done]
     # coarse 4 m grid of cells touched by any search disc: points elsewhere are never read
     gx0, gy0, cell = x.min(), y.min(), 4.0
     nx, ny = int((x.max() - gx0) // cell) + 2, int((y.max() - gy0) // cell) + 2
@@ -222,10 +266,11 @@ def _lpc_worker(args):
                 done.append((i, None))
             else:
                 partial.append((i, np.empty((0, 4))))
-    return Path(path).name, done, partial
+    return name, done, partial
 
 
-def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[Path, tuple, float]], workers: int) -> pd.DataFrame:
+def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[str, tuple, tuple]], workers: int) -> pd.DataFrame:
+    """tiles: (name, (x0, y0, x1, y1) in the metric CRS, load_points source)."""
     n = len(fp_m)
     area = shapely.area(np.array(fp_m, dtype=object))
     cent = shapely.centroid(np.array(fp_m, dtype=object))
@@ -235,7 +280,7 @@ def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[Path, tuple, float]], 
     status[area > MAX_AREA_M2] = "too_large"
     todo = np.where(status == "ok")[0]
     rad = {i: disc_radius(fp_m[i]) for i in todo}
-    tb = np.array([b for _, b, _ in tiles])  # x0, y0, x1, y1 in metres
+    tb = np.array([b for _, b, _ in tiles])  # x0, y0, x1, y1 in metres (EPT chunks: box of the reprojected chunk)
     per_tile: dict[int, list] = {k: [] for k in range(len(tiles))}
     need = np.zeros(n, int)
     for i in todo:
@@ -245,7 +290,7 @@ def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[Path, tuple, float]], 
         for k in hit:
             per_tile[k].append(i)
     status[(status == "ok") & (need == 0)] = "no_coverage"
-    jobs = [(str(tiles[k][0]), tiles[k][2],
+    jobs = [(tiles[k][0], tiles[k][2],
              [(i, cx[i], cy[i], rad[i], fp_m[i], lag_ft[i], need[i] == 1) for i in per_tile[k]])
             for k in sorted(per_tile, key=lambda k: (tb[k, 1], tb[k, 0])) if per_tile[k]]
     rows: dict = {}
@@ -274,6 +319,28 @@ def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[Path, tuple, float]], 
     return out
 
 
+def ept_chunks(e: dict, metric: str) -> list[tuple[str, tuple, tuple]]:
+    """One chunk per depth-D cell (D = e["chunk_depth"]) listed in e["chunks"]: the nodes at depth >= D inside it,
+    plus the coarser nodes (ancestors) covering it; its metric box is the box of its four reprojected corners."""
+    cube, d0 = e["cube"], e["chunk_depth"]
+    deep: dict[tuple[int, int], list[str]] = {}
+    coarse: list[tuple[int, int, int, str]] = []
+    for k in e["nodes"]:
+        d, x, y, _ = map(int, k.split("-"))
+        if d >= d0:
+            deep.setdefault((x >> (d - d0), y >> (d - d0)), []).append(k)
+        else:
+            coarse.append((d, x, y, k))
+    tr = Transformer.from_crs("EPSG:3857", metric, always_xy=True)
+    out = []
+    for cx, cy in (tuple(c) for c in e["chunks"]):
+        keys = deep.get((cx, cy), []) + [k for d, x, y, k in coarse if (cx >> (d0 - d), cy >> (d0 - d)) == (x, y)]
+        box = node_box(f"{d0}-{cx}-{cy}-0", cube)
+        xs, ys = tr.transform([box[0], box[2], box[0], box[2]], [box[1], box[1], box[3], box[3]])
+        out.append((f"{d0}-{cx}-{cy}", (min(xs), min(ys), max(xs), max(ys)), ("ept", e["base"], box, keys, metric)))
+    return out
+
+
 # ---------------------------------------------------------------- main
 
 def run(urls: dict, work: Path, workers: int) -> None:
@@ -286,7 +353,8 @@ def run(urls: dict, work: Path, workers: int) -> None:
     stage("download", urls)
     (work / "lpc").mkdir(exist_ok=True)
     (work / "dem").mkdir(exist_ok=True)
-    jobs = [(t["url"], work / "lpc" / t["url"].rsplit("/", 1)[1]) for t in tl["lpc"]] + \
+    lpc_list = [] if "ept" in tl else tl["lpc"]  # an EPT source is streamed chunk by chunk, never stored
+    jobs = [(t["url"], work / "lpc" / t["url"].rsplit("/", 1)[1]) for t in lpc_list] + \
            [(t["url"], work / "dem" / t["url"].rsplit("/", 1)[1]) for t in tl["dem"]]
     total = 0
     with ThreadPoolExecutor(16) as ex:
@@ -297,7 +365,7 @@ def run(urls: dict, work: Path, workers: int) -> None:
     log.info("downloaded %d files, %.1f GB", len(jobs), total / 1e9)
 
     stage("crs", urls)
-    lpc_paths = [work / "lpc" / t["url"].rsplit("/", 1)[1] for t in tl["lpc"]]
+    lpc_paths = [work / "lpc" / t["url"].rsplit("/", 1)[1] for t in lpc_list]
     dem_paths = [work / "dem" / t["url"].rsplit("/", 1)[1] for t in tl["dem"]]
     hcrs_set, vcrs_set, tiles = set(), set(), []
     for p in lpc_paths:
@@ -315,10 +383,16 @@ def run(urls: dict, work: Path, workers: int) -> None:
                 raise RuntimeError(f"{p.name}: US-foot CRS EPSG:{epsg} has no metric twin listed")
             epsg = METRIC_TWIN[epsg]
         hcrs_set.add(epsg)
-        tiles.append((p, (mins[0] * sc, mins[1] * sc, maxs[0] * sc, maxs[1] * sc), sc))
-    if len(hcrs_set) != 1:
-        raise RuntimeError(f"LPC tiles in several CRSs: {hcrs_set}")
-    metric = f"EPSG:{hcrs_set.pop()}"
+        tiles.append((p.name, (mins[0] * sc, mins[1] * sc, maxs[0] * sc, maxs[1] * sc), ("laz", str(p), sc)))
+    if "ept" in tl:
+        e = tl["ept"]
+        metric = e["metric_crs"]
+        vcrs_set.add(e["vertical"])
+        tiles = ept_chunks(e, metric)
+    else:
+        if len(hcrs_set) != 1:
+            raise RuntimeError(f"LPC tiles in several CRSs: {hcrs_set}")
+        metric = f"EPSG:{hcrs_set.pop()}"
     dem_crs = set()
     for p in dem_paths:
         with rasterio.open(p) as r:
@@ -353,7 +427,7 @@ def run(urls: dict, work: Path, workers: int) -> None:
     put(urls["features"], buf.getvalue())
     meta = {"rows": len(out), "metric_crs": metric, "fp_area_crs": metric, "dem_crs": dem,
             "lpc_vertical_crs": sorted(vcrs_set), "units": "ft (US survey) NAVD88 for g_* and heights; m2 for area",
-            "lpc_tiles": len(lpc_paths), "dem_tiles": len(dem_paths), "downloaded_gb": STATUS.get("downloaded_gb"),
+            "lpc_tiles": len(tiles), "lpc_source": "ept" if "ept" in tl else "laz", "dem_tiles": len(dem_paths), "downloaded_gb": STATUS.get("downloaded_gb"),
             "ground_status": g.ground_status.value_counts().to_dict(), "lpc_status": f.lpc_status.value_counts().to_dict(),
             "workers": workers, "cpu_count": os.cpu_count(), "timings_s": STATUS["timings_s"]}
     put(urls["meta"], json.dumps(meta, indent=1, default=str).encode(), "application/json")
