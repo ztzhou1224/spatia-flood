@@ -86,7 +86,7 @@ def main(fips):
                   WHERE xmax >= {x0} AND xmin <= {x1} AND ymax >= {y0} AND ymin <= {y1}""")
     nz = c.execute("SELECT count(*) FROM z").fetchone()[0]
     proj = "ST_Transform(ST_MakeValid(geom), 'EPSG:4326', 'EPSG:3086', always_xy := true)"
-    c.execute(f"""CREATE TABLE cty AS SELECT ST_Transform(geom, 'EPSG:4326', 'EPSG:3086', always_xy := true) AS g FROM county""")
+    c.execute("""CREATE TABLE cty AS SELECT ST_Transform(geom, 'EPSG:4326', 'EPSG:3086', always_xy := true) AS g FROM county""")
     c.execute(f"""CREATE TABLE sfha AS SELECT ST_Intersection(ST_Union_Agg({proj}), (SELECT g FROM cty)) AS g
                   FROM z WHERE sfha_tf = 'T'""")
     c.execute(f"""CREATE TABLE z02 AS SELECT ST_Intersection(ST_Union_Agg({proj}), (SELECT g FROM cty)) AS g
