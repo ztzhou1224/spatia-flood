@@ -70,8 +70,25 @@ def user_data(run: str) -> str:
         ""])
 
 
+def sources_up(run: str) -> None:
+    """Range-read the first LPC and DEM tile from here before paying for a box (rockyweb.usgs.gov was down on
+    2026-10-07 and the first box spent 30 min failing)."""
+    tl = json.loads((ROOT / "data" / "flood_v1" / "lidar" / run / "tiles.json").read_text())
+    for k in ("lpc", "dem"):
+        url = tl[k][0]["url"]
+        req = urllib.request.Request(url, headers={"Range": "bytes=0-1023"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                if r.status not in (200, 206):
+                    raise SystemExit(f"{k} source answered HTTP {r.status}: not creating a box")
+        except (urllib.error.URLError, OSError) as e:
+            raise SystemExit(f"{k} source unreachable ({e}): not creating a box") from None
+    print("sources reachable: first LPC and DEM tile answered a range read")
+
+
 def create(a) -> None:
     name = server_name(a.run)
+    sources_up(a.run)
     if find_server(name):
         raise SystemExit(f"server {name} already exists")
     fw = hz("GET", f"/firewalls?name={FIREWALL}")["firewalls"]

@@ -102,9 +102,9 @@ def download(url: str, dest: Path) -> int:
         return dest.stat().st_size
     if dest.exists() and dest.with_suffix(dest.suffix + ".ok").exists():
         return dest.stat().st_size
-    for attempt in range(6):
+    for attempt in range(10):  # backoff 1 s .. 8.5 min, ~17 min in all: rides out a short outage of the server
         try:
-            with requests.get(url, stream=True, timeout=300) as r:
+            with requests.get(url, stream=True, timeout=(30, 300)) as r:
                 r.raise_for_status()
                 want = int(r.headers.get("Content-Length", -1))
                 tmp = dest.with_suffix(dest.suffix + ".part")
@@ -117,7 +117,7 @@ def download(url: str, dest: Path) -> int:
                 dest.with_suffix(dest.suffix + ".ok").touch()
                 return dest.stat().st_size
         except (requests.RequestException, OSError) as e:
-            log.info("retry %s (%s)", dest.name, e)
+            log.info("retry %s (%s)", dest.name, str(e)[:200])
             time.sleep(2 ** attempt)
     raise RuntimeError(f"download failed: {url}")
 
