@@ -202,7 +202,7 @@ def main() -> None:
     b["sfha_share"] = pr[pr.sfha].groupby("a").share.sum().reindex(range(len(b))).fillna(0).clip(upper=1).values
     b["touches_sfha"] = b.sfha_share > 0
     eff = pr.sort_values("share", ascending=False).drop_duplicates("a").set_index("a").firm_panel_eff_date_max
-    b["firm_effective_date"] = pd.to_datetime(eff.reindex(range(len(b)))).dt.date.values
+    b["firm_effective_date"] = pd.to_datetime(eff.reindex(range(len(b)))).dt.strftime("%Y-%m-%d").values
     sb = pr[pr.sfha & pr.static_bfe_navd88_ft.notna()].sort_values("static_bfe_navd88_ft", ascending=False).drop_duplicates("a")
     sb = sb.set_index("a").reindex(range(len(b)))
     b["bfe_ft"] = sb.static_bfe_navd88_ft.values
@@ -442,7 +442,7 @@ def main() -> None:
 
     # ---------------------------------------------------------------- report
     def vc(col):
-        return b[col].fillna("<null>").value_counts().to_dict()
+        return {("<null>" if pd.isna(k) else str(k)): int(v) for k, v in b[col].value_counts(dropna=False).items()}
     sf = b.touches_sfha & b.in_risk_area
     rep["floor"] = {"model_eligible": int(elig.sum()), "record": int(rec.sum()),
                     "record_without_cert_lag": int((rec & np.isnan(ffh_rec)).sum()),
