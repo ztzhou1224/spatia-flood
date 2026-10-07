@@ -3,8 +3,31 @@
  "run": "pinellas_2018",
  "release": "pinellas-r0",
  "built": "2026-10-07",
+ "inputs": {
+  "us_counties": {
+   "version": "2025",
+   "file_hash": "7754492e3ca5406f7d807be22eab54a91016128d2cd18712aff530275c5d8e88",
+   "storage_path": "layers/national/us_counties.parquet"
+  },
+  "overture_addresses": {
+   "version": "2026-09-23.1",
+   "file_hash": "58bc7dc66e3e67e1c5c6727de7ccdc3dc987f998e2780de08e5d62615c3927f2",
+   "storage_path": "layers/national/overture_addresses.parquet"
+  },
+  "overture_buildings": {
+   "version": "2026-09-23.1",
+   "file_hash": "96191e4f601f8a2aee9f26db22e273aa4528e2f56591b87a7b367536350703d4",
+   "storage_path": "layers/national/overture_buildings.parquet"
+  },
+  "fl_parcels": {
+   "version": "2025",
+   "file_hash": "3b2b64f96112083cdabed16862d9ef84d19629773b435677bbb93b1f984f17c6",
+   "storage_path": "layers/state/FL/fl_parcels.parquet"
+  },
+  "fema_flood_zones": "20260930T082454Z-9c7789f1"
+ },
  "buildings": {
-  "county": 372736,
+  "county": 372764,
   "risk_area": 290540
  },
  "bfe_interpolation": {
@@ -25,14 +48,14 @@
  },
  "zones": {
   "polygons_read": 7261,
-  "pairs": 402303,
-  "no_zone_polygon": 2,
+  "pairs": 402323,
+  "no_zone_polygon": 12,
   "share_sum_over_1.01": 0,
   "touches_sfha": 92243,
   "touches_sfha_share_under_1pct": 1240,
   "bfe_static": 88274,
   "bfe_null": {
-   "not_applicable": 280493,
+   "not_applicable": 280521,
    "no_coverage": 3402,
    "not_determinable": 567
   }
@@ -52,24 +75,24 @@
    }
   ],
   "buildings_per_workunit": {
-   "FL_Peninsular_Pinellas_2018": 372736
+   "FL_Peninsular_Pinellas_2018": 372764
   },
   "lag": 290540,
   "roof": 280361,
   "eave": 280025,
   "roof_null": {
-   "not_evaluated": 84570,
+   "not_evaluated": 84598,
    "not_determinable": 7805
   },
   "eave_null": {
-   "not_evaluated": 84570,
+   "not_evaluated": 84598,
    "not_determinable": 8141
   }
  },
  "parcels": {
   "parcels_read": 432360,
-  "buildings_with_parcel": 368783,
-  "buildings_on_residential_parcel": 315444,
+  "buildings_with_parcel": 368800,
+  "buildings_on_residential_parcel": 315459,
   "risk_buildings_on_residential_parcel": 248073
  },
  "gate_recheck": {
@@ -79,10 +102,10 @@
   "q": 2.326714506848828
  },
  "addresses": {
-  "overture_addresses (point in footprint)": 298425,
-  "fl_parcels situs address (DOR NAL)": 73450,
+  "overture_addresses (point in footprint)": 298440,
+  "fl_parcels situs address (DOR NAL)": 73453,
   "geocodio reverse (Pinellas (Pinellas County), rooftop)": 692,
-  "none": 134,
+  "none": 144,
   "geocodio reverse (City of Pinellas Park, rooftop)": 17,
   "geocodio reverse (Loveland, rooftop)": 8,
   "geocodio reverse (OpenStreetMap Contributors, nearest_street)": 6,
@@ -93,6 +116,7 @@
  "floor": {
   "model_eligible": 247653,
   "record": 7515,
+  "record_ffh_implausible_nulled": 35,
   "record_without_cert_lag": 33,
   "record_lidar_conflict": 298,
   "record_issue_date_unknown": 265,
@@ -100,18 +124,18 @@
   "record_issue_date_still_unknown": 0,
   "ffh_class": {
    "modeled": 240305,
-   "<null>": 124949,
-   "record": 7482
+   "<null>": 125012,
+   "record": 7447
   },
   "ffh_null": {
-   "<null>": 247787,
-   "not_evaluated": 121876,
+   "<null>": 247752,
+   "not_evaluated": 121904,
    "no_coverage": 3038,
-   "not_determinable": 35
+   "not_determinable": 70
   },
   "raised_flag": {
    "False": 205735,
-   "<null>": 125083,
+   "<null>": 125111,
    "True": 41918
   },
   "modeled_band_width_median_ft": 2.15,
@@ -119,21 +143,21 @@
  },
  "bfe_call": {
   "all": {
-   "not_applicable": 280493,
+   "not_applicable": 280521,
    "too_close": 35973,
    "below": 33032,
    "<null>": 15442,
    "above": 7796
   },
   "basis": {
-   "<null>": 295935,
+   "<null>": 295963,
    "modeled_band": 65688,
    "record": 6444,
    "modeled_band+interpolated_bfe": 4361,
    "record+interpolated_bfe": 308
   },
   "null": {
-   "<null>": 357294,
+   "<null>": 357322,
    "not_evaluated": 10512,
    "no_coverage": 4363,
    "not_determinable": 567
@@ -141,11 +165,11 @@
   "sfha_buildings": 92243,
   "sfha_decided_share": 0.443
  },
- "seconds": 96,
+ "seconds": 90,
  "parcel_table": {
   "rows": 432360,
   "distinct_geometries": 315982,
-  "with_building": 414873,
+  "with_building": 414888,
   "any_building_below_bfe": 56612,
   "buildings_spanning_parcels": 29992
  }

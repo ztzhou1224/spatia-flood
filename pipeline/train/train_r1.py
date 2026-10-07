@@ -280,12 +280,17 @@ def main() -> None:
         (OUT / f"bands_{a.fips}.json").write_text(json.dumps(meta, indent=1))
         # re-read the saved artefacts from disk and re-score TEST, then the gate's checks against r0 (same houses)
         from gate import COVERAGE_FLOOR, TOL
-        rows = {}
+        rows, per_group = {}, {}
         for nm, dd in (("candidate (from disk)", OUT), ("baseline r0 (from disk)", DATA / "train")):
-            pp, lo, hi, _ = disk_bands(dd, a.fips, test_d)
+            pp, lo, hi, gg = disk_bands(dd, a.fips, test_d)
             rows[nm] = score(test_d, pp, lo, hi)
             cov = (yt >= lo) & (yt <= hi)
             rows[nm]["elev-unfl coverage"] = cov[el_t & (pp <= 3)].mean()
+            for k in np.unique(gg):
+                m = gg == k
+                per_group[(nm, k)] = {"TEST n": int(m.sum()), "coverage": cov[m].mean(),
+                                      "width median": np.median((hi - lo)[m]), "elev-unfl n": int((m & el_t & (pp <= 3)).sum()),
+                                      "elev-unfl covered": int((m & el_t & (pp <= 3) & cov).sum())}
         c, b = rows["candidate (from disk)"], rows["baseline r0 (from disk)"]
         checks = {"coverage >= floor": c["coverage"] >= COVERAGE_FLOOR,
                   "MAE": c["MAE"] <= b["MAE"] + TOL["MAE"],
@@ -297,6 +302,7 @@ def main() -> None:
                                     "width median not flagged", "elev-unfl coverage"]].round(3).to_markdown())
         for k, ok in checks.items():
             print(f"{'pass' if ok else 'FAIL'} {k} (gate.py rule, applied with disk_bands)")
+        print(pd.DataFrame(per_group).T.round(3).to_markdown())
 
 
 GROUP_NAMES = ["unflagged", "possibly_raised", "flagged"]

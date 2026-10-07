@@ -53,3 +53,19 @@ County residential houses (approx. assemble.py eligibility: lidar ok, lidar LAG,
 | D1 raised-elevq   |     247653 |              53176 |                             2.025 |                     2.346 |
 | D2 raised90-elevq |     247653 |              95836 |                             2.682 |                     3.732 |
 | D3 bins-elevq     |     247653 |              52419 |                             2.194 |                     2.525 |
+saved D2 raised90-elevq -> /home/user/spatia-flood/data/flood_v1/train_r1
+|                         |    n |   MAE |   BFE side |   coverage |   decided correct |   BFE decided |   width median not flagged |   elev-unfl coverage |
+|:------------------------|-----:|------:|-----------:|-----------:|------------------:|--------------:|---------------------------:|---------------------:|
+| candidate (from disk)   | 1315 | 1.039 |      0.898 |      0.933 |             0.985 |         0.486 |                      2.015 |                0.908 |
+| baseline r0 (from disk) | 1315 | 1.039 |      0.898 |      0.918 |             0.983 |         0.579 |                      1.776 |                0.79  |
+pass coverage >= floor (gate.py rule, applied with disk_bands)
+pass MAE (gate.py rule, applied with disk_bands)
+pass BFE side (gate.py rule, applied with disk_bands)
+pass coverage (gate.py rule, applied with disk_bands)
+pass decided correct (gate.py rule, applied with disk_bands)
+|                                              |   TEST n |   coverage |   width median |   elev-unfl n |   elev-unfl covered |
+|:---------------------------------------------|---------:|-----------:|---------------:|--------------:|--------------------:|
+| ('candidate (from disk)', 'flagged')         |      305 |      0.921 |         13.971 |             0 |                   0 |
+| ('candidate (from disk)', 'possibly_raised') |      408 |      0.978 |          7.027 |           109 |                 106 |
+| ('candidate (from disk)', 'unflagged')       |      602 |      0.909 |          1.484 |            10 |                   2 |
+| ('baseline r0 (from disk)', 'all')           |     1315 |      0.918 |          2.211 |           119 |                  94 |

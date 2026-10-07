@@ -1,6 +1,7 @@
 """Phase 1: assemble the per-building flood table (and the parcel table) for one county (plan docs/04 §3).
 
-One row per Overture building whose centroid lies in the county (TIGER 2020); floor work only for the risk-area
+One row per Overture building whose footprint centroid lies in the county (spatia-data us_counties, TIGER 2025);
+floor work only for the risk-area
 buildings of the lidar run. Every value x carries x_class (record / observed / modeled), x_source, x_vintage, a band
 (modeled, 90%) or x_precision_ft (when the source states one), and x_null (reason) when x is null (plan §3.1).
 Column meanings: docs/06-layer-schema-v1.md.
@@ -52,6 +53,8 @@ OUT = DATA / "assemble"
 REPORT = Path(__file__).resolve().parent / "out"
 PARCELS = "layers/state/FL/fl_parcels.parquet"
 ADDR = "layers/national/overture_addresses.parquet"
+COUNTIES = "layers/national/us_counties.parquet"
+RECORD_FFH_FT = (-1.0, 30.0)  # a certificate floor height outside this is not a plausible first living floor
 ZONES_EDITION = ZONES.split("@")[1].split("/")[0]
 WESM = "https://index.nationalmap.gov/arcgis/rest/services/3DEPElevationIndex/MapServer/24/query"
 FDEM = ("https://services8.arcgis.com/4L6VuYsPSGSEJ0qe/arcgis/rest/services/Public_FDEM_Elevation_Certificates/"
@@ -96,12 +99,29 @@ def cached(path: Path, make):
 
 
 def county_buildings(c, bk: str, fips: str) -> pd.DataFrame:
-    c.execute(f"""CREATE OR REPLACE TABLE county AS SELECT geom FROM
-        ST_Read('/vsizip/{ROOT}/data/tiger/tl_2020_us_county.zip/tl_2020_us_county.shp') WHERE GEOID = '{fips}'""")
+    """Overture footprints whose centroid (the published lon / lat) lies in the county polygon of spatia-data
+    us_counties (TIGER 2025, the catalog's county layer, so the layer's coverage footprint and membership agree)."""
+    c.execute(f"""CREATE OR REPLACE TABLE county AS SELECT geom FROM read_parquet('{bk}/{COUNTIES}')
+                  WHERE GEOID = '{fips}'""")
     x0, y0, x1, y1 = c.execute("SELECT ST_XMin(geom), ST_YMin(geom), ST_XMax(geom), ST_YMax(geom) FROM county").fetchone()
-    return c.execute(f"""SELECT b.id AS building_id, ST_AsWKB(b.geom) AS wkb, b.lon, b.lat
-        FROM read_parquet('{bk}/{BLDG}') b, county WHERE b.lon BETWEEN {x0} AND {x1} AND b.lat BETWEEN {y0} AND {y1}
-        AND ST_Intersects(county.geom, ST_Point(b.lon, b.lat))""").df().assign(wkb=lambda d: d.wkb.map(bytes))
+    pad = 0.01  # the stored lon / lat only prefilter; membership is decided on the footprint centroid
+    return c.execute(f"""SELECT b.id AS building_id, ST_AsWKB(b.geom) AS wkb
+        FROM read_parquet('{bk}/{BLDG}') b, county
+        WHERE b.lon BETWEEN {x0 - pad} AND {x1 + pad} AND b.lat BETWEEN {y0 - pad} AND {y1 + pad}
+        AND ST_Intersects(county.geom, ST_Centroid(b.geom))""").df().assign(wkb=lambda d: d.wkb.map(bytes))
+
+
+def catalog(names: tuple[str, ...]) -> dict:
+    """version and file_hash of the spatia-data layers read, from the live manifest (provenance of every input)."""
+    import os
+
+    import boto3
+    s3 = boto3.client("s3", endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"], region_name="auto",
+                      aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
+                      aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"])
+    m = json.loads(s3.get_object(Bucket=os.environ["CLOUDFLARE_R2_BUCKET"], Key="manifest.json")["Body"].read())
+    return {e["id"]: {"version": e.get("version"), "file_hash": e.get("file_hash"), "storage_path": e.get("storage_path")}
+            for e in m["layers"] if e["id"] in names}
 
 
 def wesm(bounds, project: str) -> pd.DataFrame:
@@ -219,6 +239,13 @@ def main() -> None:
     b["footprint_area_m2"] = shapely.area(ga)
     cen = shapely.centroid(g)
     b["lon"], b["lat"] = shapely.get_x(cen), shapely.get_y(cen)
+    cat = catalog(("overture_buildings", "overture_addresses", "fl_parcels", "us_counties"))
+    ob = cat["overture_buildings"]
+    b["footprint_source"] = (f"Overture buildings release {ob['version']} (spatia-data overture_buildings, "
+                             f"file_hash {ob['file_hash'][:12]}); county membership: footprint centroid in us_counties "
+                             f"{cat['us_counties']['version']} GEOID {fips}")
+    b["footprint_vintage"] = ob["version"]
+    rep["inputs"] = cat | {"fema_flood_zones": ZONES_EDITION}
     rep["buildings"] = {"county": len(b), "risk_area": int(b.in_risk_area.sum())}
     print(f"buildings {len(b)} ({b.in_risk_area.sum()} in the risk area), {time.time() - t0:.0f} s", flush=True)
 
@@ -443,6 +470,8 @@ def main() -> None:
     cert_src = ("FDEM elevation certificate OBJECTID " + r.cert_objectid.astype("Int64").astype(str) + ", diagram "
                 + r.diagram.astype(str) + ", first living floor (" + r.match.astype(str) + ")")
     ffh_rec = (r.ffe_ft - r.cert_lag_ft).values
+    implausible = rec & ~np.isnan(ffh_rec) & ((ffh_rec < RECORD_FFH_FT[0]) | (ffh_rec > RECORD_FFH_FT[1]))
+    ffh_rec = np.where(implausible, np.nan, ffh_rec)  # the certificate's own LAG is unusable there: no record height
     lag_v = b.lag_ft.values
     ffh = np.where(rec, ffh_rec, p)
     b["ffh_ft"] = ffh
@@ -453,6 +482,11 @@ def main() -> None:
     b["ffh_band_lo"] = np.where(b.ffh_class == "modeled", plo, np.nan)
     b["ffh_band_hi"] = np.where(b.ffh_class == "modeled", phi, np.nan)
     b["ffh_null"] = np.where(b.ffh_ft.notna(), None, np.where(rec, "not_determinable", why_not))
+    raw = (r.ffe_ft - r.cert_lag_ft).values
+    b["ffh_record_note"] = np.where(rec & r.cert_lag_ft.isna().values, "certificate has no usable lowest adjacent grade",
+                                    np.where(implausible, pd.Series(raw).map(lambda v: f"certificate floor minus its "
+                                             f"lowest adjacent grade = {v:.2f} ft, outside {RECORD_FFH_FT[0]:g}.."
+                                             f"{RECORD_FFH_FT[1]:g} ft: not used").values, None))
     ffe = np.where(rec, r.ffe_ft.values, lag_v + p)
     b["ffe_ft"] = ffe
     b["ffe_class"] = np.where(rec, "record", np.where(elig, "modeled", None))
@@ -552,7 +586,8 @@ def main() -> None:
         return {("<null>" if pd.isna(k) else str(k)): int(v) for k, v in b[col].value_counts(dropna=False).items()}
     sf = b.touches_sfha & b.in_risk_area
     rep["floor"] = {"model_eligible": int(elig.sum()), "record": int(rec.sum()),
-                    "record_without_cert_lag": int((rec & np.isnan(ffh_rec)).sum()),
+                    "record_ffh_implausible_nulled": int(implausible.sum()),
+                    "record_without_cert_lag": int((rec & r.cert_lag_ft.isna().values).sum()),
                     "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()),
                     "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()),
                     "record_issue_date_llm_estimate": int(note.notna().sum()),
