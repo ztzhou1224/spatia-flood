@@ -1,0 +1,58 @@
+372736 rows, 89 columns; value columns checked: zones, bfe_ft, lag_ft, roof_ft, eave_ft, year_built, living_area_sqft, raised_flag, ffh_ft, ffe_ft, lift_or_rebuild, bfe_call, address
+ok   zones: value xor null reason: 0
+ok   zones: reason in the six: 0
+ok   bfe_ft: value xor null reason: 0
+ok   bfe_ft: reason in the six: 0
+ok   bfe_class set iff value: 0
+ok   bfe_source set iff value: 0
+ok   bfe_vintage set iff value: 0
+ok   lag_ft: value xor null reason: 0
+ok   lag_ft: reason in the six: 0
+ok   lag_class set iff value: 0
+ok   lag_source set iff value: 0
+ok   lag_vintage set iff value: 0
+ok   roof_ft: value xor null reason: 0
+ok   roof_ft: reason in the six: 0
+ok   roof_class set iff value: 0
+ok   roof_source set iff value: 0
+ok   roof_vintage set iff value: 0
+ok   eave_ft: value xor null reason: 0
+ok   eave_ft: reason in the six: 0
+ok   eave_class set iff value: 0
+ok   eave_source set iff value: 0
+ok   eave_vintage set iff value: 0
+ok   year_built: value xor null reason: 0
+ok   year_built: reason in the six: 0
+ok   year_built_class set iff value: 0
+ok   year_built_source set iff value: 0
+ok   year_built_vintage set iff value: 0
+ok   living_area_sqft: value xor null reason: 0
+ok   living_area_sqft: reason in the six: 0
+ok   living_area_sqft_class set iff value: 0
+ok   living_area_sqft_source set iff value: 0
+ok   living_area_sqft_vintage set iff value: 0
+ok   raised_flag: value xor null reason: 0
+ok   raised_flag: reason in the six: 0
+ok   ffh_ft: value xor null reason: 0
+ok   ffh_ft: reason in the six: 0
+ok   ffh_class set iff value: 0
+ok   ffh_source set iff value: 0
+ok   ffh_vintage set iff value: 0
+ok   ffh: modeled has a band containing the value: 0
+ok   ffh: band only on modeled: 0
+ok   ffe_ft: value xor null reason: 0
+ok   ffe_ft: reason in the six: 0
+ok   ffe_class set iff value: 0
+ok   ffe_source set iff value: 0
+ok   ffe_vintage set iff value: 0
+ok   ffe: modeled has a band containing the value: 0
+ok   ffe: band only on modeled: 0
+ok   lift_or_rebuild: value xor null reason: 0
+ok   lift_or_rebuild: reason in the six: 0
+ok   bfe_call: value xor null reason: 0
+ok   bfe_call: reason in the six: 0
+ok   address: value xor null reason: 0
+ok   address: reason in the six: 0
+ok   address_source set iff value: 0
+ok   bfe_call: null without reason: 0
+ok   owner / personal columns: 0

@@ -45,7 +45,7 @@ Pinellas 2018). Heights (`roof_ft`, `eave_ft`) are feet above `lag_ft`.
 | | `ffe_ft` (+ `_class`, `_source`, `_vintage`, `_band_lo`, `_band_hi`, `_datum`, `_null`) | record: certificate first living floor (diagram 1A / 1B / 5: top of bottom floor; 2-4, 6-9: top of next higher floor); modeled: `lag_ft + ffh_ft` |
 | | `ffe_record_lidar_conflict` | the certificate fails train.py's label screen against our lidar (`roof_p95 - dh < 6` or `dh < -1`): possibly matched to the wrong footprint |
 | | `floor_minus_bfe_ft`, `floor_minus_bfe_band_lo`, `floor_minus_bfe_band_hi` | `ffe_ft - bfe_ft` |
-| Verdict | `bfe_call`, `bfe_call_basis`, `bfe_call_null` | `above` / `below` / `too_close` / `not_applicable`. Record: sign of `ffe - bfe` (`too_close` within 1.645 BFE sigma). Modeled: the 90% FFE band clears the BFE (`above` / `below`) or straddles it (`too_close`) |
+| Verdict | `bfe_call`, `bfe_call_basis`, `bfe_call_null` | `above` / `below` / `too_close` / `not_applicable`. Record: `above` when `ffe >= bfe` (at the BFE counts as above), else `below`; `too_close` when closer than 1.645 BFE sigma (never where the BFE is published in NAVD88: sigma 0). Modeled: the 90% FFE band clears the BFE (`above` / `below`) or straddles it (`too_close`) |
 | | `raised_flag`, `raised_flag_null` | label-free: model point estimate > 3 ft above grade; for every model-eligible building, labelled or not |
 | Change | `lift_or_rebuild`, `lift_or_rebuild_null` | `not_evaluated` (one flight) |
 | Provenance | `model_version` | `E-lgbm-<FIPS>-<sha256[:12] of model + difficulty model + bands>` |

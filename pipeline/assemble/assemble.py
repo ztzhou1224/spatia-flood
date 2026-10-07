@@ -62,7 +62,8 @@ RAISED_FT = 3.0  # train.py raised flag
 QL_RMSEZ_FT = {"QL 0": 5 / 30.48006, "QL 1": 10 / 30.48006, "QL 2": 10 / 30.48006, "QL 3": 20 / 30.48006}  # 3DEP LBS
 LIC = {"bldg": "overture_buildings:ODbL-1.0", "nfhl": "fema_nfhl:public", "3dep": "usgs_3dep:public_domain",
        "dor": "fl_dor_nal:public_record", "fdem": "fdem_certificates:terms_unread",
-       "oaddr": "overture_addresses:FL_public_domain", "geocodio": "geocodio:stored_per_terms"}
+       "oaddr": "overture_addresses:FL_public_domain", "geocodio": "geocodio:stored_per_terms",
+       "osm": "openstreetmap:ODbL-1.0"}
 
 
 def projected(g: np.ndarray, crs: str) -> np.ndarray:
@@ -341,7 +342,9 @@ def main() -> None:
     lab["cert_lag_ft"] = pd.to_numeric(lab.cert_lag_ft, errors="coerce").where(lambda s: s.between(-20, 200))
     r = b[["building_id"]].merge(lab, on="building_id", how="left")
     rec = r.ffe_ft.notna().values
-    issued = pd.to_datetime(r.issued_at, unit="ms", errors="coerce").dt.date.astype(str)
+    issued = pd.to_datetime(r.issued_at, unit="ms", errors="coerce")
+    issued_ok = issued.between(pd.Timestamp("1990-01-01"), pd.Timestamp(rep["built"]))
+    issued = issued.dt.strftime("%Y-%m-%d").where(issued_ok, "unknown")  # FDEM issuedAt: missing or invalid dates
     cert_src = ("FDEM elevation certificate OBJECTID " + r.cert_objectid.astype("Int64").astype(str) + ", diagram "
                 + r.diagram.astype(str) + ", first living floor (" + r.match.astype(str) + ")")
     ffh_rec = (r.ffe_ft - r.cert_lag_ft).values
@@ -378,7 +381,7 @@ def main() -> None:
     b["floor_minus_bfe_band_hi"] = b.ffe_band_hi - bfe
     sig = np.nan_to_num(b.bfe_precision_ft.values.astype(float))
     have = b.touches_sfha.values & ~np.isnan(bfe) & ~np.isnan(ffe)
-    rec_call = np.where(np.abs(ffe - bfe) <= Z90 * sig, "too_close", np.where(ffe >= bfe, "above", "below"))
+    rec_call = np.where(np.abs(ffe - bfe) < Z90 * sig, "too_close", np.where(ffe >= bfe, "above", "below"))
     mod_call = np.where(b.ffe_band_lo.values >= bfe, "above", np.where(b.ffe_band_hi.values < bfe, "below", "too_close"))
     call = np.where(~b.touches_sfha.values, "not_applicable", np.where(have, np.where(rec, rec_call, mod_call), None))
     b["bfe_call"] = call
@@ -414,7 +417,8 @@ def main() -> None:
         gi = b.building_id.map(gc.address)
         use = addr.isna().values & gi.notna().values
         addr[use] = gi[use].values
-        asrc[use] = "geocodio reverse (" + b.building_id.map(gc.source)[use] + ")"
+        asrc[use] = ("geocodio reverse (" + b.building_id.map(gc.source).fillna("") + ", "
+                     + b.building_id.map(gc.accuracy_type).fillna("") + ")")[use]
     b["address"], b["address_source"] = addr.values, asrc.values
     b["address_points_in_footprint"] = n_pts.reindex(range(len(b))).fillna(0).astype(int).values
     b["address_null"] = np.where(addr.notna(), None, "not_evaluated")  # until geocodio.py has run
@@ -434,6 +438,8 @@ def main() -> None:
         src = asrc.iat[i]
         if isinstance(src, str):
             s.append(LIC["oaddr"] if src.startswith("overture") else LIC["geocodio"] if src.startswith("geocodio") else LIC["dor"])
+            if "OpenStreetMap" in src:
+                s.append(LIC["osm"])
         lic.append(sorted(set(s)))
     b["input_licences"] = lic
     b["provider"] = "public"
@@ -446,7 +452,8 @@ def main() -> None:
     sf = b.touches_sfha & b.in_risk_area
     rep["floor"] = {"model_eligible": int(elig.sum()), "record": int(rec.sum()),
                     "record_without_cert_lag": int((rec & np.isnan(ffh_rec)).sum()),
-                    "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()), "ffh_class": vc("ffh_class"),
+                    "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()),
+                    "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()), "ffh_class": vc("ffh_class"),
                     "ffh_null": vc("ffh_null"), "raised_flag": vc("raised_flag"),
                     "modeled_band_width_median_ft": round(float(np.nanmedian(phi - plo)), 2),
                     "record_ffh_cert_minus_lidar_lag_median_ft": round(float(np.nanmedian(r.cert_lag_ft - lag_v)), 2)}

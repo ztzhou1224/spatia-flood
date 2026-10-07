@@ -1,0 +1,12 @@
+{
+ "fips": "12103",
+ "lookups_this_run": 727,
+ "with_address": 727,
+ "accuracy_type": {
+  "rooftop": 717,
+  "nearest_street": 8,
+  "nearest_place": 2
+ },
+ "accuracy_median": 1.0,
+ "total_cached": 727
+}
