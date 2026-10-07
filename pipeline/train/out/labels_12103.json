@@ -1,0 +1,25 @@
+{
+ "fips": "12103",
+ "run": "pinellas_2018",
+ "buildings": 290540,
+ "fdem_records_statewide": 210888,
+ "certificates_residential_navd88_latest_in_bbox_with_target": 8421,
+ "matched_within": 6690,
+ "matched_nearest_10m": 1107,
+ "unmatched": 624,
+ "labels_one_per_building": 7515,
+ "diagrams": {
+  "1A": 4803,
+  "1B": 1034,
+  "7": 583,
+  "8": 466,
+  "6": 348,
+  "5": 198,
+  "3": 46,
+  "9": 24,
+  "2A": 6,
+  "2B": 4
+ },
+ "buildings_with_parcel": 287435,
+ "residential_parcel_000_009": 248073
+}
