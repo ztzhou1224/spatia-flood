@@ -44,7 +44,7 @@ def summarise(g: pd.DataFrame) -> pd.Series:
         "missing_bfe_in_sfha": int((sf & g.bfe_ft.isna()).sum()),
         "missing_floor_in_risk": int((g.in_risk_area & g.ffh_ft.isna()).sum()),
         "missing_address": int(g.address.isna().sum()), "missing_parcel": int(g.parcel_key.isna().sum()),
-        "lidar": "; ".join(sorted({f"{w} ({v})" for w, v in zip(g.lidar_workunit, g.lag_vintage, strict=True)
+        "lidar": "; ".join(sorted({f"{w} ({v})" for w, v in zip(g.lidar_workunit, g.ground_vintage, strict=True)
                                    if isinstance(w, str) and isinstance(v, str)})),
     })
 
@@ -56,7 +56,7 @@ def main() -> None:
     ap.add_argument("--res", type=int, default=8)
     a = ap.parse_args()
     cols = ["lon", "lat", "in_risk_area", "touches_sfha", "ffh_class", "ffh_ft", "raised_flag", "bfe_call", "bfe_ft",
-            "address", "parcel_key", "lidar_workunit", "lag_vintage"]
+            "address", "parcel_key", "lidar_workunit", "ground_vintage"]
     b = pd.read_parquet(OUT / f"buildings_{a.fips}.parquet", columns=cols)
     b["cell"] = [h3.latlng_to_cell(la, lo, a.res) for la, lo in zip(b.lat, b.lon, strict=True)]
     gate = json.loads((ROOT / "pipeline" / "train" / "out" / f"gate_{a.fips}_{a.release}.json").read_text())

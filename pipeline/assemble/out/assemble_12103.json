@@ -19,12 +19,23 @@
    "file_hash": "96191e4f601f8a2aee9f26db22e273aa4528e2f56591b87a7b367536350703d4",
    "storage_path": "layers/national/overture_buildings.parquet"
   },
+  "fema_flood_zones": {
+   "version": "2026.04",
+   "file_hash": "1d4ecb38549e05b0974271c863a3288543d9d01be682fd2979890f368927c64d",
+   "storage_path": "layers/national/fema_flood_zones@20260930T082454Z-9c7789f1/current/**/*.parquet"
+  },
+  "fema_bfe_context": {
+   "version": "2026.04",
+   "file_hash": "80c177be8c76c335fd6703b57d9a5ffb05c326510e22ffff02c0aa5dd2d80f52",
+   "storage_path": "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
+  },
   "fl_parcels": {
    "version": "2025",
    "file_hash": "3b2b64f96112083cdabed16862d9ef84d19629773b435677bbb93b1f984f17c6",
    "storage_path": "layers/state/FL/fl_parcels.parquet"
   },
-  "fema_flood_zones": "20260930T082454Z-9c7789f1"
+  "fema_flood_zones_release": "20260930T082454Z-9c7789f1",
+  "fema_bfe_context_release": "20260930T082454Z-9c7789f1"
  },
  "buildings": {
   "county": 372764,
@@ -115,23 +126,25 @@
  "addresses_missing_in_risk_area": 0,
  "floor": {
   "model_eligible": 247653,
-  "record": 7515,
-  "record_ffh_implausible_nulled": 35,
-  "record_without_cert_lag": 33,
-  "record_lidar_conflict": 298,
-  "record_issue_date_unknown": 265,
+  "record": 7461,
+  "record_without_cert_lag": 32,
+  "certificates_matched": 7515,
+  "certificates_rejected_vs_lidar": 54,
+  "record_ffh_not_usable": 34,
+  "record_lidar_conflict": 300,
+  "record_issue_date_unknown": 261,
   "record_issue_date_llm_estimate": 265,
   "record_issue_date_still_unknown": 0,
   "ffh_class": {
-   "modeled": 240305,
-   "<null>": 125012,
-   "record": 7447
+   "modeled": 240356,
+   "<null>": 124981,
+   "record": 7427
   },
   "ffh_null": {
-   "<null>": 247752,
-   "not_evaluated": 121904,
+   "<null>": 247783,
+   "not_evaluated": 121907,
    "no_coverage": 3038,
-   "not_determinable": 70
+   "not_determinable": 36
   },
   "raised_flag": {
    "False": 205735,
@@ -139,38 +152,38 @@
    "True": 41918
   },
   "modeled_band_width_median_ft": 2.15,
-  "record_ffh_cert_minus_lidar_lag_median_ft": 0.44
+  "record_cert_lag_minus_lidar_ground_median_ft": 0.44
  },
  "bfe_call": {
   "all": {
    "not_applicable": 280521,
-   "too_close": 35973,
-   "below": 33032,
-   "<null>": 15442,
-   "above": 7796
+   "too_close": 35994,
+   "below": 33039,
+   "<null>": 15443,
+   "above": 7767
   },
   "basis": {
-   "<null>": 295963,
-   "modeled_band": 65688,
-   "record": 6444,
-   "modeled_band+interpolated_bfe": 4361,
-   "record+interpolated_bfe": 308
+   "<null>": 295964,
+   "modeled_band": 65725,
+   "record": 6406,
+   "modeled_band+interpolated_bfe": 4365,
+   "record+interpolated_bfe": 304
   },
   "null": {
-   "<null>": 357322,
+   "<null>": 357321,
    "not_evaluated": 10512,
    "no_coverage": 4363,
-   "not_determinable": 567
+   "not_determinable": 568
   },
   "sfha_buildings": 92243,
-  "sfha_decided_share": 0.443
+  "sfha_decided_share": 0.442
  },
- "seconds": 90,
+ "seconds": 109,
  "parcel_table": {
   "rows": 432360,
   "distinct_geometries": 315982,
   "with_building": 414888,
-  "any_building_below_bfe": 56612,
+  "any_building_below_bfe": 56619,
   "buildings_spanning_parcels": 29992
  }
 }

@@ -62,6 +62,7 @@ FDEM = ("https://services8.arcgis.com/4L6VuYsPSGSEJ0qe/arcgis/rest/services/Publ
 ALBERS = "EPSG:3086"
 BFE_LINES = "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
 LINE_SEARCH_M = 1000.0
+LINES_EDITION = BFE_LINES.split("@")[1].split("/")[0]
 BFE_ROUND_FT = 0.5  # FIRM BFEs are whole feet: an interpolated BFE carries +-0.5 ft beyond its two lines
 Z90 = 1.645
 RAISED_FT = 3.0  # train.py raised flag
@@ -239,13 +240,14 @@ def main() -> None:
     b["footprint_area_m2"] = shapely.area(ga)
     cen = shapely.centroid(g)
     b["lon"], b["lat"] = shapely.get_x(cen), shapely.get_y(cen)
-    cat = catalog(("overture_buildings", "overture_addresses", "fl_parcels", "us_counties"))
+    cat = catalog(("overture_buildings", "overture_addresses", "fl_parcels", "us_counties", "fema_flood_zones",
+                   "fema_bfe_context"))
     ob = cat["overture_buildings"]
     b["footprint_source"] = (f"Overture buildings release {ob['version']} (spatia-data overture_buildings, "
                              f"file_hash {ob['file_hash'][:12]}); county membership: footprint centroid in us_counties "
                              f"{cat['us_counties']['version']} GEOID {fips}")
-    b["footprint_vintage"] = ob["version"]
-    rep["inputs"] = cat | {"fema_flood_zones": ZONES_EDITION}
+    b["footprint_release"] = ob["version"]  # an edition, not a measurement date
+    rep["inputs"] = cat | {"fema_flood_zones_release": ZONES_EDITION, "fema_bfe_context_release": LINES_EDITION}
     rep["buildings"] = {"county": len(b), "risk_area": int(b.in_risk_area.sum())}
     print(f"buildings {len(b)} ({b.in_risk_area.sum()} in the risk area), {time.time() - t0:.0f} s", flush=True)
 
@@ -272,7 +274,9 @@ def main() -> None:
     b["zones"] = lists(zl.groupby("a").rec.agg(list), range(len(b)))
     share_sum = pr.groupby("a").share.sum().reindex(range(len(b))).fillna(0)
     b["zones_null"] = np.where(share_sum.values > 0, None, "no_coverage")
-    b["zone_main"] = zl.drop_duplicates("a").set_index("a").fld_zone.reindex(range(len(b))).values
+    first_zone = zl.drop_duplicates("a").set_index("a").reindex(range(len(b)))
+    b["zone_main"] = first_zone.fld_zone.values
+    b["zone_main_subtype"] = first_zone.zone_subty.values  # same element as zone_main: zones[1]
     b["sfha_share"] = pr[pr.sfha].groupby("a").share.sum().reindex(range(len(b))).fillna(0).clip(upper=1).values
     b["touches_sfha"] = b.sfha_share > 0
     eff = pr.sort_values("share", ascending=False).drop_duplicates("a").set_index("a").firm_panel_eff_date_max
@@ -310,7 +314,7 @@ def main() -> None:
     b.loc[ia, "bfe_band_lo"], b.loc[ia, "bfe_band_hi"] = ok_.lo.values, ok_.hi.values
     b.loc[ia, "bfe_class"], b.loc[ia, "bfe_method"] = "modeled", "interpolated"
     b.loc[ia, "bfe_source"] = ("FEMA NFHL BFE lines / cross-sections, DFIRM " + ok_.dfirm.astype(str)
-                               + f" (spatia-data fema_bfe_context@{ZONES_EDITION}): " + ok_.src).values
+                               + f" (spatia-data fema_bfe_context@{LINES_EDITION}): " + ok_.src).values
     b.loc[ia, "bfe_vintage"] = pd.to_datetime(ok_.eff).dt.strftime("%Y-%m-%d").values
     b.loc[ia, "bfe_datum"] = ("NAVD88 ft; " + ok_.status.astype(str)).values
     b.loc[ia, "bfe_null"] = None
@@ -348,14 +352,15 @@ def main() -> None:
     f = b[["building_id"]].merge(feat, on="building_id", how="left")
     risk = b.in_risk_area.values
     lag = pd.Series(np.where(risk, f.g_lag, np.nan))
-    b["lag_ft"] = lag
-    b["lag_class"] = np.where(lag.notna(), "observed", None)
-    b["lag_source"] = np.where(lag.notna(), "1 m DEM, lowest in a 0.5-2.5 m ring; " + lidar_src, None)
-    b["lag_vintage"] = np.where(lag.notna(), lidar_vint, None)
-    b["lag_precision_ft"] = np.where(lag.notna(), w.ql.map(QL_RMSEZ_FT), np.nan)
-    b["lag_geoid"] = np.where(lag.notna(), w.geoid, None)
+    b["ground_ft"] = lag  # lidar ring minimum, NOT the Elevation Certificate's Lowest Adjacent Grade
+    b["ground_class"] = np.where(lag.notna(), "observed", None)
+    b["ground_source"] = np.where(lag.notna(), "lidar 1 m DEM, lowest cell in a 0.5-2.5 m ring outside the footprint "
+                                  "(not the Elevation Certificate LAG); " + lidar_src, None)
+    b["ground_vintage"] = np.where(lag.notna(), lidar_vint, None)
+    b["ground_precision_ft"] = np.where(lag.notna(), w.ql.map(QL_RMSEZ_FT), np.nan)
+    b["ground_geoid"] = np.where(lag.notna(), w.geoid, None)
     gnull = f.ground_status.map({"no_coverage": "no_coverage", "not_determinable": "not_determinable"}).fillna("not_determinable")
-    b["lag_null"] = nulls(lag, pd.Series(np.where(risk, gnull, "not_evaluated")))
+    b["ground_null"] = nulls(lag, pd.Series(np.where(risk, gnull, "not_evaluated")))
     ok = risk & (f.lpc_status == "ok").values
     lpc_null = f.lpc_status.map({"too_large": "not_evaluated", "no_coverage": "no_coverage", "no_ground": "not_determinable",
                                  "no_points": "not_determinable", "not_determinable": "not_determinable"})
@@ -364,7 +369,7 @@ def main() -> None:
         v = pd.Series(np.where(ok, f[src], np.nan))
         b[col] = v
         b[f"{col[:-3]}_class"] = np.where(v.notna(), "observed", None)
-        b[f"{col[:-3]}_source"] = np.where(v.notna(), f"point cloud {src}, ft above lag_ft; " + lidar_src, None)
+        b[f"{col[:-3]}_source"] = np.where(v.notna(), f"point cloud {src}, ft above ground_ft; " + lidar_src, None)
         b[f"{col[:-3]}_vintage"] = np.where(v.notna(), lidar_vint, None)
         b[f"{col[:-3]}_null"] = nulls(v, pd.Series(np.where(ok, "not_determinable", lpc_null)))
     b["lidar_workunit"], b["lidar_ql"] = w.workunit.values, w.ql.values
@@ -469,38 +474,49 @@ def main() -> None:
                      + e.issued_raw.fillna("missing") + "; " + e.reason.fillna("")).values
     cert_src = ("FDEM elevation certificate OBJECTID " + r.cert_objectid.astype("Int64").astype(str) + ", diagram "
                 + r.diagram.astype(str) + ", first living floor (" + r.match.astype(str) + ")")
-    ffh_rec = (r.ffe_ft - r.cert_lag_ft).values
-    implausible = rec & ~np.isnan(ffh_rec) & ((ffh_rec < RECORD_FFH_FT[0]) | (ffh_rec > RECORD_FFH_FT[1]))
-    ffh_rec = np.where(implausible, np.nan, ffh_rec)  # the certificate's own LAG is unusable there: no record height
-    lag_v = b.lag_ft.values
-    ffh = np.where(rec, ffh_rec, p)
-    b["ffh_ft"] = ffh
-    b["ffh_class"] = np.where(rec & ~np.isnan(ffh_rec), "record", np.where(~rec & elig, "modeled", None))
-    b["ffh_source"] = np.where(b.ffh_class == "record", cert_src + " minus its lowest adjacent grade",
-                               np.where(b.ffh_class == "modeled", f"model {version} (lidar + DOR records)", None))
-    b["ffh_vintage"] = np.where(b.ffh_class == "record", issued, np.where(b.ffh_class == "modeled", lidar_vint, None))
-    b["ffh_band_lo"] = np.where(b.ffh_class == "modeled", plo, np.nan)
-    b["ffh_band_hi"] = np.where(b.ffh_class == "modeled", phi, np.nan)
+    # A certificate is used only if its floor is physically plausible against our independent lidar ground: certificate
+    # FFE minus ground_ft within RECORD_FFH_FT (GIS review 2026-10-07: the impossible values are FFEs, not LAGs). A
+    # rejected certificate falls back to the model where the building is model-eligible; record_note says why.
+    ground_v = b.ground_ft.values
+    cert_ffe = r.ffe_ft.values
+    rec_raw = ~np.isnan(cert_ffe)
+    d_ground = cert_ffe - ground_v
+    rec = rec_raw & (np.isnan(ground_v) | ((d_ground >= RECORD_FFH_FT[0]) & (d_ground <= RECORD_FFH_FT[1])))
+    rejected = rec_raw & ~rec
+    ffh_cert = (r.ffe_ft - r.cert_lag_ft).values
+    ffh_ok = rec & ~np.isnan(ffh_cert) & (ffh_cert >= RECORD_FFH_FT[0]) & (ffh_cert <= RECORD_FFH_FT[1])
+    model_floor = ~rec & elig
+    b["ffh_ft"] = np.where(ffh_ok, ffh_cert, np.where(model_floor, p, np.nan))
+    b["ffh_class"] = np.where(ffh_ok, "record", np.where(model_floor, "modeled", None))
+    b["ffh_source"] = np.where(ffh_ok, cert_src + " minus its own lowest adjacent grade",
+                               np.where(model_floor, f"model {version} (lidar + DOR records)", None))
+    b["ffh_vintage"] = np.where(ffh_ok, issued, np.where(model_floor, lidar_vint, None))
+    b["ffh_band_lo"] = np.where(model_floor, plo, np.nan)
+    b["ffh_band_hi"] = np.where(model_floor, phi, np.nan)
     b["ffh_null"] = np.where(b.ffh_ft.notna(), None, np.where(rec, "not_determinable", why_not))
-    raw = (r.ffe_ft - r.cert_lag_ft).values
-    b["ffh_record_note"] = np.where(rec & r.cert_lag_ft.isna().values, "certificate has no usable lowest adjacent grade",
-                                    np.where(implausible, pd.Series(raw).map(lambda v: f"certificate floor minus its "
-                                             f"lowest adjacent grade = {v:.2f} ft, outside {RECORD_FFH_FT[0]:g}.."
-                                             f"{RECORD_FFH_FT[1]:g} ft: not used").values, None))
-    ffe = np.where(rec, r.ffe_ft.values, lag_v + p)
+    oid_s = r.cert_objectid.astype("Int64").astype(str)
+    b["record_note"] = np.where(
+        rejected, "FDEM certificate OBJECTID " + oid_s + " not used: its floor " + pd.Series(cert_ffe).round(2).astype(str)
+        + " ft NAVD88 is " + pd.Series(d_ground).round(2).astype(str) + f" ft from the lidar ground (outside "
+        f"{RECORD_FFH_FT[0]:g}..{RECORD_FFH_FT[1]:g} ft)",
+        np.where(rec & ~ffh_ok & r.cert_lag_ft.isna().values, "certificate has no usable lowest adjacent grade: no record "
+                 "floor height (its floor elevation is used)",
+                 np.where(rec & ~ffh_ok, "certificate floor minus its own lowest adjacent grade = "
+                          + pd.Series(ffh_cert).round(2).astype(str) + f" ft, outside {RECORD_FFH_FT[0]:g}.."
+                          f"{RECORD_FFH_FT[1]:g} ft: no record floor height (its floor elevation is used)", None)))
+    ffe = np.where(rec, cert_ffe, np.where(model_floor, ground_v + p, np.nan))
     b["ffe_ft"] = ffe
-    b["ffe_class"] = np.where(rec, "record", np.where(elig, "modeled", None))
-    b["ffe_source"] = np.where(rec, cert_src, np.where(elig, f"lag_ft + modeled ffh_ft (model {version})", None))
-    b["ffe_vintage"] = np.where(rec, issued, np.where(elig, lidar_vint, None))
-    b["ffe_band_lo"] = np.where(rec, np.nan, lag_v + plo)
-    b["ffe_band_hi"] = np.where(rec, np.nan, lag_v + phi)
+    b["ffe_class"] = np.where(rec, "record", np.where(model_floor, "modeled", None))
+    b["ffe_source"] = np.where(rec, cert_src, np.where(model_floor, f"ground_ft + modeled ffh_ft (model {version})", None))
+    b["ffe_vintage"] = np.where(rec, issued, np.where(model_floor, lidar_vint, None))
+    b["ffe_band_lo"] = np.where(model_floor, ground_v + plo, np.nan)
+    b["ffe_band_hi"] = np.where(model_floor, ground_v + phi, np.nan)
     b["record_vintage_note"] = np.where(rec, note, None)
-    b["ffe_datum"] = np.where(rec, "NAVD88 ft (certificate; geoid not stated)",
-                              np.where(elig, "NAVD88 ft US survey, " + w.geoid.astype(str), None))
-    b["ffe_null"] = np.where(b.ffe_ft.notna(), None, why_not)
-    dh = r.ffe_ft.values - lag_v
-    b["ffe_record_lidar_conflict"] = pd.array(np.where(rec & ok, (mm.roof_p95.values - dh < 6) | (dh < -1), pd.NA),
-                                              dtype="boolean")
+    b["ffe_datum"] = np.where(rec, "NAVD88 ft (certificate, vertical datum filtered to NAVD 1988; geoid not stated)",
+                              np.where(model_floor, "NAVD88 ft US survey, " + w.geoid.astype(str), None))
+    b["ffe_null"] = np.where(b.ffe_ft.notna(), None, np.where(rejected, "not_determinable", why_not))
+    screen = (mm.roof_p95.values - d_ground < 6) | (d_ground < -1)
+    b["ffe_record_lidar_conflict"] = pd.array(np.where(rejected, True, np.where(rec & ok, screen, pd.NA)), dtype="boolean")
     b["lift_or_rebuild"] = pd.array([pd.NA] * len(b), dtype="boolean")
     b["lift_or_rebuild_null"] = "not_evaluated"  # one lidar flight (owner answer 3); so no record is marked stale
 
@@ -568,7 +584,7 @@ def main() -> None:
             s.append(LIC["3dep"])
         if has_p[i]:
             s.append(LIC["dor"])
-        if rec[i]:
+        if rec_raw[i]:
             s.append(LIC["fdem"])
         src = asrc.iat[i]
         if isinstance(src, str):
@@ -586,15 +602,16 @@ def main() -> None:
         return {("<null>" if pd.isna(k) else str(k)): int(v) for k, v in b[col].value_counts(dropna=False).items()}
     sf = b.touches_sfha & b.in_risk_area
     rep["floor"] = {"model_eligible": int(elig.sum()), "record": int(rec.sum()),
-                    "record_ffh_implausible_nulled": int(implausible.sum()),
                     "record_without_cert_lag": int((rec & r.cert_lag_ft.isna().values).sum()),
+                    "certificates_matched": int(rec_raw.sum()), "certificates_rejected_vs_lidar": int(rejected.sum()),
+                    "record_ffh_not_usable": int((rec & ~ffh_ok).sum()),
                     "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()),
                     "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()),
                     "record_issue_date_llm_estimate": int(note.notna().sum()),
                     "record_issue_date_still_unknown": int((rec & (issued == "unknown").values).sum()), "ffh_class": vc("ffh_class"),
                     "ffh_null": vc("ffh_null"), "raised_flag": vc("raised_flag"),
                     "modeled_band_width_median_ft": round(float(np.nanmedian(phi - plo)), 2),
-                    "record_ffh_cert_minus_lidar_lag_median_ft": round(float(np.nanmedian(r.cert_lag_ft - lag_v)), 2)}
+                    "record_cert_lag_minus_lidar_ground_median_ft": round(float(np.nanmedian(r.cert_lag_ft - ground_v)), 2)}
     rep["bfe_call"] = {"all": vc("bfe_call"), "basis": vc("bfe_call_basis"), "null": vc("bfe_call_null"),
                        "sfha_buildings": int(sf.sum()),
                        "sfha_decided_share": round(float(b.bfe_call[sf].isin(["above", "below"]).mean()), 3)}
@@ -636,7 +653,16 @@ def main() -> None:
                            "buildings_spanning_parcels": int(b.spans_parcels.sum())}
 
     gdf = gpd.GeoDataFrame(b.drop(columns="wkb"), geometry=g, crs="OGC:CRS84")
-    gdf.to_parquet(OUT / f"buildings_{fips}.parquet", index=False)
+    path = OUT / f"buildings_{fips}.parquet"
+    gdf.to_parquet(path, index=False)
+    # provenance inside the file itself (so a consumer pinning the file's hash can prove every parent's edition)
+    import pyarrow.parquet as pq
+    t = pq.read_table(path)
+    prov = {"producer": "spatia-flood pipeline/assemble/assemble.py", "fips": fips, "run": run, "release": a.release,
+            "built": rep["built"], "model_version": version, "inputs": rep["inputs"],
+            "lidar_workunits": rep["lidar"]["workunits"], "gate": rep["gate_recheck"]}
+    t = t.replace_schema_metadata({**(t.schema.metadata or {}), b"spatia_flood": json.dumps(prov, default=str).encode()})
+    pq.write_table(t, path)
     (REPORT / f"assemble_{fips}.json").write_text(json.dumps(rep, indent=1, default=str))
     print(json.dumps(rep, indent=1, default=str))
 
