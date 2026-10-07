@@ -83,3 +83,31 @@ Unit = a residential parcel (DOR use codes 000-009):
 Not yet verified (needs one test request, at most $0.20): that the search results carry `features`
 (foundation type, floor count) and that `offset` pages through a whole ZIP. Owner names in RentCast records are
 dropped at ingest.
+
+## Floor count and foundation: free sources, and whether the model needs them (2026-10-07)
+
+Owner: RentCast for all of Florida is too much; free sources first. Measured for the Pinellas risk area
+(`pipeline/phase0/records_gap.py 12103`, output `out/records_gap_12103.json`), 248,314 houses on residential parcels:
+Overture `num_floors` 826 (0.3%); FDEM certificate (foundation from the building diagram) 6,488 (2.6%); NSI point in
+the footprint 216,663 (withheld from a sold build). 241,024 houses have no clean free floors or foundation record.
+
+Does the model need them? `research/harris_mini/eval_no_records.py` (committed before its first run; output
+`eval_no_records_output.txt`): method E with every NSI column and every stories / foundation record removed
+("E-free"), and with a lidar story count instead (1 if the main eave is below 14 ft, else 2: "E-lidar"). MAE ft,
+screened houses:
+
+| Setting | E (NSI + records) | E-free | E-lidar |
+|---|---|---|---|
+| A within area (5-fold, 1 km blocks) | 0.463 | 0.491 | 0.489 |
+| B within area | 0.289 | 0.289 | 0.288 |
+| C within area | 0.551 | 0.563 | 0.560 |
+| **P (Pinellas) within area** | **0.812** | **0.813** | **0.806** |
+| P from Harris A + B + C | 1.009 | 1.101 | 1.083 |
+
+Trained on local labels (the Florida plan: 109,853 FDEM certificates), removing NSI and all floor / foundation records
+costs 0 to 0.03 ft MAE and leaves the BFE side unchanged (P: 0.890 / 0.892 / 0.891). Only a model carried from
+another state loses more (P from Harris +0.07 to +0.09 ft, BFE side 0.871 -> 0.857-0.860). Lidar stories agree with
+the record story count for 83-95% of houses (A 95.2%, B 85.0%, C 83.1%, P 84.4% vs NSI).
+
+**So the floor estimate needs no RentCast call: 0 requests.** Floors and foundation would only be bought to show
+them as record-class columns; free county appraiser extracts are being surveyed for that first.
