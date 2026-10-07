@@ -345,6 +345,17 @@ def main() -> None:
     issued = pd.to_datetime(r.issued_at, unit="ms", errors="coerce")
     issued_ok = issued.between(pd.Timestamp("1990-01-01"), pd.Timestamp(rep["built"]))
     issued = issued.dt.strftime("%Y-%m-%d").where(issued_ok, "unknown")  # FDEM issuedAt: missing or invalid dates
+    note = pd.Series(None, index=r.index, dtype=object)
+    cpath = OUT / f"dates_clean_{fips}.parquet"  # clean_dates.py: LLM estimates for those dates
+    if cpath.exists():
+        cl = pd.read_parquet(cpath)
+        cl = cl[cl.valid].set_index("cert_objectid")
+        oid = r.cert_objectid.astype("Int64")
+        hit = rec & ~issued_ok.values & oid.isin(cl.index).fillna(False).values
+        e = cl.reindex(oid[hit].astype(int))
+        issued[hit] = np.where(e.estimate.notna(), e.estimate, e.window_start + "/" + e.window_end)
+        note[hit] = ("issue date estimated by LLM (" + e.model + ", " + e.confidence + "): raw issuedAt "
+                     + e.issued_raw.fillna("missing") + "; " + e.reason.fillna("")).values
     cert_src = ("FDEM elevation certificate OBJECTID " + r.cert_objectid.astype("Int64").astype(str) + ", diagram "
                 + r.diagram.astype(str) + ", first living floor (" + r.match.astype(str) + ")")
     ffh_rec = (r.ffe_ft - r.cert_lag_ft).values
@@ -365,6 +376,7 @@ def main() -> None:
     b["ffe_vintage"] = np.where(rec, issued, np.where(elig, lidar_vint, None))
     b["ffe_band_lo"] = np.where(rec, np.nan, lag_v + plo)
     b["ffe_band_hi"] = np.where(rec, np.nan, lag_v + phi)
+    b["record_vintage_note"] = np.where(rec, note, None)
     b["ffe_datum"] = np.where(rec, "NAVD88 ft (certificate; geoid not stated)",
                               np.where(elig, "NAVD88 ft US survey, " + w.geoid.astype(str), None))
     b["ffe_null"] = np.where(b.ffe_ft.notna(), None, why_not)
@@ -453,7 +465,9 @@ def main() -> None:
     rep["floor"] = {"model_eligible": int(elig.sum()), "record": int(rec.sum()),
                     "record_without_cert_lag": int((rec & np.isnan(ffh_rec)).sum()),
                     "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()),
-                    "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()), "ffh_class": vc("ffh_class"),
+                    "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()),
+                    "record_issue_date_llm_estimate": int(note.notna().sum()),
+                    "record_issue_date_still_unknown": int((rec & (issued == "unknown").values).sum()), "ffh_class": vc("ffh_class"),
                     "ffh_null": vc("ffh_null"), "raised_flag": vc("raised_flag"),
                     "modeled_band_width_median_ft": round(float(np.nanmedian(phi - plo)), 2),
                     "record_ffh_cert_minus_lidar_lag_median_ft": round(float(np.nanmedian(r.cert_lag_ft - lag_v)), 2)}

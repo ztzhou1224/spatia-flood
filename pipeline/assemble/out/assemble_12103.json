@@ -80,6 +80,8 @@
   "record_without_cert_lag": 33,
   "record_lidar_conflict": 298,
   "record_issue_date_unknown": 265,
+  "record_issue_date_llm_estimate": 265,
+  "record_issue_date_still_unknown": 0,
   "ffh_class": {
    "modeled": 240305,
    "<null>": 124949,
@@ -120,7 +122,7 @@
   "sfha_buildings": 92243,
   "sfha_decided_share": 0.434
  },
- "seconds": 82,
+ "seconds": 97,
  "parcel_table": {
   "rows": 432360,
   "distinct_geometries": 315982,

@@ -1,0 +1,266 @@
+cert_objectid,issued_raw,form_year,firm_date_raw,estimate,window_start,window_end,confidence,reason,valid,model
+1072,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+1396,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+2223,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+3708,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; under-construction status does not identify a single date within the 2022 form period.,True,gpt-5.5-2026-04-23
+4263,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+7174,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+7701,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+8087,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+8184,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+9534,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+9590,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+12040,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+12381,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+12545,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+13977,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+14785,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+15072,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+15164,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+15224,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+16080,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+16124,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+16827,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+17668,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+18071,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+19450,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+19896,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+19935,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+20155,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+20197,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+20538,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+22411,,2022,2030-09-03,,2022-01-01,2025-12-31,low,"The 2030 panel date is future-invalid, so only the 2022 form period is usable.",True,gpt-5.5-2026-04-23
+22603,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+23022,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+23340,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+23386,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+23693,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+24721,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+28013,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+29802,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+30678,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+31402,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+31615,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+32244,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+32346,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+32662,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+32713,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+34584,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+35258,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+36216,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+36342,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+36385,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+37234,,2022,2005-05-17,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2005 panel.,True,gpt-5.5-2026-04-23
+37588,,2022,2009-08-18,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+41724,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+42174,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+42707,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+42718,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+42908,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+44730,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+44832,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+44852,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+44898,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+45037,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+46416,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+47027,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+47401,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+47896,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+48660,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+49780,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+51107,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+51626,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+52165,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+52388,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+54741,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+55339,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+55435,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+56497,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+56570,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+57649,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+58363,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+58879,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+59015,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+59213,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+59666,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+60456,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+61186,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+61586,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+63115,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+65174,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+65746,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+66033,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+66109,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+68119,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+68471,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+68654,,2026,2021-08-24,,2026-01-01,2026-10-07,medium,No raw date; the 2026 form edition limits the issue to 2026 through today.,True,gpt-5.5-2026-04-23
+68878,,2022,2003-09-03,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+69897,,2018,2003-09-03,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2003 panel.,True,gpt-5.5-2026-04-23
+70713,,2022,2021-08-24,,2022-01-01,2025-12-31,low,No raw date; the 2022 form edition bounds the issue to its use period after the 2021 panel.,True,gpt-5.5-2026-04-23
+70774,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+71208,,2018,2009-08-18,,2018-01-01,2021-12-31,low,No raw date; the 2018 form edition bounds the issue to its use period after the 2009 panel.,True,gpt-5.5-2026-04-23
+72973,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+73005,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+75592,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+76723,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+76776,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+76787,,2026,2003-09-03,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+77063,,2026,2021-08-24,,2023-07-01,2026-10-07,low,Construction-drawing source leaves only the 2026 form cycle as a guide.,True,gpt-5.5-2026-04-23
+77476,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+78059,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+80188,,2018,2009-08-18,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+81184,,2022,2003-09-03,,2019-12-01,2023-10-31,low,Missing elevation source leaves only the 2022 form cycle as a guide.,True,gpt-5.5-2026-04-23
+82497,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+82646,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+82828,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+83889,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+84222,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+84256,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+84509,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+87024,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+87125,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+87711,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+88653,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+89450,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+89739,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+90926,,2022,2008-08-28,,2019-12-01,2023-10-31,low,Under-construction source leaves only the 2022 form cycle as a guide.,True,gpt-5.5-2026-04-23
+93233,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+93684,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+93947,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+94380,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+95451,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+98304,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+100740,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+101144,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+101410,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+102068,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+102267,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+103468,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+103822,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+103835,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+104424,,2022,2030-09-03,,2019-12-01,2023-10-31,low,"Future FIRM date is invalid, so only the 2022 form cycle is usable.",True,gpt-5.5-2026-04-23
+105137,,2018,2009-08-18,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+105529,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+108265,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+109809,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+110871,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+111060,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+113124,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+114010,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+114283,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+114331,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+115135,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+116705,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+116802,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+117434,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+118282,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+118410,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+118607,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+118858,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+118935,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+119241,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+119891,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+121185,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+121396,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+121969,6201-11-22,2018,2003-09-03,2016-11-22,2016-11-22,2016-11-22,high,Raw year 6201 is best read as the transposed year 2016.,True,gpt-5.5-2026-04-23
+122148,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+123538,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+123671,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+124391,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+124409,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+125056,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+125110,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+125720,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+127952,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+128316,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+128452,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+128527,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+128761,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+129649,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+130503,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+131727,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+133028,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+134382,,2018,2008-08-28,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+135515,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+136236,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+136906,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+138226,,2022,2009-08-18,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+138329,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+139869,,2022,2021-08-24,,2021-08-24,2023-10-31,medium,Missing issue date; the 2022 form and 2021 FIRM constrain the window.,True,gpt-5.5-2026-04-23
+141334,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+141511,,2018,2003-09-03,,2015-07-01,2019-11-30,low,Missing elevation source leaves only the 2018 form cycle as a guide.,True,gpt-5.5-2026-04-23
+141686,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+142132,,2018,2005-05-17,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+144433,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+144779,,2026,2009-08-18,,2023-07-01,2026-10-07,low,Under-construction source leaves only the 2026 form cycle as a guide.,True,gpt-5.5-2026-04-23
+145257,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+145844,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+146747,,2026,2021-08-24,,2023-07-01,2026-10-07,medium,Missing issue date; the 2026 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+146778,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+147100,,2018,2003-09-03,,2015-07-01,2019-11-30,medium,Missing issue date; the 2018 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+148595,,2022,2003-09-03,,2019-12-01,2023-10-31,medium,Missing issue date; the 2022 form cycle is the main constraint.,True,gpt-5.5-2026-04-23
+151135,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+151790,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+152306,,2022,2030-09-03,,2018-12-01,2022-11-30,low,"The 2030 FIRM date is impossible, so the 2022 form window is used.",True,gpt-5.5-2026-04-23
+155910,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+156782,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+156837,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+158100,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+158414,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+159618,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+159946,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+160686,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+161345,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+161984,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+162088,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+162214,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+162932,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+164343,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+164576,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+164880,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+164983,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+165654,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+168377,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+169688,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+172884,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+173510,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+173846,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+177941,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+179114,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+180353,,2022,2009-08-18,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+180757,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+181081,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+183061,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+183070,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+183914,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+184576,,2026,2003-09-03,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+184951,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+186463,,2018,2005-05-17,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+186512,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+187478,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+187631,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+188402,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+189764,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+191213,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+192019,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+192898,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+194373,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+194441,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+196396,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+196700,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+198942,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+199521,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+199972,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+200125,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+200833,,2026,2021-08-24,,2023-07-01,2026-06-30,medium,No raw date; the 2026 EC form limits issuance to its use period.,True,gpt-5.5-2026-04-23
+202238,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+202636,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+202709,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+203371,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+203917,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+204089,,2022,2021-08-24,,2021-08-24,2022-11-30,medium,No raw date; the 2021 FIRM narrows the 2022-form window.,True,gpt-5.5-2026-04-23
+204653,,2022,2003-09-03,,2018-12-01,2022-11-30,medium,No raw date; the 2022 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+205345,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+206399,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+207642,,2018,2009-08-18,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
+209996,,2018,2003-09-03,,2015-12-01,2018-11-30,medium,No raw date; the 2018 EC form is the only useful constraint.,True,gpt-5.5-2026-04-23
