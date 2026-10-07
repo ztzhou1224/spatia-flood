@@ -14,6 +14,10 @@ import sys
 import time
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+import shapely
+
 from risk_area import BLDG, DATA, OUT, connect
 
 ADDR = "layers/national/overture_addresses.parquet"
@@ -37,25 +41,32 @@ def main(fips: str) -> None:
     print(f"read: {c.execute('SELECT count(*) FROM br').fetchone()[0]} buildings, "
           f"{c.execute('SELECT count(*) FROM ad').fetchone()[0]} address points, "
           f"{c.execute('SELECT count(*) FROM pa').fetchone()[0]} parcels in {time.time() - t0:.0f} s", flush=True)
-    c.execute("""CREATE TABLE has_pt AS SELECT DISTINCT br.id FROM br JOIN ad
-                 ON ad.lon BETWEEN ST_XMin(br.geom) AND ST_XMax(br.geom) AND ad.lat BETWEEN ST_YMin(br.geom) AND ST_YMax(br.geom)
-                 WHERE ST_Intersects(br.geom, ST_Point(ad.lon, ad.lat))""")
-    c.execute("""CREATE TABLE in_pa AS SELECT br.id, any_value(pa.parcel_id) AS parcel_id, any_value(pa.dor_uc) AS dor_uc,
-                 bool_or(nullif(trim(pa.phy_addr1), '') IS NOT NULL) AS situs
-                 FROM br JOIN pa ON ST_Intersects(pa.geom, ST_Point(br.lon, br.lat)) GROUP BY br.id""")
-    r = c.execute("""SELECT count(*) AS buildings,
-            count(*) FILTER (WHERE h.id IS NOT NULL) AS with_address_point,
-            count(*) FILTER (WHERE h.id IS NULL AND p.situs) AS parcel_situs_only,
-            count(*) FILTER (WHERE h.id IS NULL AND coalesce(p.situs, false) = false) AS no_free_address,
-            count(*) FILTER (WHERE p.id IS NULL) AS no_parcel,
-            count(DISTINCT p.parcel_id) AS parcels_with_building,
-            count(DISTINCT p.parcel_id) FILTER (WHERE p.dor_uc < '100') AS residential_parcels_with_building
-          FROM br LEFT JOIN has_pt h USING (id) LEFT JOIN in_pa p USING (id)""").df().iloc[0].to_dict()
-    res = {"fips": fips, **{k: int(v) for k, v in r.items()}}
+    # point-in-polygon matching with shapely's STRtree (DuckDB's range join over these tables ran > 25 min)
+    br = c.execute("SELECT id, ST_AsWKB(geom) AS wkb, lon, lat FROM br").df()
+    ad = c.execute("SELECT lon, lat FROM ad").df()
+    pa = c.execute("SELECT parcel_id, dor_uc, nullif(trim(phy_addr1), '') IS NOT NULL AS situs, ST_AsWKB(geom) AS wkb FROM pa").df()
+    fp = shapely.from_wkb(br.wkb.map(bytes).values)
+    _, bi = shapely.STRtree(fp).query(shapely.points(ad.lon.values, ad.lat.values), predicate="within")
+    has_pt = np.zeros(len(br), bool)
+    has_pt[bi] = True
+    pg = shapely.from_wkb(pa.wkb.map(bytes).values)
+    bj, pj = shapely.STRtree(pg).query(shapely.points(br.lon.values, br.lat.values), predicate="within")
+    first = pd.DataFrame({"b": bj, "p": pj}).drop_duplicates("b")
+    parcel = np.full(len(br), -1)
+    parcel[first.b.values] = first.p.values
+    has_pa = parcel >= 0
+    situs = np.zeros(len(br), bool)
+    situs[has_pa] = pa.situs.values[parcel[has_pa]]
+    pid = pd.Series(np.where(has_pa, pa.parcel_id.values[np.maximum(parcel, 0)], None))
+    res_uc = pd.Series(np.where(has_pa, pa.dor_uc.values[np.maximum(parcel, 0)], None)).fillna("999") < "100"
+    r = {"buildings": len(br), "with_address_point": int(has_pt.sum()),
+         "parcel_situs_only": int((~has_pt & situs).sum()), "no_free_address": int((~has_pt & ~situs).sum()),
+         "no_parcel": int((~has_pa).sum()), "parcels_with_building": int(pid.nunique()),
+         "residential_parcels_with_building": int(pid[res_uc].nunique())}
+    res = {"fips": fips, **r}
     (OUT / f"address_gap_{fips}.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1), f"\n{time.time() - t0:.0f} s")
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
     main(sys.argv[1])
