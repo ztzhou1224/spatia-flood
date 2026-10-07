@@ -204,18 +204,19 @@ def load_points(src: tuple) -> tuple[np.ndarray, ...]:
         return x, y, z, c
     _, base, box, keys, metric = src
     xs, ys, zs, cs = [], [], [], []
-    for k in keys:
-        if base.startswith("file://"):
-            las = laspy.read(f"{base[7:]}/ept-data/{k}.laz")
-        else:
-            las = laspy.read(io.BytesIO(fetch_retry(f"{base}/ept-data/{k}.laz")))
-        x, y = np.asarray(las.x), np.asarray(las.y)
-        cls = np.asarray(las.classification)
-        keep = (x >= box[0]) & (x < box[2]) & (y >= box[1]) & (y < box[3]) & ~np.isin(cls, DROP)
-        xs.append(x[keep])
-        ys.append(y[keep])
-        zs.append(np.asarray(las.z)[keep])
-        cs.append(np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16))
+    with ThreadPoolExecutor(8) as ex:  # node files are small: fetch them concurrently, decode one by one
+        blobs = ex.map(lambda k: fetch_retry(f"{base}/ept-data/{k}.laz"), keys)
+        for blob in blobs:
+            las = laspy.read(io.BytesIO(blob))
+            x, y = np.asarray(las.x), np.asarray(las.y)
+            cls = np.asarray(las.classification)
+            keep = (x >= box[0]) & (x < box[2]) & (y >= box[1]) & (y < box[3]) & ~np.isin(cls, DROP)
+            xs.append(x[keep])
+            ys.append(y[keep])
+            zs.append(np.asarray(las.z)[keep])
+            cs.append(np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16))
+    if not xs:
+        return tuple(np.empty(0) for _ in range(4))
     x, y = np.concatenate(xs), np.concatenate(ys)
     if len(x):
         x, y = Transformer.from_crs("EPSG:3857", metric, always_xy=True).transform(x, y)
@@ -223,6 +224,8 @@ def load_points(src: tuple) -> tuple[np.ndarray, ...]:
 
 
 def fetch_retry(url: str) -> bytes:
+    if url.startswith("file://"):
+        return Path(url[7:]).read_bytes()
     for attempt in range(8):
         try:
             r = requests.get(url, timeout=(30, 300))
@@ -414,7 +417,9 @@ def run(urls: dict, work: Path, workers: int) -> None:
     log.info("ground: %s", g.ground_status.value_counts().to_dict())
 
     stage("lpc", urls)
-    f = lpc(fp_m, g["lag"].values.astype(float), tiles, max(1, workers - 2))
+    # EPT chunks are small (~4 M points) and network-bound: one worker per core; LAZ tiles (~40 M points) leave
+    # memory headroom with two workers fewer
+    f = lpc(fp_m, g["lag"].values.astype(float), tiles, workers if "ept" in tl else max(1, workers - 2))
     log.info("lpc: %s", f.lpc_status.value_counts().to_dict())
 
     stage("upload", urls)

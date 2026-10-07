@@ -74,8 +74,8 @@ def sources_up(run: str) -> None:
     """Range-read the first LPC and DEM tile from here before paying for a box (rockyweb.usgs.gov was down on
     2026-10-07 and the first box spent 30 min failing)."""
     tl = json.loads((ROOT / "data" / "flood_v1" / "lidar" / run / "tiles.json").read_text())
-    for k in ("lpc", "dem"):
-        url = tl[k][0]["url"]
+    lpc_url = f"{tl['ept']['base']}/ept.json" if "ept" in tl else tl["lpc"][0]["url"]
+    for k, url in (("lpc", lpc_url), ("dem", tl["dem"][0]["url"])):
         req = urllib.request.Request(url, headers={"Range": "bytes=0-1023"})
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
@@ -83,7 +83,7 @@ def sources_up(run: str) -> None:
                     raise SystemExit(f"{k} source answered HTTP {r.status}: not creating a box")
         except (urllib.error.URLError, OSError) as e:
             raise SystemExit(f"{k} source unreachable ({e}): not creating a box") from None
-    print("sources reachable: first LPC and DEM tile answered a range read")
+    print("sources reachable: point cloud and first DEM tile answered a range read")
 
 
 def create(a) -> None:

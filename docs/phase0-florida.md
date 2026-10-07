@@ -111,3 +111,15 @@ the record story count for 83-95% of houses (A 95.2%, B 85.0%, C 83.1%, P 84.4% 
 
 **So the floor estimate needs no RentCast call: 0 requests.** Floors and foundation would only be bought to show
 them as record-class columns; free county appraiser extracts are being surveyed for that first.
+
+## Lidar source: the EPT copy on AWS (2026-10-07)
+
+rockyweb.usgs.gov (the LAZ tiles) refused connections from this sandbox and from a Hetzner box from 07:07 UTC
+on; the first Pinellas box was deleted unused after ~0.5 h. Owner chose option B: the free USGS Entwine Point
+Tile copy (`s3://usgs-lidar-public/FL_Peninsular_Pinellas_2018`, EPSG:3857, z in metres). Checks:
+- Points: over a 120 m box of tile 473290, paired by GPS time + return number, 99% of returns agree within
+  4.4 mm horizontally and 5 mm in height after 3857 -> EPSG:6442; class agrees for 99.97%.
+- Features (`pipeline/lidar/check_trial.py`, area P, 892 research houses): ground identical (same DEM); point-cloud
+  heights differ by a median < 0.01 ft (99th pct <= 0.07 ft; `eave_main` 0.48 ft, 9 of 880 houses > 0.5 ft).
+- Floor estimate: method E within area P, MAE 0.819 ft (LAZ features) vs 0.804 ft (EPT features), same houses and
+  folds; per-house predictions differ by a median 0.05 ft (99th pct 0.48 ft).
