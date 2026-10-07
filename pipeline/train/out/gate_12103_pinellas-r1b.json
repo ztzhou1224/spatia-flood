@@ -1,0 +1,59 @@
+{
+ "fips": "12103",
+ "release": "pinellas-r1b",
+ "candidate": "data/flood_v1/train_r1b",
+ "baseline": "data/flood_v1/train",
+ "labels": "data/flood_v1/labels_pinellas/labels_combined_12103.parquet",
+ "n_test": 1782,
+ "tolerances": {
+  "MAE": 0.05,
+  "BFE side": 0.01,
+  "coverage": 0.01,
+  "decided correct": 0.01
+ },
+ "coverage_floor": 0.88,
+ "scores": {
+  "candidate": {
+   "n": 1782.0,
+   "MAE": 1.4731244967579014,
+   "within 1 ft": 0.6487093153759821,
+   "raised n": 617.0,
+   "raised MAE": 2.7698406336797725,
+   "raised recall": 0.8444084278768234,
+   "SFHA with BFE": 1646.0,
+   "BFE side": 0.8535844471445929,
+   "coverage": 0.8967452300785634,
+   "coverage flagged": 0.8778979907264297,
+   "coverage not flagged": 0.9074889867841409,
+   "width median not flagged": 1.9301004218273454,
+   "width median flagged": 12.416826891621008,
+   "BFE decided": 0.5164034021871203,
+   "decided correct": 0.9658823529411765
+  },
+  "baseline": {
+   "n": 1782.0,
+   "MAE": 1.3663451075895623,
+   "within 1 ft": 0.6739618406285073,
+   "raised n": 617.0,
+   "raised MAE": 2.649165224635538,
+   "raised recall": 0.8703403565640194,
+   "SFHA with BFE": 1646.0,
+   "BFE side": 0.8602673147023087,
+   "coverage": 0.9152637485970819,
+   "coverage flagged": 0.9095092024539877,
+   "coverage not flagged": 0.9185840707964602,
+   "width median not flagged": 1.9528533594979807,
+   "width median flagged": 14.004130932638223,
+   "BFE decided": 0.5078979343863913,
+   "decided correct": 0.9581339712918661
+  }
+ },
+ "checks": {
+  "coverage >= floor": true,
+  "MAE": false,
+  "BFE side": true,
+  "coverage": false,
+  "decided correct": true
+ },
+ "passed": false
+}

@@ -133,7 +133,7 @@
   "record_ffh_not_usable": 34,
   "record_lidar_conflict": 300,
   "record_issue_date_unknown": 261,
-  "record_issue_date_llm_estimate": 265,
+  "record_issue_date_llm_estimate": 261,
   "record_issue_date_still_unknown": 0,
   "ffh_class": {
    "modeled": 240356,
@@ -165,9 +165,11 @@
   "basis": {
    "<null>": 295964,
    "modeled_band": 65725,
-   "record": 6406,
+   "record": 6161,
    "modeled_band+interpolated_bfe": 4365,
-   "record+interpolated_bfe": 304
+   "record+interpolated_bfe": 303,
+   "record_lidar_conflict": 245,
+   "record_lidar_conflict+interpolated_bfe": 1
   },
   "null": {
    "<null>": 357321,
@@ -178,7 +180,7 @@
   "sfha_buildings": 92243,
   "sfha_decided_share": 0.442
  },
- "seconds": 109,
+ "seconds": 96,
  "parcel_table": {
   "rows": 432360,
   "distinct_geometries": 315982,

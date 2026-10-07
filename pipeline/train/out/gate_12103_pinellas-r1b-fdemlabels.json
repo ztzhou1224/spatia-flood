@@ -1,0 +1,59 @@
+{
+ "fips": "12103",
+ "release": "pinellas-r1b-fdemlabels",
+ "candidate": "data/flood_v1/train_r1b",
+ "baseline": "data/flood_v1/train",
+ "labels": "/home/user/spatia-flood/data/flood_v1/train/labels_12103.parquet",
+ "n_test": 1472,
+ "tolerances": {
+  "MAE": 0.05,
+  "BFE side": 0.01,
+  "coverage": 0.01,
+  "decided correct": 0.01
+ },
+ "coverage_floor": 0.88,
+ "scores": {
+  "candidate": {
+   "n": 1472.0,
+   "MAE": 1.2722634377251467,
+   "within 1 ft": 0.6997282608695652,
+   "raised n": 425.0,
+   "raised MAE": 2.59791601799384,
+   "raised recall": 0.8211764705882353,
+   "SFHA with BFE": 1359.0,
+   "BFE side": 0.8712288447387785,
+   "coverage": 0.9103260869565217,
+   "coverage flagged": 0.8989010989010989,
+   "coverage not flagged": 0.9154375614552606,
+   "width median not flagged": 1.8571565574705016,
+   "width median flagged": 12.93606143870969,
+   "BFE decided": 0.5445180279617365,
+   "decided correct": 0.972972972972973
+  },
+  "baseline": {
+   "n": 1472.0,
+   "MAE": 1.0979133246967527,
+   "within 1 ft": 0.7370923913043478,
+   "raised n": 425.0,
+   "raised MAE": 2.2633009250468,
+   "raised recall": 0.8564705882352941,
+   "SFHA with BFE": 1359.0,
+   "BFE side": 0.8866813833701251,
+   "coverage": 0.9320652173913043,
+   "coverage flagged": 0.9343544857768052,
+   "coverage not flagged": 0.9310344827586207,
+   "width median not flagged": 1.8833901856520012,
+   "width median flagged": 13.550959255151643,
+   "BFE decided": 0.5445180279617365,
+   "decided correct": 0.972972972972973
+  }
+ },
+ "checks": {
+  "coverage >= floor": true,
+  "MAE": false,
+  "BFE side": false,
+  "coverage": false,
+  "decided correct": true
+ },
+ "passed": false
+}

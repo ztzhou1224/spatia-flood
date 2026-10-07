@@ -1,0 +1,213 @@
+{
+ "fips": "12103",
+ "run": "pinellas_2018",
+ "fetched": "2026-10-07",
+ "records": 19382,
+ "datum": {
+  "pair_C2a_29_88_filled": 8398,
+  "pair_C2A_equals_C2a_88_navd88_native": 6873,
+  "pair_C2A_equals_C2a_29_ngvd29_with_county_navd88": 1525,
+  "pair_C2A_equals_neither": 0,
+  "no_pair_VERTICAL_DATUM_NAVD1988": 528,
+  "no_pair_VERTICAL_DATUM_NGVD1929_or_1927_dropped": 894,
+  "no_pair_VERTICAL_DATUM_NGVD1929_dropped": 875,
+  "no_pair_no_stated_datum_dropped": 9562,
+  "ngvd29_total_on_certificates": 2400,
+  "offset_C2a_29_minus_C2a_88_ft": {
+   "min": -0.2,
+   "median": 0.86,
+   "max": 0.95
+  }
+ },
+ "after_datum": 8926,
+ "use_dropped": {
+  "(blank)": 943,
+  "NONRES": 408,
+  "ACC": 50,
+  "OTH": 29,
+  "ADD": 27,
+  "COM": 5
+ },
+ "after_residential": 7464,
+ "diagram_dropped": {
+  "1": 849,
+  "(blank)": 146,
+  "8&": 10,
+  "ONE": 4,
+  "1*": 1,
+  "5&": 1,
+  "7A8": 1
+ },
+ "after_diagram": 6452,
+ "plausibility_dropped": {
+  "ffe_null": 208,
+  "ffe_zero": 1,
+  "ffe_outside_-20_200": 0,
+  "ffe_minus_own_lag_outside_-2_40": 2,
+  "ffe_minus_own_lag_outside_examples": [
+   40.58,
+   40.49
+  ]
+ },
+ "after_plausibility": 6241,
+ "issue_date": {
+  "field": "D_DATE",
+  "null": 118,
+  "set_null_invalid": 1,
+  "invalid_values": [
+   "6201-11-22"
+  ],
+  "min": "1974-12-31",
+  "max": "2020-05-01",
+  "by_5yr": {
+   "1970": 1,
+   "1980": 2,
+   "1985": 1,
+   "1995": 1,
+   "2000": 294,
+   "2005": 483,
+   "2010": 632,
+   "2015": 4528,
+   "2020": 180
+  }
+ },
+ "older_certificate_same_property_dropped": 617,
+ "outside_run_bbox": 0,
+ "to_match": 5624,
+ "matched_within": 4759,
+ "matched_nearest_10m": 724,
+ "unmatched": 141,
+ "older_certificate_same_building_dropped": 236,
+ "bfe": {
+  "navd88_from_B9": 4903,
+  "navd88_from_county_conversion": 0,
+  "outside_0_40_set_null": 53
+ },
+ "county_labels_one_per_building": 5247,
+ "county_labels_by_route": {
+  "navd88_native": 5019,
+  "ngvd29_county_navd88": 228
+ },
+ "county_labels_diagrams": {
+  "1A": 2991,
+  "7": 738,
+  "1B": 565,
+  "8": 386,
+  "6": 373,
+  "5": 131,
+  "3": 35,
+  "9": 14,
+  "2": 8,
+  "4": 3,
+  "2B": 2,
+  "2A": 1
+ },
+ "fdem_agreement": {
+  "buildings_in_both": 3665,
+  "all": {
+   "n": 3665,
+   "median": 0.0,
+   "within_0.5ft": 0.944,
+   "within_1ft": 0.968
+  },
+  "navd88_native": {
+   "n": 3603,
+   "median": 0.0,
+   "within_0.5ft": 0.96,
+   "within_1ft": 0.969
+  },
+  "ngvd29_county_navd88": {
+   "n": 62,
+   "median": -0.86,
+   "within_0.5ft": 0.016,
+   "within_1ft": 0.871
+  },
+  "issue_dates_within_1_day": {
+   "n": 3222,
+   "median": 0.0,
+   "within_0.5ft": 0.982,
+   "within_1ft": 0.998
+  },
+  "issue_dates_differ": {
+   "n": 318,
+   "median": 0.0,
+   "within_0.5ft": 0.566,
+   "within_1ft": 0.654
+  },
+  "same_diagram_share": 0.966,
+  "median_abs_diff": 0.0,
+  "share_abs_diff_le_0.5": 0.944,
+  "share_abs_diff_le_1": 0.968,
+  "share_abs_diff_gt_3": 0.022,
+  "ngvd29_route_bottom_floor_fdem_equals_C2a_29": 38,
+  "ngvd29_route_bottom_floor_n": 40
+ },
+ "datum_route_lidar_check": {
+  "<=2004 navd88_native": {
+   "n": 61,
+   "median_cert_lag_minus_lidar_lag_ft": 0.543
+  },
+  "<=2004 ngvd29_county_navd88": {
+   "n": 150,
+   "median_cert_lag_minus_lidar_lag_ft": 0.189
+  },
+  "2005-09 navd88_native": {
+   "n": 361,
+   "median_cert_lag_minus_lidar_lag_ft": 0.557
+  },
+  "2005-09 ngvd29_county_navd88": {
+   "n": 7,
+   "median_cert_lag_minus_lidar_lag_ft": 0.733
+  },
+  "2010-14 navd88_native": {
+   "n": 517,
+   "median_cert_lag_minus_lidar_lag_ft": 0.576
+  },
+  "2010-14 ngvd29_county_navd88": {
+   "n": 8,
+   "median_cert_lag_minus_lidar_lag_ft": -0.03
+  },
+  ">=2015 navd88_native": {
+   "n": 3963,
+   "median_cert_lag_minus_lidar_lag_ft": 0.482
+  },
+  ">=2015 ngvd29_county_navd88": {
+   "n": 59,
+   "median_cert_lag_minus_lidar_lag_ft": -0.334
+  }
+ },
+ "county_labels_used_navd88_native": 5019,
+ "overlap_rule": "county replaces FDEM only when both dates are known and the county's is strictly later",
+ "overlap_county_kept": 15,
+ "overlap_fdem_kept": 3588,
+ "combined": {
+  "labels": 8931,
+  "by_source": {
+   "fdem": 7500,
+   "pinellas_county": 1431
+  },
+  "new_buildings_from_county": 1416
+ },
+ "new_county_buildings": {
+  "n": 1416,
+  "elevated_diagram_5_9": 763,
+  "elevated_dh_gt_3": 870,
+  "elevated_either": 924,
+  "no_lidar_ground_or_points": 29,
+  "fail_train_screen": 37,
+  "fail_screen_dh_lt_-1": 14,
+  "fail_screen_roof_p95_minus_dh_lt_6": 23,
+  "usable_after_screen": 1350,
+  "usable_elevated_either": 877,
+  "usable_elevated_diagram_5_9": 727,
+  "by_route_usable": {
+   "navd88_native": 1350
+  }
+ },
+ "fdem_reference": {
+  "n": 7515,
+  "usable_after_screen": 7187,
+  "usable_elevated_diagram_5_9": 1396,
+  "usable_elevated_either": 2283
+ }
+}

@@ -535,7 +535,8 @@ def main() -> None:
     mod_call = np.where(flo >= bhi, "above", np.where(fhi < blo, "below", "too_close"))
     call = np.where(~b.touches_sfha.values, "not_applicable", np.where(have, np.where(rec, rec_call, mod_call), None))
     b["bfe_call"] = call
-    b["bfe_call_basis"] = np.where(have, np.where(rec, "record", "modeled_band")
+    conflict = b.ffe_record_lidar_conflict.fillna(False).values.astype(bool)
+    b["bfe_call_basis"] = np.where(have, np.where(rec, np.where(conflict, "record_lidar_conflict", "record"), "modeled_band")
                                    + np.where(b.bfe_method.values == "interpolated", "+interpolated_bfe", ""), None)
     b["bfe_call_null"] = np.where(pd.isna(call), np.where(np.isnan(bfe), b.bfe_null, b.ffe_null), None)
 
@@ -607,7 +608,7 @@ def main() -> None:
                     "record_ffh_not_usable": int((rec & ~ffh_ok).sum()),
                     "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()),
                     "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()),
-                    "record_issue_date_llm_estimate": int(note.notna().sum()),
+                    "record_issue_date_llm_estimate": int((rec & note.notna().values).sum()),
                     "record_issue_date_still_unknown": int((rec & (issued == "unknown").values).sum()), "ffh_class": vc("ffh_class"),
                     "ffh_null": vc("ffh_null"), "raised_flag": vc("raised_flag"),
                     "modeled_band_width_median_ft": round(float(np.nanmedian(phi - plo)), 2),

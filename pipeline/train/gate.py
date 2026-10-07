@@ -12,7 +12,10 @@ Thresholds (fixed in phase 1; tolerances absorb run-to-run noise of one held-out
   decided correct  candidate >= baseline - 0.01 (precision of the above / below calls)
 With no baseline (the first release), only the absolute coverage floor applies.
 Output: the comparison table on stdout and pipeline/train/out/gate_<FIPS>_<release>.json; exit 1 when the gate fails.
-Usage: python pipeline/train/gate.py 12103 pinellas_2018 --candidate DIR [--baseline DIR] --release NAME
+Labels: data/flood_v1/train/labels_<FIPS>.parquet by default; --labels FILE scores on another label set with the same
+columns (added 2026-10-07 for r1b, whose held-out blocks include Pinellas County certificate labels; omitting it gives
+the original behaviour).
+Usage: python pipeline/train/gate.py 12103 pinellas_2018 --candidate DIR [--baseline DIR] --release NAME [--labels FILE]
 """
 from __future__ import annotations
 
@@ -53,8 +56,10 @@ def main() -> None:
     ap.add_argument("--candidate", type=Path, required=True)
     ap.add_argument("--baseline", type=Path)
     ap.add_argument("--release", required=True)
+    ap.add_argument("--labels", type=Path, help="label parquet (default data/flood_v1/train/labels_<FIPS>.parquet)")
     a = ap.parse_args()
-    lab = pd.read_parquet(DATA / "train" / f"labels_{a.fips}.parquet")
+    labels = a.labels or DATA / "train" / f"labels_{a.fips}.parquet"
+    lab = pd.read_parquet(labels)
     d = lab.merge(features(a.fips, a.run), on="building_id")
     d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
     d["dh"] = d.ffe_ft - d.g_lag
@@ -77,7 +82,7 @@ def main() -> None:
     passed = all(checks.values())
     out = Path(__file__).parent / "out" / f"gate_{a.fips}_{a.release}.json"
     out.write_text(json.dumps({"fips": a.fips, "release": a.release, "candidate": str(a.candidate),
-                               "baseline": str(a.baseline) if a.baseline else None, "n_test": len(t),
+                               "baseline": str(a.baseline) if a.baseline else None, "labels": str(labels), "n_test": len(t),
                                "tolerances": TOL, "coverage_floor": COVERAGE_FLOOR, "scores": rows,
                                "checks": checks, "passed": passed}, indent=1))
     print("GATE", "PASSED" if passed else "FAILED")
