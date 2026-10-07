@@ -1,0 +1,37 @@
+:root {
+  --bg: #ffffff; --fg: #1d2330; --muted: #5d6676; --line: #e3e6ec; --panel: #f7f8fa;
+  --below: #c8352b; --close: #e39a1c; --above: #2f8a4c; --na: #b9bfca; --none: #6b7280;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); }
+body { display: flex; }
+#panel { width: 400px; max-width: 100vw; height: 100%; overflow-y: auto; padding: 16px; border-right: 1px solid var(--line); background: var(--panel); font-size: 14px; }
+#map { flex: 1; height: 100%; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 14px; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.sub, .hint, footer { color: var(--muted); font-size: 12px; }
+footer { margin-top: 24px; }
+table { width: 100%; border-collapse: collapse; }
+td { padding: 3px 0; vertical-align: top; border-bottom: 1px solid var(--line); }
+td:first-child { color: var(--muted); width: 42%; padding-right: 8px; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
+.stat b { display: block; font-size: 18px; }
+.stat span { color: var(--muted); font-size: 12px; }
+label { display: block; margin-top: 12px; color: var(--muted); font-size: 12px; }
+select { width: 100%; margin-top: 4px; padding: 6px; font: inherit; }
+#legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; font-size: 12px; }
+#legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: -2px; }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 11px; background: var(--line); color: var(--fg); }
+.tag.record { background: #dbeafe; } .tag.observed { background: #dcfce7; } .tag.modeled { background: #fef3c7; }
+.call { font-weight: 600; } .call.below { color: var(--below); } .call.too_close { color: var(--close); } .call.above { color: var(--above); }
+.why { color: var(--muted); font-style: italic; }
+.src { color: var(--muted); font-size: 11px; display: block; }
+details { margin-top: 12px; } summary { cursor: pointer; color: var(--muted); }
+pre { white-space: pre-wrap; word-break: break-all; font-size: 11px; }
+@media (max-width: 720px) {
+  body { flex-direction: column-reverse; }
+  #panel { width: 100%; height: 45%; border-right: 0; border-top: 1px solid var(--line); }
+  #map { height: 55%; flex: none; }
+}

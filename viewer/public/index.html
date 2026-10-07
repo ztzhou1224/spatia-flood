@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Flood Layer Viewer</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside id="panel">
+  <header>
+    <h1>Flood layer viewer</h1>
+    <p class="sub" id="release">internal · pilot</p>
+  </header>
+  <section id="card" aria-label="County summary"></section>
+  <section id="controls">
+    <label>Coverage cells (zoomed out)
+      <select id="metric">
+        <option value="sfha_decided_share">SFHA buildings with a decided call (share)</option>
+        <option value="sfha_below">SFHA buildings below the BFE (count)</option>
+        <option value="floor_record">certificate floors held (count)</option>
+        <option value="missing_bfe_in_sfha">SFHA buildings without a BFE (count)</option>
+      </select>
+    </label>
+    <div id="legend"></div>
+  </section>
+  <section id="record" aria-live="polite"><p class="hint">Zoom in and click a building to see its full record.</p></section>
+  <footer>Footprints © Overture Maps (ODbL) · FEMA NFHL · USGS 3DEP · FL DOR · FDEM certificates · Basemap © OpenStreetMap contributors. Internal use only.</footer>
+</aside>
+<main id="map"></main>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
