@@ -1,5 +1,8 @@
 # Floor count and foundation: free Florida sources (survey, 2026-10-07)
 
+**Outcome (owner, 2026-10-07): floor count and foundation are not columns of the layer**, so none of the sources
+below is ingested and no RentCast call is made. Kept as a reference.
+
 Why: RentCast for all of Florida was ruled too costly (owner, 2026-10-07); free sources first. The floor estimate
 itself does not need these fields (`docs/phase0-florida.md`, `eval_no_records.py`: 0 to 0.03 ft MAE within area);
 they matter only as record-class columns in the layer. Survey by a research agent from pages it opened

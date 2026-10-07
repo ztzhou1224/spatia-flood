@@ -65,7 +65,7 @@ engine can read the layer without a new grammar.
 | Identity | `building_id`, `parcel_key`, `parcel_id_native`, `county_fips`, `address` (+ source), `lon`, `lat` (centroid, CRS84), `footprint_area_m2` (EPSG:3086), `footprint_source` + date |
 | Flood context | `zones` (list of {zone, share of footprint}), `touches_sfha`, `bfe_ft` (NAVD88) + datum note + method (static / interpolated), `firm_effective_date`, `in_risk_area` |
 | Ground | `lag_ft` (observed: 1 m lidar DEM, lowest in a 0.5-2.5 m ring), lidar project, QL, flight dates |
-| Building | `year_built` (record, DOR NAL), `living_area_sqft` (record), `stories` (record where a source has it, else modeled from NSI with its class), `foundation` (record where available) |
+| Building | `year_built` (record, DOR NAL), `living_area_sqft` (record). No floor count or foundation column (owner, 2026-10-07) |
 | Roof / eave | `roof_ft`, `eave_ft` (observed, point cloud) |
 | Floor | `ffh_ft` (record if a certificate / inventory matches, else modeled + band), `ffe_ft`, `floor_minus_bfe_ft` |
 | Verdict | `bfe_call` in {`above`, `below`, `too_close`, `not_applicable`}, `bfe_call_basis` (record / modeled band), `raised_flag` (label-free) |
@@ -152,3 +152,7 @@ terms), Geocodio (storage and redistribution), HCFCD key (proof only), NFIP (exc
 2. Viewer: a **hosted page at flood.runspatia.com** (internal + demos).
 3. Change detection: `not_evaluated` where only one lidar flight exists.
 4. The HCFCD inventory is **record** class.
+5. **No floor count or foundation columns** in the layer (2026-10-07). The floor estimate does not need them
+   (`research/harris_mini/eval_no_records.py`: 0 to 0.03 ft MAE within area without NSI or any such record), so no
+   RentCast calls and no county appraiser downloads for them. Geocodio is approved for buildings without a free
+   address (Pinellas: 727, inside the free daily tier).
