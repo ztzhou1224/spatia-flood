@@ -73,8 +73,10 @@ def projected(g: np.ndarray, crs: str) -> np.ndarray:
 def overlay(a: np.ndarray, polys: np.ndarray) -> pd.DataFrame:
     """Pairs (a index, poly index) with their overlap area (> 0), same projected CRS; a polygon that contains the
     shape properly is not intersected (prepared test first)."""
-    bi, pi = shapely.STRtree(polys).query(a, predicate="intersects")
+    bi, pi = shapely.STRtree(polys).query(a)  # bounding boxes; exact tests below run on prepared polygons
     shapely.prepare(polys)
+    hit = shapely.intersects(polys[pi], a[bi])
+    bi, pi = bi[hit], pi[hit]
     full = shapely.contains_properly(polys[pi], a[bi])
     area = shapely.area(a[bi])
     k = ~full
@@ -430,7 +432,7 @@ def main() -> None:
         if rec[i]:
             s.append(LIC["fdem"])
         src = asrc.iat[i]
-        if src is not None:
+        if isinstance(src, str):
             s.append(LIC["oaddr"] if src.startswith("overture") else LIC["geocodio"] if src.startswith("geocodio") else LIC["dor"])
         lic.append(sorted(set(s)))
     b["input_licences"] = lic
