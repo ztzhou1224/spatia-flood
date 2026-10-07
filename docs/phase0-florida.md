@@ -78,7 +78,7 @@ Unit = a residential parcel (DOR use codes 000-009):
 | Area | Residential parcels | Requests at 500 per request (floor; tiling overlap may double it) | Cost |
 |---|---|---|---|
 | Pinellas risk area (with a building) | 212,386 (`address_gap.py`) | 425-850 | Foundation month $74 (or Developer: $75-160 in overage) |
-| Florida, all residential parcels with living area | 8,049,712 (`fl_parcels` count) | 16,100-32,200 | Scale month $449-554 |
+| Florida, all residential parcels with living area | 8,049,712 (`fl_parcels` count) | 16,100-32,200 | Scale month $449-557 |
 
 Not yet verified (needs one test request, at most $0.20): that the search results carry `features`
 (foundation type, floor count) and that `offset` pages through a whole ZIP. Owner names in RentCast records are
