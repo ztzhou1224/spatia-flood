@@ -1,6 +1,6 @@
 # Plan: flood layer v1 (Florida statewide + Harris accuracy proof)
 
-Status: **draft for owner review, 2026-10-07. Nothing built.** Decisions below are the owner's answers of
+Status: **approved by the owner 2026-10-07 (answers to §8 below); phase 0 started.** Decisions below are the owner's answers of
 2026-10-07 to the 19 design questions (chat), unless marked *open*. Research evidence: `research/SUMMARY_2026-10-06.md`,
 `research/harris_mini/LPC.md`, `research/harris_mini/BANDS.md`. Every number here names its source; costs from
 vendor pages are as read on 2026-10-06/07.
@@ -109,9 +109,9 @@ sources registry ──► ingest ──► match to buildings ──► feature
   precision and band coverage are no worse than the previous release (thresholds fixed in phase 1).
 - **Assemble**: one row per building with the conventions of §3.1; record beats observed beats modeled for the
   same field, and a record older than a detected change is marked `stale`.
-- **Publish**: GeoParquet + PMTiles + release notes (what changed per building) to R2. *Open*: as a spatia-data
-  **pilot** layer through its contract (withheld from spatia-report runs by `maturity: pilot`) or under a
-  spatia-flood prefix until v1 is accepted.
+- **Publish**: GeoParquet + PMTiles + release notes (what changed per building) to R2, as a spatia-data **pilot**
+  layer through its contract (owner, 2026-10-07): withheld from spatia-report runs by `maturity: pilot`; the
+  spatia-data side goes through that repo's plan / GIS review / build / live-review harness.
 
 **PDF certificates.** Florida's main certificate volume is already structured: FDEM's public layer has 210,888
 records statewide (`data/fl/ec_all.json`). PDFs come from county portals (per-address indexes found 2026-10-04 in
@@ -146,11 +146,9 @@ without a clean form read or a human check. Phase 0 counts the PDFs actually rea
 Overture buildings (ODbL share-alike), FDEM certificates (terms unread), Florida DOR NAL (public record; DOR
 terms), Geocodio (storage and redistribution), HCFCD key (proof only), NFIP (excluded), Bee Maps (excluded).
 
-## 8. Open questions for the owner
+## 8. Owner answers (2026-10-07)
 
-1. Publish v1 as a spatia-data pilot layer (contract work in spatia-data, its own plan and GIS review) or under a
-   spatia-flood prefix first?
-2. Viewer: run locally from the built files, or a hosted page behind spatia-auth for demos?
-3. Change detection needs two lidar flights; Florida's second flights vary by county. v1 marks it `not_evaluated`
-   where one flight exists. OK?
-4. Is the HCFCD inventory "record" (official county data) rather than "observed" (sensor)? Proposed: record.
+1. Publish as a **spatia-data pilot layer**.
+2. Viewer: a **hosted page at flood.runspatia.com** (internal + demos).
+3. Change detection: `not_evaluated` where only one lidar flight exists.
+4. The HCFCD inventory is **record** class.
