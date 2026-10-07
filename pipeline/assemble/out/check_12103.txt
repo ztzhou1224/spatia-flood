@@ -1,4 +1,4 @@
-372736 rows, 90 columns; value columns checked: zones, bfe_ft, lag_ft, roof_ft, eave_ft, year_built, living_area_sqft, raised_flag, ffh_ft, ffe_ft, lift_or_rebuild, bfe_call, address
+372736 rows, 92 columns; value columns checked: zones, bfe_ft, lag_ft, roof_ft, eave_ft, year_built, living_area_sqft, raised_flag, ffh_ft, ffe_ft, lift_or_rebuild, bfe_call, address
 ok   zones: value xor null reason: 0
 ok   zones: reason in the six: 0
 ok   bfe_ft: value xor null reason: 0
@@ -6,6 +6,8 @@ ok   bfe_ft: reason in the six: 0
 ok   bfe_class set iff value: 0
 ok   bfe_source set iff value: 0
 ok   bfe_vintage set iff value: 0
+ok   bfe: modeled has a band containing the value: 0
+ok   bfe: band only on modeled: 0
 ok   lag_ft: value xor null reason: 0
 ok   lag_ft: reason in the six: 0
 ok   lag_class set iff value: 0

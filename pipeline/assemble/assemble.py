@@ -57,6 +57,9 @@ WESM = "https://index.nationalmap.gov/arcgis/rest/services/3DEPElevationIndex/Ma
 FDEM = ("https://services8.arcgis.com/4L6VuYsPSGSEJ0qe/arcgis/rest/services/Public_FDEM_Elevation_Certificates/"
         "FeatureServer/0/query")
 ALBERS = "EPSG:3086"
+BFE_LINES = "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
+LINE_SEARCH_M = 1000.0
+BFE_ROUND_FT = 0.5  # FIRM BFEs are whole feet: an interpolated BFE carries +-0.5 ft beyond its two lines
 Z90 = 1.645
 RAISED_FT = 3.0  # train.py raised flag
 QL_RMSEZ_FT = {"QL 0": 5 / 30.48006, "QL 1": 10 / 30.48006, "QL 2": 10 / 30.48006, "QL 3": 20 / 30.48006}  # 3DEP LBS
@@ -135,6 +138,49 @@ def fdem_lag(ids: list[int]) -> pd.DataFrame:
             raise RuntimeError("FDEM query failed")
     return pd.DataFrame(rows).rename(columns={"OBJECTID": "cert_objectid", "lowestAdjacentGrade": "cert_lag_ft",
                                               "verticalDatum": "cert_datum"})
+
+
+def interpolate_bfe(cen: np.ndarray, polys_of: dict, zg: np.ndarray, lines: pd.DataFrame, lg: np.ndarray) -> pd.DataFrame:
+    """BFE between FEMA BFE lines / cross-sections, per building index in polys_of (building -> SFHA polygon indices).
+    Candidates: lines crossing one of the building's SFHA polygons, within LINE_SEARCH_M of its centroid (EPSG:3086).
+    L1 = nearest; L2 = nearest line on the other side (vector to its nearest point opposite to L1's). BFE = linear in
+    distance between them, band = [min - 0.5, max + 0.5] of the two elevations (BFE_ROUND_FT). No L2: not_determinable; no candidate: no_coverage."""
+    need = sorted({q for ps in polys_of.values() for q in ps})
+    li, pi = shapely.STRtree(lg).query(zg[need], predicate="intersects")
+    by_poly: dict[int, set] = {}
+    for k, j in zip(np.asarray(need)[li], pi, strict=True):
+        by_poly.setdefault(int(k), set()).add(int(j))
+    rows = []
+    for a, ps in polys_of.items():
+        cand = sorted(set().union(*(by_poly.get(q, set()) for q in ps)))
+        c = cen[a]
+        if cand:
+            d = shapely.distance(c, lg[cand])
+            keep = d <= LINE_SEARCH_M
+            cand, d = np.asarray(cand)[keep], d[keep]
+        if not len(cand):
+            rows.append({"a": a, "null": "no_coverage"})
+            continue
+        near = shapely.get_coordinates(shapely.shortest_line(c, lg[cand]))[1::2] - shapely.get_coordinates(c)
+        o = np.argsort(d)
+        i1 = o[0]
+        e1 = lines.elev.values[cand[i1]]
+        if d[i1] == 0:
+            i2, e2, f = i1, e1, 0.0
+        else:
+            opp = [k for k in o[1:] if d[k] > 0 and near[k] @ near[i1] < 0]
+            if not opp:
+                rows.append({"a": a, "null": "not_determinable"})
+                continue
+            i2 = opp[0]
+            e2 = lines.elev.values[cand[i2]]
+            f = d[i1] / (d[i1] + d[i2])
+        l1, l2 = lines.iloc[cand[i1]], lines.iloc[cand[i2]]
+        rows.append({"a": a, "bfe": e1 + (e2 - e1) * f, "lo": min(e1, e2) - BFE_ROUND_FT, "hi": max(e1, e2) + BFE_ROUND_FT,
+                     "src": f"{l1.source_type} {l1.line_id} {e1:g} ft at {d[i1]:.0f} m; {l2.source_type} {l2.line_id} "
+                            f"{e2:g} ft at {d[i2]:.0f} m",
+                     "dfirm": l1.dfirm_id, "eff": max(l1.eff, l2.eff), "status": l1.status})
+    return pd.DataFrame(rows, columns=["a", "bfe", "lo", "hi", "src", "dfirm", "eff", "status", "null"])
 
 
 def lists(s: pd.Series, idx) -> np.ndarray:
@@ -218,6 +264,44 @@ def main() -> None:
     only_a = sfha_zones.map(lambda s: isinstance(s, set) and s <= {"A"}).values
     b["bfe_null"] = nulls(b.bfe_ft, pd.Series(np.where(~b.touches_sfha, "not_applicable",
                                                         np.where(only_a, "no_coverage", "not_evaluated")), index=b.index))
+    b["bfe_band_lo"], b["bfe_band_hi"] = np.nan, np.nan
+    lines = cached(OUT / f"bfe_lines_{fips}.parquet", lambda: c.execute(f"""SELECT line_id, source_type, dfirm_id,
+        elev_ft_navd88_ft, elev_ft_navd88_status, firm_panel_eff_date_max, ST_AsWKB(geom) AS wkb
+        FROM read_parquet('{bk}/{BFE_LINES}') WHERE dfirm_id IN ({", ".join(f"'{x}'" for x in z.dfirm_id.unique())})""").df())
+    lines = lines[lines.elev_ft_navd88_ft.notna()].reset_index(drop=True)
+    lines = lines.rename(columns={"elev_ft_navd88_ft": "elev", "elev_ft_navd88_status": "status",
+                                  "firm_panel_eff_date_max": "eff"})
+    lg = projected(shapely.from_wkb(lines.wkb.map(bytes).values), ALBERS)
+    cen_a = shapely.centroid(ga)
+    sp = pr[pr.sfha]
+    todo = set(np.where(b.bfe_null.values == "not_evaluated")[0])
+    polys_of = {int(k): set(v) for k, v in sp[sp.a.isin(todo)].groupby("a").p}
+    ip = interpolate_bfe(cen_a, polys_of, zg, lines, lg)
+    ok_ = ip[ip.bfe.notna()]
+    ia = ok_.a.values.astype(int)
+    b.loc[ia, "bfe_ft"] = ok_.bfe.values
+    b.loc[ia, "bfe_band_lo"], b.loc[ia, "bfe_band_hi"] = ok_.lo.values, ok_.hi.values
+    b.loc[ia, "bfe_class"], b.loc[ia, "bfe_method"] = "modeled", "interpolated"
+    b.loc[ia, "bfe_source"] = ("FEMA NFHL BFE lines / cross-sections, DFIRM " + ok_.dfirm.astype(str)
+                               + f" (spatia-data fema_bfe_context@{ZONES_EDITION}): " + ok_.src).values
+    b.loc[ia, "bfe_vintage"] = pd.to_datetime(ok_.eff).dt.strftime("%Y-%m-%d").values
+    b.loc[ia, "bfe_datum"] = ("NAVD88 ft; " + ok_.status.astype(str)).values
+    b.loc[ia, "bfe_null"] = None
+    nn = ip[ip.bfe.isna()]
+    b.loc[nn.a.values.astype(int), "bfe_null"] = nn.null.values
+    # the same method where a static BFE exists (AE / VE with lines): how close does interpolation get?
+    st = np.where((b.bfe_method.values == "static") & b.touches_sfha.values)[0]
+    chk = interpolate_bfe(cen_a, {int(k): set(v) for k, v in sp[sp.a.isin(set(st))].groupby("a").p}, zg, lines, lg)
+    chk = chk[chk.bfe.notna()]
+    err = chk.bfe.values - b.bfe_ft.values[chk.a.values.astype(int)]
+    inb = (b.bfe_ft.values[chk.a.values.astype(int)] >= chk.lo.values - 1e-9) & (b.bfe_ft.values[chk.a.values.astype(int)] <= chk.hi.values + 1e-9)
+    rep["bfe_interpolation"] = {"lines_with_elevation": len(lines), "buildings_tried": len(polys_of),
+                                "interpolated": len(ok_), "null": nn.null.value_counts().to_dict(),
+                                "band_width_median_ft": round(float((ok_.hi - ok_.lo).median()), 2) if len(ok_) else None,
+                                "check_on_static_bfe": {"n": len(chk), "MAE_ft": round(float(np.abs(err).mean()), 3),
+                                                        "within_1ft": round(float((np.abs(err) <= 1).mean()), 3),
+                                                        "static_inside_band": round(float(inb.mean()), 3)}}
+    print(f"bfe interpolation: {rep['bfe_interpolation']}", flush=True)
     rep["zones"] = {"polygons_read": len(z), "pairs": len(pr), "no_zone_polygon": int((share_sum == 0).sum()),
                     "share_sum_over_1.01": int((share_sum > 1.01).sum()), "touches_sfha": int(b.touches_sfha.sum()),
                     "touches_sfha_share_under_1pct": int(((b.sfha_share > 0) & (b.sfha_share < 0.01)).sum()),
@@ -388,16 +472,21 @@ def main() -> None:
 
     # ---------------------------------------------------------------- floor vs BFE
     bfe = b.bfe_ft.values
+    blo, bhi = b.bfe_band_lo.fillna(b.bfe_ft).values, b.bfe_band_hi.fillna(b.bfe_ft).values  # static: lo = hi = BFE
+    flo, fhi = b.ffe_band_lo.fillna(b.ffe_ft).values, b.ffe_band_hi.fillna(b.ffe_ft).values  # record: lo = hi = FFE
+    banded = b.ffe_band_lo.notna().values | b.bfe_band_lo.notna().values
     b["floor_minus_bfe_ft"] = ffe - bfe
-    b["floor_minus_bfe_band_lo"] = b.ffe_band_lo - bfe
-    b["floor_minus_bfe_band_hi"] = b.ffe_band_hi - bfe
+    b["floor_minus_bfe_band_lo"] = np.where(banded, flo - bhi, np.nan)
+    b["floor_minus_bfe_band_hi"] = np.where(banded, fhi - blo, np.nan)
     sig = np.nan_to_num(b.bfe_precision_ft.values.astype(float))
     have = b.touches_sfha.values & ~np.isnan(bfe) & ~np.isnan(ffe)
-    rec_call = np.where(np.abs(ffe - bfe) < Z90 * sig, "too_close", np.where(ffe >= bfe, "above", "below"))
-    mod_call = np.where(b.ffe_band_lo.values >= bfe, "above", np.where(b.ffe_band_hi.values < bfe, "below", "too_close"))
+    rec_call = np.where(np.abs(ffe - bfe) < Z90 * sig, "too_close",
+                        np.where(ffe >= bhi, "above", np.where(ffe < blo, "below", "too_close")))
+    mod_call = np.where(flo >= bhi, "above", np.where(fhi < blo, "below", "too_close"))
     call = np.where(~b.touches_sfha.values, "not_applicable", np.where(have, np.where(rec, rec_call, mod_call), None))
     b["bfe_call"] = call
-    b["bfe_call_basis"] = np.where(have, np.where(rec, "record", "modeled_band"), None)
+    b["bfe_call_basis"] = np.where(have, np.where(rec, "record", "modeled_band")
+                                   + np.where(b.bfe_method.values == "interpolated", "+interpolated_bfe", ""), None)
     b["bfe_call_null"] = np.where(pd.isna(call), np.where(np.isnan(bfe), b.bfe_null, b.ffe_null), None)
 
     # ---------------------------------------------------------------- addresses

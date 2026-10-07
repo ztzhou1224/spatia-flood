@@ -7,6 +7,22 @@
   "county": 372736,
   "risk_area": 290540
  },
+ "bfe_interpolation": {
+  "lines_with_elevation": 9832,
+  "buildings_tried": 5876,
+  "interpolated": 5250,
+  "null": {
+   "not_determinable": 567,
+   "no_coverage": 59
+  },
+  "band_width_median_ft": 1.4,
+  "check_on_static_bfe": {
+   "n": 124,
+   "MAE_ft": 0.415,
+   "within_1ft": 0.96,
+   "static_inside_band": 0.96
+  }
+ },
  "zones": {
   "polygons_read": 7261,
   "pairs": 402303,
@@ -14,11 +30,11 @@
   "share_sum_over_1.01": 0,
   "touches_sfha": 92243,
   "touches_sfha_share_under_1pct": 1240,
-  "bfe_static": 83024,
+  "bfe_static": 88274,
   "bfe_null": {
    "not_applicable": 280493,
-   "not_evaluated": 5876,
-   "no_coverage": 3343
+   "no_coverage": 3402,
+   "not_determinable": 567
   }
  },
  "lidar": {
@@ -104,30 +120,33 @@
  "bfe_call": {
   "all": {
    "not_applicable": 280493,
-   "below": 32880,
-   "too_close": 32129,
-   "<null>": 20111,
-   "above": 7123
+   "too_close": 35973,
+   "below": 33032,
+   "<null>": 15442,
+   "above": 7796
   },
   "basis": {
-   "<null>": 300604,
+   "<null>": 295935,
    "modeled_band": 65688,
-   "record": 6444
+   "record": 6444,
+   "modeled_band+interpolated_bfe": 4361,
+   "record+interpolated_bfe": 308
   },
   "null": {
-   "<null>": 352625,
-   "not_evaluated": 15875,
-   "no_coverage": 4236
+   "<null>": 357294,
+   "not_evaluated": 10512,
+   "no_coverage": 4363,
+   "not_determinable": 567
   },
   "sfha_buildings": 92243,
-  "sfha_decided_share": 0.434
+  "sfha_decided_share": 0.443
  },
- "seconds": 97,
+ "seconds": 96,
  "parcel_table": {
   "rows": 432360,
   "distinct_geometries": 315982,
   "with_building": 414873,
-  "any_building_below_bfe": 56458,
+  "any_building_below_bfe": 56612,
   "buildings_spanning_parcels": 29992
  }
 }
