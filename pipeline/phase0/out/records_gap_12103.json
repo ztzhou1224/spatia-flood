@@ -1,0 +1,12 @@
+{
+ "fips": "12103",
+ "risk_buildings": 290540,
+ "houses_on_residential_parcels": 248314,
+ "overture_num_floors": 826,
+ "overture_height": 241883,
+ "fdem_certificate_foundation": 6488,
+ "free_clean_floors_and_foundation": 24,
+ "free_clean_neither": 241024,
+ "nsi_point_in_footprint_num_story": 216663,
+ "nsi_point_in_footprint_found_type": 216663
+}
