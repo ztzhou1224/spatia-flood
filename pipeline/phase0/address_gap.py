@@ -5,7 +5,7 @@ risk_area.py). Free address sources, in order:
 1. an Overture address point (spatia-data overture_addresses) inside the building footprint;
 2. else the situs address (phy_addr1) of the fl_parcels parcel containing the footprint centroid.
 Buildings left with neither are what a Geocodio reverse lookup would be needed for. Also counts the residential
-parcels touched (DOR use codes 000-099 with a building), the unit a RentCast records lookup would be bought for.
+parcels touched (DOR use codes 000-009, residential, with a building), the unit a RentCast records lookup would be bought for.
 Only counts are output; no addresses or owner fields are written.
 Usage: python pipeline/phase0/address_gap.py 12103
 """
@@ -58,7 +58,7 @@ def main(fips: str) -> None:
     situs = np.zeros(len(br), bool)
     situs[has_pa] = pa.situs.values[parcel[has_pa]]
     pid = pd.Series(np.where(has_pa, pa.parcel_id.values[np.maximum(parcel, 0)], None))
-    res_uc = pd.Series(np.where(has_pa, pa.dor_uc.values[np.maximum(parcel, 0)], None)).fillna("999") < "100"
+    res_uc = pd.Series(np.where(has_pa, pa.dor_uc.values[np.maximum(parcel, 0)], None)).fillna("999") < "010"
     r = {"buildings": len(br), "with_address_point": int(has_pt.sum()),
          "parcel_situs_only": int((~has_pt & situs).sum()), "no_free_address": int((~has_pt & ~situs).sum()),
          "no_parcel": int((~has_pa).sum()), "parcels_with_building": int(pid.nunique()),

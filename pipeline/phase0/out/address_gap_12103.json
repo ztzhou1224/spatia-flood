@@ -1,0 +1,10 @@
+{
+ "fips": "12103",
+ "buildings": 290540,
+ "with_address_point": 233881,
+ "parcel_situs_only": 55932,
+ "no_free_address": 727,
+ "no_parcel": 3105,
+ "parcels_with_building": 224129,
+ "residential_parcels_with_building": 212386
+}
