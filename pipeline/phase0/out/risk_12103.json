@@ -1,0 +1,35 @@
+{
+ "fips": "12103",
+ "area_km2": {
+  "county": 2234.0,
+  "sfha": 424.3,
+  "zone_0_2": 76.8,
+  "risk": 900.2
+ },
+ "flood_polygons_read": 7261,
+ "overture_buildings_in_county": 372736,
+ "overture_buildings_in_risk": 290540,
+ "nsi_structures_in_risk": 344488,
+ "nsi_residential_in_risk": 316071,
+ "certificates_in_risk": 8147,
+ "lidar_projects_touching_risk": [
+  {
+   "project": "FL_2018PascoCounty_C22",
+   "tiles": 11,
+   "gb": 3.0,
+   "published": "2025-12-08"
+  },
+  {
+   "project": "FL_Peninsular_2018_D18",
+   "tiles": 483,
+   "gb": 88.2,
+   "published": "2021-03-25"
+  },
+  {
+   "project": "legacy",
+   "tiles": 473,
+   "gb": 40.6,
+   "published": "2023-04-08"
+  }
+ ]
+}
