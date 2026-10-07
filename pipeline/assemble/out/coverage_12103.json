@@ -1,0 +1,35 @@
+{
+ "buildings": 372736,
+ "in_risk_area": 290540,
+ "touches_sfha": 92243,
+ "floor_record": 7482,
+ "floor_record_flagged": 1851,
+ "floor_modeled": 240305,
+ "sfha_decided": 40828,
+ "sfha_decided_share": 0.443,
+ "sfha_below": 33032,
+ "missing_bfe_in_sfha": 3969,
+ "missing_floor_in_risk": 42753,
+ "missing_address": 134,
+ "missing_parcel": 3953,
+ "lidar": "FL_Peninsular_Pinellas_2018 (2018-12-07/2019-03-08)",
+ "fips": "12103",
+ "release": "pinellas-r0",
+ "h3_res": 8,
+ "cells": 1224,
+ "band_calibration": "county",
+ "held_out_accuracy": {
+  "n": 1315.0,
+  "MAE": 1.039,
+  "BFE side": 0.897,
+  "coverage": 0.918,
+  "decided correct": 0.983
+ },
+ "cells_with_sfha": 866,
+ "cells_with_sfha_and_no_record_floor": 253,
+ "cells_sfha_decided_share_quartiles": [
+  0.025,
+  0.27,
+  0.526
+ ]
+}
