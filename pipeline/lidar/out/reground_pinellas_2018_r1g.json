@@ -1,0 +1,54 @@
+{
+ "run": "pinellas_2018_r1g",
+ "buildings": 290540,
+ "r0_g_lag_reproduced": 290540,
+ "water_constants_m": {
+  "USGS_1M_17_x31y308_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x31y309_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x31y310_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x31y311_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x31y312_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x32y306_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x32y307_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x32y308_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x32y310_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x32y311_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x32y312_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x33y306_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x33y307_FL_Peninsular_2018_D18.tif": -0.6095601320266724,
+  "USGS_1M_17_x33y308_FL_Peninsular_2018_D18.tif": -0.24416011571884155,
+  "USGS_1M_17_x33y309_FL_Peninsular_2018_D18.tif": -0.24416011571884155,
+  "USGS_1M_17_x33y310_FL_Peninsular_2018_D18.tif": -0.24416011571884155,
+  "USGS_1M_17_x33y311_FL_Peninsular_2018_D18.tif": -0.24416011571884155,
+  "USGS_1M_17_x34y307_FL_Peninsular_2018_D18.tif": -0.24416011571884155,
+  "USGS_1M_17_x34y308_FL_Peninsular_2018_D18.tif": -0.24416011571884155,
+  "USGS_1M_17_x34y309_FL_Peninsular_2018_D18.tif": -0.24416011571884155
+ },
+ "ground_status": {
+  "ok": 290459,
+  "not_determinable": 81
+ },
+ "ring_cells_masked_any": 468,
+ "ring_fully_masked_or_under_5": 81,
+ "lag_check": {
+  "certificate_lots": 7483,
+  "r0 ring minimum": {
+   "n": 7483,
+   "median_cert_minus_ground_ft": 0.44,
+   "MAE_ft": 0.813,
+   "share_cert_below_ground": 0.129
+  },
+  "masked minimum": {
+   "n": 7483,
+   "median_cert_minus_ground_ft": 0.44,
+   "MAE_ft": 0.811,
+   "share_cert_below_ground": 0.129
+  },
+  "masked median": {
+   "n": 7483,
+   "median_cert_minus_ground_ft": -0.147,
+   "MAE_ft": 0.508,
+   "share_cert_below_ground": 0.667
+  }
+ }
+}

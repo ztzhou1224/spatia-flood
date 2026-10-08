@@ -1,0 +1,256 @@
+{
+ "fips": "12103",
+ "release": "r1dev",
+ "model": "data/flood_v1/train_r1m",
+ "q": 2.2218097210228938,
+ "q_by_regime": [
+  2.2255119200383757,
+  2.848143219789338,
+  1.900778474840671
+ ],
+ "populations": {
+  "fdem_held_out": "FDEM certificates (statewide EC layer via Forerunner) in the model's held-out 1 km test blocks (105 blocks); the release gate's set",
+  "county_independent": "Pinellas County certificate layer, native NAVD88, finished construction, buildings with no FDEM certificate, in the model's held-out test blocks only (the model trains on county labels in the other blocks); certificate first living floor (C2a for 1A/1B/5, C2b otherwise)"
+ },
+ "counts": {
+  "county labels": 5247,
+  "county native NAVD88": 4752,
+  "county native, no FDEM label": 1284,
+  "county scored (screened, lidar ok)": 193
+ },
+ "fdem_held_out": {
+  "all": {
+   "n": 1236,
+   "MAE": 0.985,
+   "within 1 ft": 0.752,
+   "BFE side": 0.913,
+   "coverage": 0.902,
+   "coverage flagged": 0.891,
+   "coverage not flagged": 0.904,
+   "BFE decided": 0.579,
+   "decided correct": 0.983,
+   "SFHA with BFE": 1134,
+   "raised n": 153,
+   "raised recall": 0.725,
+   "median error": 0.041,
+   "coverage CI95": [
+    0.884,
+    0.917
+   ]
+  },
+  "slab 1A/1B": {
+   "n": 1017,
+   "MAE": 0.787,
+   "within 1 ft": 0.806,
+   "BFE side": 0.919,
+   "coverage": 0.917,
+   "coverage flagged": 0.876,
+   "coverage not flagged": 0.922,
+   "BFE decided": 0.62,
+   "decided correct": 0.988,
+   "SFHA with BFE": 926,
+   "raised n": 46,
+   "raised recall": 0.63,
+   "median error": 0.098,
+   "coverage CI95": [
+    0.899,
+    0.933
+   ]
+  },
+  "elevated 5-9": {
+   "n": 209,
+   "MAE": 1.903,
+   "within 1 ft": 0.498,
+   "BFE side": 0.889,
+   "coverage": 0.833,
+   "coverage flagged": 0.917,
+   "coverage not flagged": 0.776,
+   "BFE decided": 0.389,
+   "decided correct": 0.948,
+   "SFHA with BFE": 198,
+   "raised n": 104,
+   "raised recall": 0.779,
+   "median error": -0.727,
+   "coverage CI95": [
+    0.776,
+    0.877
+   ]
+  },
+  "elevated 5-9 not flagged": {
+   "n": 125,
+   "MAE": 1.343,
+   "within 1 ft": 0.672,
+   "BFE side": 0.88,
+   "coverage": 0.776,
+   "coverage flagged": NaN,
+   "coverage not flagged": 0.776,
+   "BFE decided": 0.479,
+   "decided correct": 0.946,
+   "SFHA with BFE": 117,
+   "raised n": 23,
+   "raised recall": 0.0,
+   "median error": -0.576,
+   "coverage CI95": [
+    0.695,
+    0.84
+   ]
+  }
+ },
+ "county_independent": {
+  "all": {
+   "n": 193,
+   "MAE": 1.982,
+   "within 1 ft": 0.554,
+   "BFE side": 0.908,
+   "coverage": 0.855,
+   "coverage flagged": 0.807,
+   "coverage not flagged": 0.891,
+   "BFE decided": 0.451,
+   "decided correct": 0.964,
+   "SFHA with BFE": 184,
+   "raised n": 79,
+   "raised recall": 0.785,
+   "median error": 0.079,
+   "coverage CI95": [
+    0.798,
+    0.898
+   ]
+  },
+  "slab 1A/1B": {
+   "n": 110,
+   "MAE": 1.331,
+   "within 1 ft": 0.664,
+   "BFE side": 0.971,
+   "coverage": 0.927,
+   "coverage flagged": 0.833,
+   "coverage not flagged": 0.953,
+   "BFE decided": 0.495,
+   "decided correct": 0.98,
+   "SFHA with BFE": 103,
+   "raised n": 10,
+   "raised recall": 0.6,
+   "median error": 0.473,
+   "coverage CI95": [
+    0.863,
+    0.963
+   ]
+  },
+  "elevated 5-9": {
+   "n": 83,
+   "MAE": 2.844,
+   "within 1 ft": 0.41,
+   "BFE side": 0.827,
+   "coverage": 0.759,
+   "coverage flagged": 0.797,
+   "coverage not flagged": 0.667,
+   "BFE decided": 0.395,
+   "decided correct": 0.938,
+   "SFHA with BFE": 81,
+   "raised n": 69,
+   "raised recall": 0.812,
+   "median error": -0.844,
+   "coverage CI95": [
+    0.657,
+    0.838
+   ]
+  },
+  "elevated 5-9 not flagged": {
+   "n": 24,
+   "MAE": 3.136,
+   "within 1 ft": 0.458,
+   "BFE side": 0.636,
+   "coverage": 0.667,
+   "coverage flagged": NaN,
+   "coverage not flagged": 0.667,
+   "BFE decided": 0.364,
+   "decided correct": 0.75,
+   "SFHA with BFE": 22,
+   "raised n": 13,
+   "raised recall": 0.0,
+   "median error": -1.287,
+   "coverage CI95": [
+    0.467,
+    0.82
+   ]
+  }
+ },
+ "county_independent_r0_test_blocks": {
+  "all": {
+   "n": 193,
+   "MAE": 1.982,
+   "within 1 ft": 0.554,
+   "BFE side": 0.908,
+   "coverage": 0.855,
+   "coverage flagged": 0.807,
+   "coverage not flagged": 0.891,
+   "BFE decided": 0.451,
+   "decided correct": 0.964,
+   "SFHA with BFE": 184,
+   "raised n": 79,
+   "raised recall": 0.785,
+   "median error": 0.079,
+   "coverage CI95": [
+    0.798,
+    0.898
+   ]
+  },
+  "slab 1A/1B": {
+   "n": 110,
+   "MAE": 1.331,
+   "within 1 ft": 0.664,
+   "BFE side": 0.971,
+   "coverage": 0.927,
+   "coverage flagged": 0.833,
+   "coverage not flagged": 0.953,
+   "BFE decided": 0.495,
+   "decided correct": 0.98,
+   "SFHA with BFE": 103,
+   "raised n": 10,
+   "raised recall": 0.6,
+   "median error": 0.473,
+   "coverage CI95": [
+    0.863,
+    0.963
+   ]
+  },
+  "elevated 5-9": {
+   "n": 83,
+   "MAE": 2.844,
+   "within 1 ft": 0.41,
+   "BFE side": 0.827,
+   "coverage": 0.759,
+   "coverage flagged": 0.797,
+   "coverage not flagged": 0.667,
+   "BFE decided": 0.395,
+   "decided correct": 0.938,
+   "SFHA with BFE": 81,
+   "raised n": 69,
+   "raised recall": 0.812,
+   "median error": -0.844,
+   "coverage CI95": [
+    0.657,
+    0.838
+   ]
+  },
+  "elevated 5-9 not flagged": {
+   "n": 24,
+   "MAE": 3.136,
+   "within 1 ft": 0.458,
+   "BFE side": 0.636,
+   "coverage": 0.667,
+   "coverage flagged": NaN,
+   "coverage not flagged": 0.667,
+   "BFE decided": 0.364,
+   "decided correct": 0.75,
+   "SFHA with BFE": 22,
+   "raised n": 13,
+   "raised recall": 0.0,
+   "median error": -1.287,
+   "coverage CI95": [
+    0.467,
+    0.82
+   ]
+  }
+ },
+ "table_calls_vs_county_certificate": null
+}

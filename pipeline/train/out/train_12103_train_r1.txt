@@ -1,0 +1,13 @@
+# 12103 (pinellas_2018_r1g): floor model, held-out 20% by 1 km block
+
+labels joined to lidar features with ground and points: 8177; after the label screen: 7960; blocks 523: fit 4715 / cal 1816 / test 1429 houses; blocks new to the split (hashed in): {'fit': 10, 'test': 5, 'cal': 4}
+90% normalised conformal scale q = 2.222 (CAL, n = 1816)
+
+|                            |    n |   MAE |   within 1 ft |   raised n |   raised MAE |   raised recall |   SFHA with BFE |   BFE side |   coverage |   coverage flagged |   coverage not flagged |   width median not flagged |   width median flagged |   BFE decided |   decided correct |
+|:---------------------------|-----:|------:|--------------:|-----------:|-------------:|----------------:|----------------:|-----------:|-----------:|-------------------:|-----------------------:|---------------------------:|-----------------------:|--------------:|------------------:|
+| all held-out (screened)    | 1429 | 1.12  |         0.725 |        232 |        2.822 |           0.746 |            1318 |      0.912 |      0.893 |              0.895 |                  0.893 |                      1.833 |                 14.596 |         0.566 |             0.981 |
+| slab 1A/1B                 | 1127 | 0.84  |         0.792 |         56 |        2.189 |           0.625 |            1029 |      0.924 |      0.917 |              0.909 |                  0.918 |                      1.706 |                 15.768 |         0.612 |             0.989 |
+| elevated / enclosed 5-9    |  292 | 2.171 |         0.473 |        173 |        3.028 |           0.792 |             279 |      0.871 |      0.798 |              0.881 |                  0.718 |                      3.221 |                 13.422 |         0.387 |             0.935 |
+| FIT-only model (same test) | 1429 | 1.123 |         0.715 |        232 |        2.933 |           0.737 |            1318 |      0.906 |      0.896 |              0.898 |                  0.896 |                      1.837 |                 14.618 |         0.568 |             0.981 |
+
+feature importance (gain, final model, top 12): roof_p05, year_built, eave_p10, roof_p50, living_area, g_far, eave_p50, fp_area_m2, g_inside, g_hag, ridge, roof_p95

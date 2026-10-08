@@ -84,6 +84,7 @@ def feats(base: str) -> list[str]:
 
 FEATS = feats("lag")  # r0's list (scripts that only ever read r0 runs)
 SLAB_FT = 1.0
+REGIME_EDGES = (1.5, 3.0)  # Mondrian band groups by the model's own point estimate p (ft): <= 1.5, 1.5-3, > 3
 C = 0.90
 
 
@@ -129,6 +130,17 @@ def screen(lab: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
     return d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))].reset_index(drop=True)
 
 
+def regime(p: np.ndarray) -> np.ndarray:
+    return np.digitize(p, REGIME_EDGES, right=True)  # 0: p <= 1.5, 1: 1.5 < p <= 3, 2: p > 3
+
+
+def band_q(bands: dict, p: np.ndarray) -> np.ndarray:
+    """q per house: one q (r0) or one per predicted regime (docs/09 D3, 'q_by_regime'); label-free at prediction."""
+    if "q_by_regime" in bands:
+        return np.asarray(bands["q_by_regime"], float)[regime(p)]
+    return np.full(len(p), bands["q"])
+
+
 def fit(x, y):
     return lgb.LGBMRegressor(**P).fit(x, y)
 
@@ -166,7 +178,7 @@ def score(d, p, lo, hi) -> dict:
     }
 
 
-def main(fips: str, run: str, labels_path: Path, out_dir: Path) -> None:
+def main(fips: str, run: str, labels_path: Path, out_dir: Path, mondrian: bool = False) -> None:
     f = features(fips, run)
     base = run_base(run)
     FEATS = feats(base)  # this run's feature list (the module-level FEATS is r0's)
@@ -195,11 +207,25 @@ def main(fips: str, run: str, labels_path: Path, out_dir: Path) -> None:
 
     m_fit = fit(fit_d[FEATS], fit_d.dh)
     pc = m_fit.predict(cal_d[FEATS])
-    q = abs_q(np.abs(cal_d.dh.values - pc) / s_of(cal_d, pc), C)
+    ratio = np.abs(cal_d.dh.values - pc) / s_of(cal_d, pc)
+    q = abs_q(ratio, C)
+    bands_extra: dict = {}
+    if mondrian:  # docs/09 D3: a q per predicted regime, each the finite-sample 90% quantile of its CAL houses
+        rg = regime(pc)
+        qr = [float(abs_q(ratio[rg == k], C)) for k in range(len(REGIME_EDGES) + 1)]
+        bands_extra = {
+            "q_by_regime": qr,
+            "regime_edges": list(REGIME_EDGES),
+            "n_cal_by_regime": [int((rg == k).sum()) for k in range(len(REGIME_EDGES) + 1)],
+        }
+
+    def qv(p):
+        return band_q({"q": q, **bands_extra}, p)
+
     model = fit(pd.concat([fit_d, cal_d])[FEATS], pd.concat([fit_d, cal_d]).dh)
     pt = model.predict(test_d[FEATS])
     st = s_of(test_d, pt)
-    lo, hi = pt - q * st, pt + q * st
+    lo, hi = pt - qv(pt) * st, pt + qv(pt) * st
     rows = {"all held-out (screened)": score(test_d, pt, lo, hi)}
     dg = test_d.diagram.astype(str)
     for name, m in (
@@ -208,7 +234,9 @@ def main(fips: str, run: str, labels_path: Path, out_dir: Path) -> None:
     ):
         rows[name] = score(test_d[m].reset_index(drop=True), pt[m], lo[m], hi[m])
     pf = m_fit.predict(test_d[FEATS])
-    rows["FIT-only model (same test)"] = score(test_d, pf, pf - q * s_of(test_d, pf), pf + q * s_of(test_d, pf))
+    rows["FIT-only model (same test)"] = score(
+        test_d, pf, pf - qv(pf) * s_of(test_d, pf), pf + qv(pf) * s_of(test_d, pf)
+    )
 
     out = Path(__file__).parent / "out"
     out.mkdir(exist_ok=True)
@@ -240,6 +268,7 @@ def main(fips: str, run: str, labels_path: Path, out_dir: Path) -> None:
         json.dumps(
             {
                 "q": q,
+                **bands_extra,
                 "c": C,
                 "run": run,
                 "base": base,
@@ -261,6 +290,7 @@ if __name__ == "__main__":
     ap.add_argument("fips")
     ap.add_argument("run")
     ap.add_argument("--labels", type=Path, help="default data/flood_v1/train/labels_<FIPS>.parquet")
+    ap.add_argument("--mondrian", action="store_true", help="a band q per predicted regime (docs/09 D3)")
     ap.add_argument("--out", type=Path, default=DATA / "train", help="artefact dir (default data/flood_v1/train)")
     a = ap.parse_args()
-    main(a.fips, a.run, a.labels or DATA / "train" / f"labels_{a.fips}.parquet", a.out)
+    main(a.fips, a.run, a.labels or DATA / "train" / f"labels_{a.fips}.parquet", a.out, a.mondrian)

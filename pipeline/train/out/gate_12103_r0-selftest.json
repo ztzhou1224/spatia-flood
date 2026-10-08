@@ -227,8 +227,8 @@
      }
     },
     "combined: label blocks not in the split": {
-     "blocks": 20,
-     "houses": 26
+     "blocks": 1,
+     "houses": 1
     },
     "benchmark | combined": {
      "houses": 1428,
@@ -335,23 +335,23 @@
      }
     },
     "held_out | combined": {
-     "houses": 1428,
+     "houses": 1434,
      "candidate": {
-      "n": 1428.0,
-      "MAE": 1.1594822037277208,
-      "within 1 ft": 0.7121848739495799,
-      "raised n": 330.0,
-      "raised MAE": 2.5710578866022606,
-      "raised recall": 0.7848484848484848,
-      "SFHA with BFE": 1317.0,
-      "BFE side": 0.894457099468489,
-      "coverage": 0.9131652661064426,
-      "coverage flagged": 0.9259259259259259,
-      "coverage not flagged": 0.9085714285714286,
-      "width median not flagged": 1.8038256819899872,
-      "width median flagged": 15.330047524324787,
-      "BFE decided": 0.554290053151101,
-      "decided correct": 0.9808219178082191
+      "n": 1434.0,
+      "MAE": 1.159312804129349,
+      "within 1 ft": 0.7112970711297071,
+      "raised n": 333.0,
+      "raised MAE": 2.5535936007678703,
+      "raised recall": 0.7837837837837838,
+      "SFHA with BFE": 1323.0,
+      "BFE side": 0.8934240362811792,
+      "coverage": 0.9128312412831241,
+      "coverage flagged": 0.926509186351706,
+      "coverage not flagged": 0.9078822412155746,
+      "width median not flagged": 1.8069362511864226,
+      "width median flagged": 15.375774201028541,
+      "BFE decided": 0.5532879818594104,
+      "decided correct": 0.9795081967213115
      },
      "candidate_conditional": {
       "truly raised & unflagged (p <= 3)": {
@@ -359,8 +359,8 @@
        "coverage": 0.485
       },
       "diagram 5-9 unflagged (p <= 3)": {
-       "n": 127,
-       "coverage": 0.764
+       "n": 128,
+       "coverage": 0.766
       },
       "slab 1A/1B truly raised": {
        "n": 62,
@@ -368,21 +368,21 @@
       }
      },
      "baseline": {
-      "n": 1428.0,
-      "MAE": 1.1594822037277208,
-      "within 1 ft": 0.7121848739495799,
-      "raised n": 330.0,
-      "raised MAE": 2.5710578866022606,
-      "raised recall": 0.7848484848484848,
-      "SFHA with BFE": 1317.0,
-      "BFE side": 0.894457099468489,
-      "coverage": 0.9131652661064426,
-      "coverage flagged": 0.9259259259259259,
-      "coverage not flagged": 0.9085714285714286,
-      "width median not flagged": 1.8038256819899872,
-      "width median flagged": 15.330047524324787,
-      "BFE decided": 0.554290053151101,
-      "decided correct": 0.9808219178082191
+      "n": 1434.0,
+      "MAE": 1.159312804129349,
+      "within 1 ft": 0.7112970711297071,
+      "raised n": 333.0,
+      "raised MAE": 2.5535936007678703,
+      "raised recall": 0.7837837837837838,
+      "SFHA with BFE": 1323.0,
+      "BFE side": 0.8934240362811792,
+      "coverage": 0.9128312412831241,
+      "coverage flagged": 0.926509186351706,
+      "coverage not flagged": 0.9078822412155746,
+      "width median not flagged": 1.8069362511864226,
+      "width median flagged": 15.375774201028541,
+      "BFE decided": 0.5532879818594104,
+      "decided correct": 0.9795081967213115
      },
      "baseline_conditional": {
       "truly raised & unflagged (p <= 3)": {
@@ -390,8 +390,8 @@
        "coverage": 0.485
       },
       "diagram 5-9 unflagged (p <= 3)": {
-       "n": 127,
-       "coverage": 0.764
+       "n": 128,
+       "coverage": 0.766
       },
       "slab 1A/1B truly raised": {
        "n": 62,
@@ -399,12 +399,12 @@
       }
      },
      "bootstrap": {
-      "blocks": 100,
+      "blocks": 105,
       "candidate_sd": {
-       "MAE": 0.0808,
+       "MAE": 0.0802,
        "BFE side": 0.0086,
-       "coverage": 0.0109,
-       "decided correct": 0.0058,
+       "coverage": 0.0108,
+       "decided correct": 0.0061,
        "raised unflagged coverage": 0.1049
       },
       "diff_ci95": {
@@ -680,8 +680,8 @@
      }
     },
     "combined: label blocks not in the split": {
-     "blocks": 20,
-     "houses": 26
+     "blocks": 1,
+     "houses": 1
     },
     "benchmark | combined": {
      "houses": 1428,
@@ -788,23 +788,23 @@
      }
     },
     "held_out | combined": {
-     "houses": 1428,
+     "houses": 1434,
      "candidate": {
-      "n": 1428.0,
-      "MAE": 1.1594822037277208,
-      "within 1 ft": 0.7121848739495799,
-      "raised n": 330.0,
-      "raised MAE": 2.5710578866022606,
-      "raised recall": 0.7848484848484848,
-      "SFHA with BFE": 1317.0,
-      "BFE side": 0.894457099468489,
-      "coverage": 0.7289915966386554,
-      "coverage flagged": 0.7407407407407407,
-      "coverage not flagged": 0.7247619047619047,
-      "width median not flagged": 0.9019128409949934,
-      "width median flagged": 7.665023762162394,
-      "BFE decided": 0.7107061503416856,
-      "decided correct": 0.9636752136752137
+      "n": 1434.0,
+      "MAE": 1.159312804129349,
+      "within 1 ft": 0.7112970711297071,
+      "raised n": 333.0,
+      "raised MAE": 2.5535936007678703,
+      "raised recall": 0.7837837837837838,
+      "SFHA with BFE": 1323.0,
+      "BFE side": 0.8934240362811792,
+      "coverage": 0.7287308228730823,
+      "coverage flagged": 0.7427821522309711,
+      "coverage not flagged": 0.7236467236467237,
+      "width median not flagged": 0.9034681255932111,
+      "width median flagged": 7.6878871005142715,
+      "BFE decided": 0.7105064247921391,
+      "decided correct": 0.9627659574468085
      },
      "candidate_conditional": {
       "truly raised & unflagged (p <= 3)": {
@@ -812,8 +812,8 @@
        "coverage": 0.152
       },
       "diagram 5-9 unflagged (p <= 3)": {
-       "n": 127,
-       "coverage": 0.528
+       "n": 128,
+       "coverage": 0.523
       },
       "slab 1A/1B truly raised": {
        "n": 62,
@@ -821,21 +821,21 @@
       }
      },
      "baseline": {
-      "n": 1428.0,
-      "MAE": 1.1594822037277208,
-      "within 1 ft": 0.7121848739495799,
-      "raised n": 330.0,
-      "raised MAE": 2.5710578866022606,
-      "raised recall": 0.7848484848484848,
-      "SFHA with BFE": 1317.0,
-      "BFE side": 0.894457099468489,
-      "coverage": 0.9131652661064426,
-      "coverage flagged": 0.9259259259259259,
-      "coverage not flagged": 0.9085714285714286,
-      "width median not flagged": 1.8038256819899872,
-      "width median flagged": 15.330047524324787,
-      "BFE decided": 0.554290053151101,
-      "decided correct": 0.9808219178082191
+      "n": 1434.0,
+      "MAE": 1.159312804129349,
+      "within 1 ft": 0.7112970711297071,
+      "raised n": 333.0,
+      "raised MAE": 2.5535936007678703,
+      "raised recall": 0.7837837837837838,
+      "SFHA with BFE": 1323.0,
+      "BFE side": 0.8934240362811792,
+      "coverage": 0.9128312412831241,
+      "coverage flagged": 0.926509186351706,
+      "coverage not flagged": 0.9078822412155746,
+      "width median not flagged": 1.8069362511864226,
+      "width median flagged": 15.375774201028541,
+      "BFE decided": 0.5532879818594104,
+      "decided correct": 0.9795081967213115
      },
      "baseline_conditional": {
       "truly raised & unflagged (p <= 3)": {
@@ -843,8 +843,8 @@
        "coverage": 0.485
       },
       "diagram 5-9 unflagged (p <= 3)": {
-       "n": 127,
-       "coverage": 0.764
+       "n": 128,
+       "coverage": 0.766
       },
       "slab 1A/1B truly raised": {
        "n": 62,
@@ -852,13 +852,13 @@
       }
      },
      "bootstrap": {
-      "blocks": 100,
+      "blocks": 105,
       "candidate_sd": {
-       "MAE": 0.0808,
+       "MAE": 0.0802,
        "BFE side": 0.0086,
-       "coverage": 0.0167,
-       "decided correct": 0.0067,
-       "raised unflagged coverage": 0.0646
+       "coverage": 0.0165,
+       "decided correct": 0.0068,
+       "raised unflagged coverage": 0.0633
       },
       "diff_ci95": {
        "MAE": [
@@ -870,24 +870,24 @@
         0.0
        ],
        "coverage": [
-        -0.2064,
-        -0.1625
+        -0.208,
+        -0.1633
        ],
        "decided correct": [
-        -0.0273,
-        -0.009
+        -0.0268,
+        -0.0087
        ],
        "raised unflagged coverage": [
         -0.5186,
-        -0.1724
+        -0.1786
        ]
       },
       "diff_sd": {
        "MAE": 0.0,
        "BFE side": 0.0,
-       "coverage": 0.0111,
-       "decided correct": 0.0046,
-       "raised unflagged coverage": 0.0877
+       "coverage": 0.0113,
+       "decided correct": 0.0045,
+       "raised unflagged coverage": 0.0878
       }
      }
     }

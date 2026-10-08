@@ -41,7 +41,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import split
-from train import DATA, feats, features, score
+from train import DATA, band_q, feats, features, score
 
 TOL = {"MAE": 0.05, "BFE side": 0.01, "coverage": 0.01, "decided correct": 0.01}
 COVERAGE_FLOOR = 0.88
@@ -69,7 +69,7 @@ def predict(d: Path, fips: str, t: pd.DataFrame, q_mult: float = 1.0):
     fe = bands["features"]
     p = model.predict(t[fe])
     s = np.maximum(diff.predict(t[fe].assign(p=p)), 0.05)
-    q = bands["q"] * q_mult
+    q = band_q(bands, p) * q_mult
     return p, p - q * s, p + q * s
 
 

@@ -1,0 +1,467 @@
+{
+ "fips": "12103",
+ "release": "r1dev-train_r1m",
+ "labels": "/home/user/spatia-flood/data/flood_v1/train/labels_12103.parquet",
+ "labels_combined": "/home/user/spatia-flood/data/flood_v1/labels_pinellas/labels_combined_12103.parquet",
+ "boot": 2000,
+ "tolerances_floor": {
+  "MAE": 0.05,
+  "BFE side": 0.01,
+  "coverage": 0.01,
+  "decided correct": 0.01
+ },
+ "coverage_floor": 0.88,
+ "candidate": "data/flood_v1/train_r1m",
+ "baseline": "data/flood_v1/train_r0",
+ "tables": {
+  "fdem: label blocks not in the split": {
+   "blocks": 0,
+   "houses": 0
+  },
+  "benchmark | fdem": {
+   "houses": 1236,
+   "candidate": {
+    "n": 1236.0,
+    "MAE": 0.985496580976844,
+    "within 1 ft": 0.7516181229773463,
+    "raised n": 153.0,
+    "raised MAE": 2.7742647501333706,
+    "raised recall": 0.7254901960784313,
+    "SFHA with BFE": 1134.0,
+    "BFE side": 0.9126984126984127,
+    "coverage": 0.9021035598705501,
+    "coverage flagged": 0.8907103825136612,
+    "coverage not flagged": 0.9040835707502374,
+    "width median not flagged": 1.7891649982345659,
+    "width median flagged": 13.489724555982612,
+    "BFE decided": 0.5793650793650794,
+    "decided correct": 0.9832572298325722
+   },
+   "candidate_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 51,
+     "coverage": 0.667
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 125,
+     "coverage": 0.776
+    },
+    "slab 1A/1B truly raised": {
+     "n": 50,
+     "coverage": 0.96
+    }
+   },
+   "baseline": {
+    "n": 1236.0,
+    "MAE": 0.9809682778938025,
+    "within 1 ft": 0.7516181229773463,
+    "raised n": 237.0,
+    "raised MAE": 2.2786071759880304,
+    "raised recall": 0.7468354430379747,
+    "SFHA with BFE": 1134.0,
+    "BFE side": 0.8994708994708994,
+    "coverage": 0.9215210355987055,
+    "coverage flagged": 0.9424460431654677,
+    "coverage not flagged": 0.9154488517745303,
+    "width median not flagged": 1.7742204091896396,
+    "width median flagged": 15.414810564445329,
+    "BFE decided": 0.5802469135802469,
+    "decided correct": 0.9832826747720365
+   },
+   "baseline_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 25,
+     "coverage": 0.52
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 111,
+     "coverage": 0.793
+    },
+    "slab 1A/1B truly raised": {
+     "n": 50,
+     "coverage": 0.94
+    }
+   },
+   "bootstrap": {
+    "blocks": 100,
+    "candidate_sd": {
+     "MAE": 0.0755,
+     "BFE side": 0.0101,
+     "coverage": 0.0111,
+     "decided correct": 0.0048,
+     "raised unflagged coverage": 0.0793
+    },
+    "diff_ci95": {
+     "MAE": [
+      -0.0565,
+      0.0762
+     ],
+     "BFE side": [
+      0.0022,
+      0.0252
+     ],
+     "coverage": [
+      -0.0304,
+      -0.0087
+     ],
+     "decided correct": [
+      -0.0078,
+      0.0066
+     ],
+     "raised unflagged coverage": [
+      -0.0359,
+      0.3485
+     ]
+    },
+    "diff_sd": {
+     "MAE": 0.0332,
+     "BFE side": 0.0059,
+     "coverage": 0.0055,
+     "decided correct": 0.0037,
+     "raised unflagged coverage": 0.0966
+    }
+   }
+  },
+  "held_out | fdem": {
+   "houses": 1236,
+   "candidate": {
+    "n": 1236.0,
+    "MAE": 0.985496580976844,
+    "within 1 ft": 0.7516181229773463,
+    "raised n": 153.0,
+    "raised MAE": 2.7742647501333706,
+    "raised recall": 0.7254901960784313,
+    "SFHA with BFE": 1134.0,
+    "BFE side": 0.9126984126984127,
+    "coverage": 0.9021035598705501,
+    "coverage flagged": 0.8907103825136612,
+    "coverage not flagged": 0.9040835707502374,
+    "width median not flagged": 1.7891649982345659,
+    "width median flagged": 13.489724555982612,
+    "BFE decided": 0.5793650793650794,
+    "decided correct": 0.9832572298325722
+   },
+   "candidate_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 51,
+     "coverage": 0.667
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 125,
+     "coverage": 0.776
+    },
+    "slab 1A/1B truly raised": {
+     "n": 50,
+     "coverage": 0.96
+    }
+   },
+   "baseline": {
+    "n": 1236.0,
+    "MAE": 0.9809682778938025,
+    "within 1 ft": 0.7516181229773463,
+    "raised n": 237.0,
+    "raised MAE": 2.2786071759880304,
+    "raised recall": 0.7468354430379747,
+    "SFHA with BFE": 1134.0,
+    "BFE side": 0.8994708994708994,
+    "coverage": 0.9215210355987055,
+    "coverage flagged": 0.9424460431654677,
+    "coverage not flagged": 0.9154488517745303,
+    "width median not flagged": 1.7742204091896396,
+    "width median flagged": 15.414810564445329,
+    "BFE decided": 0.5802469135802469,
+    "decided correct": 0.9832826747720365
+   },
+   "baseline_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 25,
+     "coverage": 0.52
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 111,
+     "coverage": 0.793
+    },
+    "slab 1A/1B truly raised": {
+     "n": 50,
+     "coverage": 0.94
+    }
+   },
+   "bootstrap": {
+    "blocks": 100,
+    "candidate_sd": {
+     "MAE": 0.0755,
+     "BFE side": 0.0101,
+     "coverage": 0.0111,
+     "decided correct": 0.0048,
+     "raised unflagged coverage": 0.0793
+    },
+    "diff_ci95": {
+     "MAE": [
+      -0.0565,
+      0.0762
+     ],
+     "BFE side": [
+      0.0022,
+      0.0252
+     ],
+     "coverage": [
+      -0.0304,
+      -0.0087
+     ],
+     "decided correct": [
+      -0.0078,
+      0.0066
+     ],
+     "raised unflagged coverage": [
+      -0.0359,
+      0.3485
+     ]
+    },
+    "diff_sd": {
+     "MAE": 0.0332,
+     "BFE side": 0.0059,
+     "coverage": 0.0055,
+     "decided correct": 0.0037,
+     "raised unflagged coverage": 0.0966
+    }
+   }
+  },
+  "combined: label blocks not in the split": {
+   "blocks": 0,
+   "houses": 0
+  },
+  "benchmark | combined": {
+   "houses": 1423,
+   "candidate": {
+    "n": 1423.0,
+    "MAE": 1.1207376529272517,
+    "within 1 ft": 0.7259311314125088,
+    "raised n": 230.0,
+    "raised MAE": 2.840203983738881,
+    "raised recall": 0.7478260869565218,
+    "SFHA with BFE": 1312.0,
+    "BFE side": 0.9123475609756098,
+    "coverage": 0.8959943780744906,
+    "coverage flagged": 0.8636363636363636,
+    "coverage not flagged": 0.903364969801553,
+    "width median not flagged": 1.8411599808256303,
+    "width median flagged": 12.487077713150297,
+    "BFE decided": 0.5617378048780488,
+    "decided correct": 0.9823609226594301
+   },
+   "candidate_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 70,
+     "coverage": 0.657
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 148,
+     "coverage": 0.757
+    },
+    "slab 1A/1B truly raised": {
+     "n": 62,
+     "coverage": 0.952
+    }
+   },
+   "baseline": {
+    "n": 1423.0,
+    "MAE": 1.148307270381203,
+    "within 1 ft": 0.7146872803935348,
+    "raised n": 330.0,
+    "raised MAE": 2.5710578866022606,
+    "raised recall": 0.7848484848484848,
+    "SFHA with BFE": 1312.0,
+    "BFE side": 0.8948170731707317,
+    "coverage": 0.9149683766690091,
+    "coverage flagged": 0.925531914893617,
+    "coverage not flagged": 0.9111747851002865,
+    "width median not flagged": 1.808425399042723,
+    "width median flagged": 15.330047524324787,
+    "BFE decided": 0.5541158536585366,
+    "decided correct": 0.9807427785419532
+   },
+   "baseline_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 33,
+     "coverage": 0.485
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 126,
+     "coverage": 0.77
+    },
+    "slab 1A/1B truly raised": {
+     "n": 62,
+     "coverage": 0.935
+    }
+   },
+   "bootstrap": {
+    "blocks": 100,
+    "candidate_sd": {
+     "MAE": 0.085,
+     "BFE side": 0.0084,
+     "coverage": 0.0108,
+     "decided correct": 0.0053,
+     "raised unflagged coverage": 0.0743
+    },
+    "diff_ci95": {
+     "MAE": [
+      -0.0904,
+      0.0486
+     ],
+     "BFE side": [
+      0.0067,
+      0.0286
+     ],
+     "coverage": [
+      -0.0308,
+      -0.0069
+     ],
+     "decided correct": [
+      -0.0056,
+      0.0084
+     ],
+     "raised unflagged coverage": [
+      0.0033,
+      0.3398
+     ]
+    },
+    "diff_sd": {
+     "MAE": 0.0361,
+     "BFE side": 0.0057,
+     "coverage": 0.0062,
+     "decided correct": 0.0036,
+     "raised unflagged coverage": 0.0839
+    }
+   }
+  },
+  "held_out | combined": {
+   "houses": 1429,
+   "candidate": {
+    "n": 1429.0,
+    "MAE": 1.1200378638453765,
+    "within 1 ft": 0.7249825052484254,
+    "raised n": 232.0,
+    "raised MAE": 2.8224465072639338,
+    "raised recall": 0.7456896551724138,
+    "SFHA with BFE": 1318.0,
+    "BFE side": 0.9119878603945372,
+    "coverage": 0.8957312806158153,
+    "coverage flagged": 0.8646616541353384,
+    "coverage not flagged": 0.9028374892519346,
+    "width median not flagged": 1.8411599808256303,
+    "width median flagged": 12.487077713150297,
+    "BFE decided": 0.5614567526555387,
+    "decided correct": 0.981081081081081
+   },
+   "candidate_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 70,
+     "coverage": 0.657
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 149,
+     "coverage": 0.758
+    },
+    "slab 1A/1B truly raised": {
+     "n": 62,
+     "coverage": 0.952
+    }
+   },
+   "baseline": {
+    "n": 1429.0,
+    "MAE": 1.1481841987059156,
+    "within 1 ft": 0.7137858642407278,
+    "raised n": 333.0,
+    "raised MAE": 2.5535936007678703,
+    "raised recall": 0.7837837837837838,
+    "SFHA with BFE": 1318.0,
+    "BFE side": 0.8937784522003035,
+    "coverage": 0.9146256123163051,
+    "coverage flagged": 0.9261213720316622,
+    "coverage not flagged": 0.9104761904761904,
+    "width median not flagged": 1.8109490709133964,
+    "width median flagged": 15.375774201028541,
+    "BFE decided": 0.5531107738998483,
+    "decided correct": 0.9794238683127572
+   },
+   "baseline_conditional": {
+    "truly raised & unflagged (p <= 3)": {
+     "n": 33,
+     "coverage": 0.485
+    },
+    "diagram 5-9 unflagged (p <= 3)": {
+     "n": 127,
+     "coverage": 0.772
+    },
+    "slab 1A/1B truly raised": {
+     "n": 62,
+     "coverage": 0.935
+    }
+   },
+   "bootstrap": {
+    "blocks": 105,
+    "candidate_sd": {
+     "MAE": 0.0852,
+     "BFE side": 0.0083,
+     "coverage": 0.0106,
+     "decided correct": 0.0054,
+     "raised unflagged coverage": 0.0736
+    },
+    "diff_ci95": {
+     "MAE": [
+      -0.0933,
+      0.0473
+     ],
+     "BFE side": [
+      0.0074,
+      0.0302
+     ],
+     "coverage": [
+      -0.0303,
+      -0.0063
+     ],
+     "decided correct": [
+      -0.0059,
+      0.0082
+     ],
+     "raised unflagged coverage": [
+      0.0087,
+      0.3239
+     ]
+    },
+    "diff_sd": {
+     "MAE": 0.0365,
+     "BFE side": 0.0058,
+     "coverage": 0.006,
+     "decided correct": 0.0036,
+     "raised unflagged coverage": 0.0821
+    }
+   }
+  }
+ },
+ "checks": {
+  "benchmark | fdem: coverage >= 0.88": true,
+  "benchmark | fdem: MAE no regression (95% CI -0.0565 .. +0.0762)": true,
+  "benchmark | fdem: BFE side no regression (95% CI +0.0022 .. +0.0252)": true,
+  "benchmark | fdem: coverage no regression (95% CI -0.0304 .. -0.0087)": false,
+  "benchmark | fdem: decided correct no regression (95% CI -0.0078 .. +0.0066)": true,
+  "benchmark | fdem: raised unflagged coverage no regression (95% CI -0.0359 .. +0.3485)": true,
+  "benchmark | fdem: MAE floor (diff <= +0.05)": true,
+  "benchmark | fdem: BFE side floor (diff >= -0.01)": true,
+  "benchmark | fdem: coverage floor (diff >= -0.01)": false,
+  "benchmark | fdem: decided correct floor (diff >= -0.01)": true,
+  "held_out | fdem: coverage >= 0.88": true,
+  "benchmark | combined: coverage >= 0.88": true,
+  "benchmark | combined: MAE no regression (95% CI -0.0904 .. +0.0486)": true,
+  "benchmark | combined: BFE side no regression (95% CI +0.0067 .. +0.0286)": true,
+  "benchmark | combined: coverage no regression (95% CI -0.0308 .. -0.0069)": false,
+  "benchmark | combined: decided correct no regression (95% CI -0.0056 .. +0.0084)": true,
+  "benchmark | combined: raised unflagged coverage no regression (95% CI +0.0033 .. +0.3398)": true,
+  "benchmark | combined: MAE floor (diff <= +0.05)": true,
+  "benchmark | combined: BFE side floor (diff >= -0.01)": true,
+  "benchmark | combined: coverage floor (diff >= -0.01)": false,
+  "benchmark | combined: decided correct floor (diff >= -0.01)": true,
+  "held_out | combined: coverage >= 0.88": true
+ },
+ "passed": false
+}

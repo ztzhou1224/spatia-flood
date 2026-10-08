@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "pipeline" / "phase0"))
 sys.path.insert(0, str(ROOT / "pipeline" / "train"))
 from risk_area import BLDG, ZONES, connect
-from train import feats, features, run_base, screen
+from train import band_q, feats, features, run_base, screen
 
 DATA = ROOT / "data" / "flood_v1"
 OUT = DATA / "assemble"
@@ -244,7 +244,7 @@ def interpolate_bfe(
         i1 = o[0]
         e1 = lines.elev.values[cand[i1]]
         if d[i1] == 0:
-            i2, e2, f = i1, e1, 0.0
+            i2, e2, f, out_frac = i1, e1, 0.0, 0.0
         else:
             opp = [k for k in o[1:] if d[k] > 0 and near[k] @ near[i1] < 0]
             if not opp:
@@ -262,9 +262,6 @@ def interpolate_bfe(
             )
             area = shapely.union_all(zg[sorted(ps)])
             out_frac = shapely.length(shapely.difference(path, area)) / max(shapely.length(path), 1e-9)
-            if out_frac > SEGMENT_OUTSIDE:
-                rows.append({"a": a, "null": "not_determinable", "why": "path between the lines leaves the SFHA"})
-                continue
             e2 = lines.elev.values[cand[i2]]
             f = d[i1] / (d[i1] + d[i2])
         l1, l2 = lines.iloc[cand[i1]], lines.iloc[cand[i2]]
@@ -279,9 +276,21 @@ def interpolate_bfe(
                 "dfirm": l1.dfirm_id,
                 "eff": max(l1.eff, l2.eff),
                 "status": l1.status,
+                "out_frac": out_frac,
             }
         )
-    return pd.DataFrame(rows, columns=["a", "bfe", "lo", "hi", "src", "dfirm", "eff", "status", "null", "why"])
+    cols = ["a", "bfe", "lo", "hi", "src", "dfirm", "eff", "status", "null", "why", "out_frac"]
+    return pd.DataFrame(rows, columns=cols)
+
+
+def segment_rule(ip: pd.DataFrame, limit: float = SEGMENT_OUTSIDE) -> pd.DataFrame:
+    """E8: an interpolation whose path leaves the building's SFHA by more than `limit` of its length is not used."""
+    ip = ip.copy()
+    out = ip.bfe.notna() & (ip.out_frac > limit)
+    ip.loc[out, ["bfe", "lo", "hi"]] = np.nan
+    ip.loc[out, "null"] = "not_determinable"
+    ip.loc[out, "why"] = "path between the lines leaves the SFHA"
+    return ip
 
 
 def lists(s: pd.Series, idx) -> np.ndarray:
@@ -462,7 +471,8 @@ def main() -> None:
     sp = pr[pr.sfha]
     todo = set(np.where((b.bfe_null.values == "not_evaluated") & ~ao & ~sliver)[0])
     polys_of = {int(k): set(v) for k, v in sp[sp.a.isin(todo)].groupby("a").p}
-    ip = interpolate_bfe(cen_a, polys_of, zg, lines, lg)
+    ip_all = interpolate_bfe(cen_a, polys_of, zg, lines, lg)
+    ip = segment_rule(ip_all)
     ok_ = ip[ip.bfe.notna()]
     ia = ok_.a.values.astype(int)
     b.loc[ia, "bfe_ft"] = ok_.bfe.values
@@ -482,7 +492,9 @@ def main() -> None:
     b.loc[nn.a.values.astype(int), "bfe_null"] = nn.null.values
     # the same method where a static BFE exists (AE / VE with lines): how close does interpolation get?
     st = np.where((b.bfe_method.values == "static") & b.touches_sfha.values)[0]
-    chk = interpolate_bfe(cen_a, {int(k): set(v) for k, v in sp[sp.a.isin(set(st))].groupby("a").p}, zg, lines, lg)
+    chk = segment_rule(
+        interpolate_bfe(cen_a, {int(k): set(v) for k, v in sp[sp.a.isin(set(st))].groupby("a").p}, zg, lines, lg)
+    )
     chk = chk[chk.bfe.notna()]
     err = chk.bfe.values - b.bfe_ft.values[chk.a.values.astype(int)]
     inb = (b.bfe_ft.values[chk.a.values.astype(int)] >= chk.lo.values - 1e-9) & (
@@ -498,7 +510,21 @@ def main() -> None:
     for i, q in zip(mz, pz, strict=True):
         if int(q) in sfha_poly:
             hp.setdefault(int(i), set()).add(int(q))
-    ho = interpolate_bfe(mids, hp, zg, lines, lg, exclude={i: int(bl[i]) for i in hp})
+    ho_all = interpolate_bfe(mids, hp, zg, lines, lg, exclude={i: int(bl[i]) for i in hp})
+    # sensitivity of the E8 limit: buildings interpolated and held-out line error at each limit (owner's choice)
+    sens = {}
+    for lim in (0.01, 0.1, 0.25, 0.5, 1.01):
+        hv_ = segment_rule(ho_all, lim)
+        hv_ = hv_[hv_.bfe.notna()]
+        e_ = hv_.bfe.values - lines.elev.values[bl[hv_.a.values.astype(int)]]
+        sens[f"outside <= {lim:g}"] = {
+            "buildings_interpolated": int(segment_rule(ip_all, lim).bfe.notna().sum()),
+            "holdout_lines_predicted": len(hv_),
+            "holdout_MAE_ft": round(float(np.abs(e_).mean()), 3) if len(hv_) else None,
+            "holdout_within_1ft": round(float((np.abs(e_) <= 1).mean()), 3) if len(hv_) else None,
+        }
+    rep["bfe_segment_rule_sensitivity"] = sens
+    ho = segment_rule(ho_all)
     hv = ho[ho.bfe.notna()]
     herr = hv.bfe.values - lines.elev.values[bl[hv.a.values.astype(int)]]
     rep["bfe_line_holdout"] = {
@@ -689,7 +715,8 @@ def main() -> None:
     def predict(x: pd.DataFrame):
         p = model.predict(x[FE])
         s = np.maximum(diff.predict(x[FE].assign(p=p)), 0.05)
-        return p, p - q * s, p + q * s
+        qq = band_q(bands, p)
+        return p, p - qq * s, p + qq * s
 
     # gate re-check: the saved artefacts must reproduce train.py's held-out score
     lab = pd.read_parquet(md / f"labels_{fips}.parquet")
@@ -706,7 +733,8 @@ def main() -> None:
     print(f"gate re-check from saved artefacts: {rep['gate_recheck']}", flush=True)
     # the accuracy card (docs/09 A1): both populations, from pipeline/train/accuracy.py --no-table for this release
     acc = json.loads((ROOT / "pipeline" / "train" / "out" / f"accuracy_{fips}_{a.release}.json").read_text())
-    assert acc["fdem_held_out"]["all"]["n"] == len(t), "accuracy card scored a different held-out set"
+    n_fdem = int((t.label_source == "fdem").sum()) if "label_source" in t.columns else len(t)
+    assert acc["fdem_held_out"]["all"]["n"] == n_fdem, "accuracy card scored a different held-out set"
     accuracy = {k: acc[k] for k in ("populations", "fdem_held_out", "county_independent")}
 
     mm = b[["building_id"]].merge(m, on="building_id", how="left")
@@ -852,9 +880,11 @@ def main() -> None:
     # conflict screen (train.py's label screen, plus the certificate's own LAG against our ground, review DA6): a
     # conflicting certificate keeps its value but produces no above / below call (docs/09 Q2 / E2)
     lag_off = np.abs(r.cert_lag_ft.values - ground_v)
-    screen = ((mm.roof_p95.values - d_ground < 6) | (d_ground < -1)) & ok
-    screen = screen | (~np.isnan(lag_off) & (lag_off > CONFLICT_LAG_FT))
-    b["ffe_record_lidar_conflict"] = pd.array(np.where(rejected, True, np.where(rec, screen, pd.NA)), dtype="boolean")
+    conflict_screen = ((mm.roof_p95.values - d_ground < 6) | (d_ground < -1)) & ok
+    conflict_screen = conflict_screen | (~np.isnan(lag_off) & (lag_off > CONFLICT_LAG_FT))
+    b["ffe_record_lidar_conflict"] = pd.array(
+        np.where(rejected, True, np.where(rec, conflict_screen, pd.NA)), dtype="boolean"
+    )
     # raised flag: from the record floor height where there is one (docs/09 E3, review V1), else the model's
     b["raised_flag"] = pd.array(
         np.where(ffh_ok, ffh_cert > RAISED_FT, np.where(elig, p > RAISED_FT, pd.NA)), dtype="boolean"

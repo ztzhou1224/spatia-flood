@@ -1,0 +1,276 @@
+{
+ "fips": "12103",
+ "run": "pinellas_2018_r1g",
+ "release": "r1dev",
+ "built": "2026-10-08",
+ "inputs": {
+  "us_counties": {
+   "version": "2025",
+   "file_hash": "7754492e3ca5406f7d807be22eab54a91016128d2cd18712aff530275c5d8e88",
+   "storage_path": "layers/national/us_counties.parquet"
+  },
+  "overture_addresses": {
+   "version": "2026-09-23.1",
+   "file_hash": "58bc7dc66e3e67e1c5c6727de7ccdc3dc987f998e2780de08e5d62615c3927f2",
+   "storage_path": "layers/national/overture_addresses.parquet"
+  },
+  "overture_buildings": {
+   "version": "2026-09-23.1",
+   "file_hash": "96191e4f601f8a2aee9f26db22e273aa4528e2f56591b87a7b367536350703d4",
+   "storage_path": "layers/national/overture_buildings.parquet"
+  },
+  "fema_flood_zones": {
+   "version": "2026.04",
+   "file_hash": "1d4ecb38549e05b0974271c863a3288543d9d01be682fd2979890f368927c64d",
+   "storage_path": "layers/national/fema_flood_zones@20260930T082454Z-9c7789f1/current/**/*.parquet"
+  },
+  "fema_bfe_context": {
+   "version": "2026.04",
+   "file_hash": "80c177be8c76c335fd6703b57d9a5ffb05c326510e22ffff02c0aa5dd2d80f52",
+   "storage_path": "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
+  },
+  "fl_parcels": {
+   "version": "2025",
+   "file_hash": "3b2b64f96112083cdabed16862d9ef84d19629773b435677bbb93b1f984f17c6",
+   "storage_path": "layers/state/FL/fl_parcels.parquet"
+  },
+  "fema_flood_zones_release": "20260930T082454Z-9c7789f1",
+  "fema_bfe_context_release": "20260930T082454Z-9c7789f1"
+ },
+ "buildings": {
+  "county": 372764,
+  "risk_area": 290540
+ },
+ "firm_status": "effective FIRM panel dates in the county: 2003-09-03 (5,126 buildings); 2009-08-18 (1,817 buildings); 2021-08-24 (365,809 buildings). FEMA preliminary countywide FIRM issued 2025-05-15: not effective, not used",
+ "ao_static_bfe_removed": 54,
+ "bfe_segment_rule_sensitivity": {
+  "outside <= 0.01": {
+   "buildings_interpolated": 1384,
+   "holdout_lines_predicted": 99,
+   "holdout_MAE_ft": 0.395,
+   "holdout_within_1ft": 0.909
+  },
+  "outside <= 0.1": {
+   "buildings_interpolated": 1826,
+   "holdout_lines_predicted": 129,
+   "holdout_MAE_ft": 0.454,
+   "holdout_within_1ft": 0.899
+  },
+  "outside <= 0.25": {
+   "buildings_interpolated": 2665,
+   "holdout_lines_predicted": 171,
+   "holdout_MAE_ft": 0.468,
+   "holdout_within_1ft": 0.871
+  },
+  "outside <= 0.5": {
+   "buildings_interpolated": 3856,
+   "holdout_lines_predicted": 270,
+   "holdout_MAE_ft": 0.453,
+   "holdout_within_1ft": 0.878
+  },
+  "outside <= 1.01": {
+   "buildings_interpolated": 5132,
+   "holdout_lines_predicted": 450,
+   "holdout_MAE_ft": 0.44,
+   "holdout_within_1ft": 0.882
+  }
+ },
+ "bfe_line_holdout": {
+  "bfe_lines_with_elevation": 7240,
+  "midpoint_in_sfha": 630,
+  "predicted": 99,
+  "MAE_ft": 0.395,
+  "within_1ft": 0.909,
+  "inside_band": 1.0,
+  "null": {
+   "path between the lines leaves the SFHA": 351,
+   "lines on one side only": 160
+  }
+ },
+ "bfe_interpolation": {
+  "lines_with_elevation": 9832,
+  "buildings_tried": 5700,
+  "interpolated": 1384,
+  "null": {
+   "not_determinable": 4295,
+   "no_coverage": 21
+  },
+  "null_why": {
+   "path between the lines leaves the SFHA": 3748,
+   "lines on one side only": 547
+  },
+  "band_width_median_ft": 1.5,
+  "check_on_static_bfe": {
+   "n": 6,
+   "MAE_ft": 0.284,
+   "within_1ft": 1.0,
+   "static_inside_band": 1.0
+  }
+ },
+ "zones": {
+  "polygons_read": 7261,
+  "pairs": 402323,
+  "no_zone_polygon": 12,
+  "share_sum_over_1.01": 0,
+  "touches_sfha": 92243,
+  "touches_sfha_share_under_1pct": 1240,
+  "bfe_static": 84354,
+  "bfe_null": {
+   "not_applicable": 280521,
+   "not_determinable": 4295,
+   "no_coverage": 3364,
+   "not_evaluated": 230
+  }
+ },
+ "ground_suspect": {
+  "range_gt_3ft": 20353,
+  "min_below_0": 684,
+  "cells_masked": 468,
+  "any": 20392
+ },
+ "lidar": {
+  "workunits": [
+   {
+    "workunit": "FL_Peninsular_Pinellas_2018",
+    "project": "FL_Peninsular_2018_D18",
+    "collect_start": "2018-12-07",
+    "collect_end": "2019-03-08",
+    "ql": "QL 1",
+    "spec": "USGS Lidar Base Specification 1.3",
+    "vert_crs": "6360",
+    "geoid": "GEOID12B",
+    "lpc_pub_date": "2021-05-13"
+   }
+  ],
+  "buildings_per_workunit": {
+   "FL_Peninsular_Pinellas_2018": 372764
+  },
+  "lag": 290459,
+  "roof": 280360,
+  "eave": 280024,
+  "roof_null": {
+   "not_evaluated": 84598,
+   "not_determinable": 7806
+  },
+  "eave_null": {
+   "not_evaluated": 84598,
+   "not_determinable": 8142
+  }
+ },
+ "parcels": {
+  "parcels_read": 432360,
+  "buildings_with_parcel": 368800,
+  "buildings_on_residential_parcel": 315459,
+  "risk_buildings_on_residential_parcel": 248073
+ },
+ "gate_recheck": {
+  "n": 1429,
+  "MAE": 1.12,
+  "coverage": 0.896,
+  "q": 2.2218097210228938
+ },
+ "stale_modeled": 3872,
+ "bands_capped_at_roof": {
+  "n": 3,
+  "estimate_above_roof": 0
+ },
+ "calls_nulled_for_conflict": {
+  "above": 157,
+  "below": 4,
+  "too_close": 0
+ },
+ "lowest_floor": {
+  "record_rows_with_lowest_floor": 6878,
+  "calls": {
+   "not_applicable": 280521,
+   "NaN": 86421,
+   "below": 4575,
+   "above": 1192,
+   "too_close": 55
+  },
+  "living_above_lowest_below": 750
+ },
+ "addresses": {
+  "overture_addresses (point in footprint)": 298440,
+  "fl_parcels situs address (DOR NAL)": 73453,
+  "geocodio reverse (Pinellas (Pinellas County), rooftop)": 692,
+  "none": 144,
+  "geocodio reverse (City of Pinellas Park, rooftop)": 17,
+  "geocodio reverse (Loveland, rooftop)": 8,
+  "geocodio reverse (OpenStreetMap Contributors, nearest_street)": 6,
+  "geocodio reverse (TIGER/Line\u00ae from the US Census Bureau, nearest_street)": 2,
+  "geocodio reverse (TIGER/Line\u00ae from the US Census Bureau, nearest_place)": 2
+ },
+ "addresses_missing_in_risk_area": 0,
+ "floor": {
+  "model_eligible": 247645,
+  "record": 6878,
+  "record_without_cert_lag": 6,
+  "certificates_matched": 7515,
+  "certificates_by_stage": {
+   "finished_construction": 6944,
+   "building_under_construction": 289,
+   "construction_drawings": 235,
+   "not_stated": 47
+  },
+  "certificates_not_finished_fallback": 571,
+  "certificates_rejected_vs_lidar": 66,
+  "record_ffh_not_usable": 6,
+  "record_lidar_conflict": 234,
+  "record_issue_date_unknown": 213,
+  "record_issue_date_llm_estimate": 213,
+  "record_issue_date_still_unknown": 0,
+  "ffh_class": {
+   "modeled": 237045,
+   "<null>": 128847,
+   "record": 6872
+  },
+  "ffh_null": {
+   "<null>": 243917,
+   "not_evaluated": 121904,
+   "stale": 3872,
+   "no_coverage": 3038,
+   "not_determinable": 33
+  },
+  "raised_flag": {
+   "False": 224686,
+   "<null>": 128841,
+   "True": 19237
+  },
+  "modeled_band_width_median_ft": 2.04,
+  "record_cert_lag_minus_lidar_ground_median_ft": -0.15
+ },
+ "bfe_call": {
+  "all": {
+   "not_applicable": 280521,
+   "below": 33071,
+   "too_close": 31297,
+   "<null>": 20278,
+   "above": 7597
+  },
+  "basis": {
+   "<null>": 300799,
+   "modeled_band": 65051,
+   "record": 5728,
+   "modeled_band+interpolated_bfe": 1092,
+   "record+interpolated_bfe": 94
+  },
+  "null": {
+   "<null>": 352486,
+   "not_evaluated": 10404,
+   "not_determinable": 4474,
+   "no_coverage": 4273,
+   "stale": 1127
+  },
+  "sfha_buildings": 92243,
+  "sfha_decided_share": 0.441
+ },
+ "seconds": 84,
+ "parcel_table": {
+  "rows": 432106,
+  "distinct_geometries": 315982,
+  "with_building": 414671,
+  "any_building_below_bfe": 56803,
+  "buildings_spanning_parcels": 29992
+ }
+}

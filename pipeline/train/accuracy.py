@@ -36,7 +36,7 @@ import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gate import load
-from train import DATA, features, score, screen
+from train import DATA, band_q, features, score, screen
 
 ELEVATED = list("56789")
 KEYS = [
@@ -68,10 +68,13 @@ def screened(lab: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
     return screen(lab, f)
 
 
-def card(d: pd.DataFrame, model, diff, q: float, fe: list[str]) -> dict:
+def card(d: pd.DataFrame, model, diff, q: dict | float, fe: list[str]) -> dict:
+    if not len(d):
+        return {}
     p = model.predict(d[fe])
     s = np.maximum(diff.predict(d[fe].assign(p=p)), 0.05)
-    lo, hi = p - q * s, p + q * s
+    qq = band_q(q, p) if isinstance(q, dict) else q
+    lo, hi = p - qq * s, p + qq * s
     cov = (d.dh.values >= lo) & (d.dh.values <= hi)
     elev = d.diagram.astype(str).str[0].isin(ELEVATED).values
     slab = d.diagram.astype(str).isin(["1A", "1B"]).values
@@ -111,13 +114,18 @@ def main() -> None:
     ap.add_argument("--county-labels", type=Path, default=DATA / "labels_pinellas" / "labels_pinellas_12103.parquet")
     a = ap.parse_args()
     model, diff, bands = load(a.model, a.fips)
-    q, test = bands["q"], set(bands["test_blocks"])
+    q, test = bands, set(bands["test_blocks"])  # card() reads the q (one, or one per regime) from bands
     f = features(a.fips, bands["run"])  # the model's own run (its ground base and features)
     fd = pd.read_parquet(a.model / f"labels_{a.fips}.parquet")  # the labels this model was trained on
     co = pd.read_parquet(a.county_labels)
     co_native = co[co.vertical_datum_route == "navd88_native"]
     if "record_stage" in co.columns and not a.all_stages:  # finished construction only (docs/09 B4)
         co_native = co_native[co_native.record_stage == "finished_construction"]
+    # r1 models train on FDEM + county labels: the FDEM score uses the FDEM labels, and the county population can only
+    # be the county certificates in the model's held-out blocks (it never trained or calibrated on those blocks)
+    county_trained = "label_source" in fd.columns and bool((fd.label_source == "pinellas_county").any())
+    if "label_source" in fd.columns:
+        fd = fd[fd.label_source == "fdem"]
     fdem_any = set(fd.building_id)
     cert = DATA / "train" / f"certificates_{a.fips}.parquet"  # any-stage FDEM certificates (labels.py, r1 on)
     if cert.exists():
@@ -125,17 +133,26 @@ def main() -> None:
     co_only = co_native[~co_native.building_id.isin(fdem_any)]
     dfd = screened(fd, f)
     dco = screened(co_only, f)
+    if county_trained:
+        dco = dco[dco.block.isin(test)].reset_index(drop=True)
     res: dict = {
         "fips": a.fips,
         "release": a.release,
         "model": str(a.model),
-        "q": q,
+        "q": bands["q"],
+        **({"q_by_regime": bands["q_by_regime"]} if "q_by_regime" in bands else {}),
         "populations": {
             "fdem_held_out": "FDEM certificates (statewide EC layer via Forerunner) in the model's held-out 1 km test "
             f"blocks ({len(test)} blocks); the release gate's set",
-            "county_independent": "Pinellas County certificate layer, native NAVD88, buildings with no FDEM label "
-            "(never a training label), all blocks; certificate first living floor (C2a for "
-            "1A/1B/5, C2b otherwise)",
+            "county_independent": (
+                "Pinellas County certificate layer, native NAVD88, finished construction, buildings with no FDEM "
+                "certificate, in the model's held-out test blocks only (the model trains on county labels in the "
+                "other blocks); certificate first living floor (C2a for 1A/1B/5, C2b otherwise)"
+                if county_trained
+                else "Pinellas County certificate layer, native NAVD88, buildings with no FDEM label "
+                "(never a training label), all blocks; certificate first living floor (C2a for "
+                "1A/1B/5, C2b otherwise)"
+            ),
         },
         "counts": {
             "county labels": len(co),

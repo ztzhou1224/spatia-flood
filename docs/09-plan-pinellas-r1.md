@@ -50,6 +50,44 @@ to mean finished). A1's spatia-data note is written and reviewed (spatia-data br
 from another session's unmerged branch (`claude/issue-resolution-fewdn8`), and this checkout is 2.28. It runs once
 2.29 is on spatia-data `main`.
 
+Then (2026-10-08, evening), all measured by the commands named:
+- **C1** `lidar/reground.py` → run `pinellas_2018_r1g`: the unmasked minimum reproduces r0's ground on all 290,540
+  buildings; two water constants found (−0.60956 m west, −0.24416 m east; the second is −0.80 ft, above the −1.5 ft
+  floor, so only the constant rule catches it); 468 rings masked, 81 grounds now `not_determinable`. On 7,483
+  certificate lots: certificate LAG vs masked ring median MAE **0.508 ft** (median −0.15), vs r0 ring minimum 0.813
+  (median +0.44). Accepted. Open: two tiles have a positive mode (0.78764 m, 0.40614 m; likely flattened lakes) that
+  the approved rule does not mask; not yet measured how many rings touch them.
+- **C3 / D3** candidates on the new ground (`train.py --out`), gate v2 vs r0 (`pipeline/train/out/gate_12103_r1dev-*.json`),
+  benchmark 1,236 FDEM houses: `train_r1m` (combined labels, Mondrian bands): MAE 0.985 vs 0.981 (CI −0.06..+0.08),
+  BFE side **0.913 vs 0.899** (CI +0.002..+0.025), coverage **0.902 vs 0.922** (CI −0.030..−0.009), decided correct
+  0.983 vs 0.983; truly raised & unflagged coverage 0.657 (n 70) vs 0.485 (n 33) on the combined benchmark; flagged
+  band median 12.5 vs 15.3 ft. The coverage fall is the new ground (the FDEM-only candidate shows it too, 0.900), not
+  the labels. **The gate fails only on coverage**, because r0 over-covered (0.922 against the 0.90 target).
+  → owner decision G-a below.
+- **E-items** on a dev build (`assemble.py --model-dir data/flood_v1/train_r1m --out data/flood_v1/assemble_dev`):
+  all 79 `check.py` rules pass (E1-E4, E9, E13, C2, parcel key). Stale modeled floors (E6) 3,872; AO BFEs removed
+  (E4) 54; calls nulled for conflicts (E2) 161; bands capped at the roof (E13) 3; record rows whose living floor is
+  above the BFE and lowest floor below (E1) 750; `ground_suspect` 20,392 (range > 3 ft: 20,353).
+- **E8** as written (path inside the building's SFHA, ≤ 1 % outside) keeps 1,384 interpolated BFEs (r0: 5,250).
+  Held-out FEMA BFE lines (each predicted from the others) by the limit on the share of path outside the SFHA:
+
+  | limit | buildings interpolated | lines predicted | hold-out MAE ft | within 1 ft |
+  |---|---|---|---|---|
+  | 0.01 | 1,384 | 99 | 0.395 | 0.909 |
+  | 0.10 | 1,826 | 129 | 0.454 | 0.899 |
+  | 0.25 | 2,665 | 171 | 0.468 | 0.871 |
+  | 0.50 | 3,856 | 270 | 0.453 | 0.878 |
+  | none | 5,132 | 450 | 0.440 | 0.882 |
+
+  The error barely moves with the limit; the rule mostly removes coverage. → owner decision G-b below.
+
+Owner decisions needed before G:
+- **G-a, gate coverage rule.** As approved, any fall in coverage below the baseline is a regression, so a candidate
+  calibrated to the 90 % target fails against r0's over-covering 0.922. Options: (1) judge coverage against the target
+  (pass when ≥ 0.90 − the bootstrap sd and ≥ the 0.88 floor) instead of against the baseline; (2) keep the rule and
+  calibrate r1 to r0's coverage (wider bands); (3) keep the rule and r0.
+- **G-b, E8 limit.** Strict (1 %, as written) or a looser limit from the table.
+
 Each item names the finding, the files, and what "done" is. Acceptance numbers are measured by the named command, never
 copied from this doc.
 

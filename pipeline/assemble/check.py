@@ -59,7 +59,7 @@ def main(fips: str, d: Path) -> None:
         )
         rec_h = b.ffh_class == "record"
         bad["E3: raised_flag agrees with a record height"] = int(
-            (rec_h & b.raised_flag.notna() & (b.raised_flag.astype(bool) != (b.ffh_ft > 3))).sum()
+            (rec_h & b.raised_flag.notna() & (b.raised_flag.fillna(False).astype(bool) != (b.ffh_ft > 3))).sum()
         )
         bad["E4: no BFE on an AO building"] = int(((b.zone_main == "AO") & b.bfe_ft.notna()).sum())
         bad["E9: model_version only on modeled floors"] = int(
