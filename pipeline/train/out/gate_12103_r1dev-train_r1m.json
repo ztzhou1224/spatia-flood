@@ -441,27 +441,25 @@
  },
  "checks": {
   "benchmark | fdem: coverage >= 0.88": true,
+  "benchmark | fdem: coverage 0.902 >= target 0.9 - sd 0.0111": true,
   "benchmark | fdem: MAE no regression (95% CI -0.0565 .. +0.0762)": true,
   "benchmark | fdem: BFE side no regression (95% CI +0.0022 .. +0.0252)": true,
-  "benchmark | fdem: coverage no regression (95% CI -0.0304 .. -0.0087)": false,
   "benchmark | fdem: decided correct no regression (95% CI -0.0078 .. +0.0066)": true,
   "benchmark | fdem: raised unflagged coverage no regression (95% CI -0.0359 .. +0.3485)": true,
   "benchmark | fdem: MAE floor (diff <= +0.05)": true,
   "benchmark | fdem: BFE side floor (diff >= -0.01)": true,
-  "benchmark | fdem: coverage floor (diff >= -0.01)": false,
   "benchmark | fdem: decided correct floor (diff >= -0.01)": true,
   "held_out | fdem: coverage >= 0.88": true,
   "benchmark | combined: coverage >= 0.88": true,
+  "benchmark | combined: coverage 0.896 >= target 0.9 - sd 0.0108": true,
   "benchmark | combined: MAE no regression (95% CI -0.0904 .. +0.0486)": true,
   "benchmark | combined: BFE side no regression (95% CI +0.0067 .. +0.0286)": true,
-  "benchmark | combined: coverage no regression (95% CI -0.0308 .. -0.0069)": false,
   "benchmark | combined: decided correct no regression (95% CI -0.0056 .. +0.0084)": true,
   "benchmark | combined: raised unflagged coverage no regression (95% CI +0.0033 .. +0.3398)": true,
   "benchmark | combined: MAE floor (diff <= +0.05)": true,
   "benchmark | combined: BFE side floor (diff >= -0.01)": true,
-  "benchmark | combined: coverage floor (diff >= -0.01)": false,
   "benchmark | combined: decided correct floor (diff >= -0.01)": true,
   "held_out | combined: coverage >= 0.88": true
  },
- "passed": false
+ "passed": true
 }

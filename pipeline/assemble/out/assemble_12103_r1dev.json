@@ -78,31 +78,31 @@
  "bfe_line_holdout": {
   "bfe_lines_with_elevation": 7240,
   "midpoint_in_sfha": 630,
-  "predicted": 99,
-  "MAE_ft": 0.395,
-  "within_1ft": 0.909,
-  "inside_band": 1.0,
+  "predicted": 171,
+  "MAE_ft": 0.468,
+  "within_1ft": 0.871,
+  "inside_band": 0.994,
   "null": {
-   "path between the lines leaves the SFHA": 351,
+   "path between the lines leaves the SFHA": 279,
    "lines on one side only": 160
   }
  },
  "bfe_interpolation": {
   "lines_with_elevation": 9832,
   "buildings_tried": 5700,
-  "interpolated": 1384,
+  "interpolated": 2665,
   "null": {
-   "not_determinable": 4295,
+   "not_determinable": 3014,
    "no_coverage": 21
   },
   "null_why": {
-   "path between the lines leaves the SFHA": 3748,
+   "path between the lines leaves the SFHA": 2467,
    "lines on one side only": 547
   },
   "band_width_median_ft": 1.5,
   "check_on_static_bfe": {
-   "n": 6,
-   "MAE_ft": 0.284,
+   "n": 9,
+   "MAE_ft": 0.25,
    "within_1ft": 1.0,
    "static_inside_band": 1.0
   }
@@ -114,11 +114,11 @@
   "share_sum_over_1.01": 0,
   "touches_sfha": 92243,
   "touches_sfha_share_under_1pct": 1240,
-  "bfe_static": 84354,
+  "bfe_static": 85635,
   "bfe_null": {
    "not_applicable": 280521,
-   "not_determinable": 4295,
    "no_coverage": 3364,
+   "not_determinable": 3014,
    "not_evaluated": 230
   }
  },
@@ -183,12 +183,12 @@
   "record_rows_with_lowest_floor": 6878,
   "calls": {
    "not_applicable": 280521,
-   "NaN": 86421,
-   "below": 4575,
-   "above": 1192,
-   "too_close": 55
+   "NaN": 86364,
+   "below": 4586,
+   "above": 1205,
+   "too_close": 88
   },
-  "living_above_lowest_below": 750
+  "living_above_lowest_below": 752
  },
  "addresses": {
   "overture_addresses (point in footprint)": 298440,
@@ -243,34 +243,34 @@
  "bfe_call": {
   "all": {
    "not_applicable": 280521,
-   "below": 33071,
-   "too_close": 31297,
-   "<null>": 20278,
-   "above": 7597
+   "below": 33099,
+   "too_close": 32312,
+   "<null>": 19123,
+   "above": 7709
   },
   "basis": {
-   "<null>": 300799,
+   "<null>": 299644,
    "modeled_band": 65051,
    "record": 5728,
-   "modeled_band+interpolated_bfe": 1092,
-   "record+interpolated_bfe": 94
+   "modeled_band+interpolated_bfe": 2190,
+   "record+interpolated_bfe": 151
   },
   "null": {
-   "<null>": 352486,
-   "not_evaluated": 10404,
-   "not_determinable": 4474,
-   "no_coverage": 4273,
-   "stale": 1127
+   "<null>": 353641,
+   "not_evaluated": 10507,
+   "no_coverage": 4292,
+   "not_determinable": 3193,
+   "stale": 1131
   },
   "sfha_buildings": 92243,
-  "sfha_decided_share": 0.441
+  "sfha_decided_share": 0.442
  },
- "seconds": 84,
+ "seconds": 100,
  "parcel_table": {
   "rows": 432106,
   "distinct_geometries": 315982,
   "with_building": 414671,
-  "any_building_below_bfe": 56803,
+  "any_building_below_bfe": 56830,
   "buildings_spanning_parcels": 29992
  }
 }

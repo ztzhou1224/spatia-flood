@@ -65,7 +65,9 @@ FDEM = (
 ALBERS = "EPSG:3086"
 BFE_LINES = "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
 LINE_SEARCH_M = 1000.0
-SEGMENT_OUTSIDE = 0.01  # share of the L1 -> building -> L2 path allowed outside the SFHA (numerical tolerance; E8)
+# share of the L1 -> building -> L2 path allowed outside the building's SFHA (E8; owner G-b, 2026-10-08, from the
+# sensitivity table: hold-out FEMA-line error barely moves with the limit, 0.25 keeps 2,665 buildings)
+SEGMENT_OUTSIDE = 0.25
 LINES_EDITION = BFE_LINES.split("@")[1].split("/")[0]
 BFE_ROUND_FT = 0.5  # FIRM BFEs are whole feet: an interpolated BFE carries +-0.5 ft beyond its two lines
 Z90 = 1.645

@@ -81,7 +81,16 @@ Then (2026-10-08, evening), all measured by the commands named:
 
   The error barely moves with the limit; the rule mostly removes coverage. → owner decision G-b below.
 
-Owner decisions needed before G:
+Owner decisions, 2026-10-08 (answered after the table above): **G-a: coverage against the target** (option 1;
+`gate.py` now passes coverage when the candidate's benchmark coverage >= 0.90 minus its own bootstrap sd and >= 0.88
+everywhere; MAE, BFE side, decided correct and truly-raised-unflagged coverage stay baseline-relative). **G-b: E8
+limit 0.25.** Re-run: `gate.py --candidate data/flood_v1/train_r1m --baseline data/flood_v1/train_r0` **passes**
+(benchmark FDEM coverage 0.902 vs target - sd 0.889; combined 0.896 vs 0.889; truly raised & unflagged coverage CI
+on combined +0.003..+0.340); self-test still OK. Dev build with the 0.25 limit: 2,665 interpolated BFEs; held-out FEMA
+lines MAE 0.468 ft, 87.1 % within 1 ft, 99.4 % inside the band (n 171); all 79 `check.py` rules pass; SFHA decided
+share 0.442.
+
+The questions as they were put:
 - **G-a, gate coverage rule.** As approved, any fall in coverage below the baseline is a regression, so a candidate
   calibrated to the 90 % target fails against r0's over-covering 0.922. Options: (1) judge coverage against the target
   (pass when ≥ 0.90 − the bootstrap sd and ≥ the 0.88 floor) instead of against the baseline; (2) keep the rule and

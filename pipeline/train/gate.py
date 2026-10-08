@@ -14,10 +14,12 @@ certificate's own floor height (floor - certificate LAG) > 3 ft, model-independe
 A house either model trained or calibrated on can only be in a FIT / CAL block, so no table holds one.
 Pass rule, on the two BENCHMARK tables:
   - paired block bootstrap (resample blocks with replacement, --boot draws, seed 0) of candidate - baseline for MAE,
-    BFE side, coverage, decided correct, and the conditional coverage of truly raised & unflagged houses
-    (dh > 3 ft, p <= 3 ft): a regression is a 95% interval that excludes zero the wrong way (MAE: lower bound > 0;
-    the others: upper bound < 0);
-  - r0's fixed tolerances kept as a floor: MAE diff <= +0.05 ft, the others >= -0.01;
+    BFE side, decided correct, and the conditional coverage of truly raised & unflagged houses: a regression is a
+    95% interval that excludes zero the wrong way (MAE: lower bound > 0; the others: upper bound < 0);
+  - r0's fixed tolerances kept as a floor: MAE diff <= +0.05 ft, BFE side and decided correct >= -0.01;
+  - band coverage is judged against its TARGET, not the baseline (owner G-a, 2026-10-08: r0 over-covered, 0.922
+    against 0.90, so a calibrated candidate would "regress"): candidate coverage >= COVERAGE_TARGET minus its own
+    marginal bootstrap sd; the paired coverage CI is still reported;
   - absolute coverage >= 0.88 on every table (benchmark and held-out, both label sets).
 The held-out tables and the conditional-coverage rows (truly raised & unflagged, diagram 5-9 unflagged, slab 1A/1B
 truly raised) are printed and stored for every table, with n, and the marginal bootstrap sd of each candidate metric.
@@ -45,6 +47,8 @@ from train import DATA, band_q, feats, features, score
 
 TOL = {"MAE": 0.05, "BFE side": 0.01, "coverage": 0.01, "decided correct": 0.01}
 COVERAGE_FLOOR = 0.88
+COVERAGE_TARGET = 0.90  # the band's nominal coverage (train.py C)
+BASELINE_RELATIVE = ["MAE", "BFE side", "decided correct", "raised unflagged coverage"]
 METRICS = ["MAE", "BFE side", "coverage", "decided correct", "raised unflagged coverage"]
 LOWER_IS_BETTER = {"MAE"}
 COMBINED = DATA / "labels_pinellas" / "labels_combined_12103.parquet"
@@ -219,16 +223,22 @@ def evaluate(a, q_mult: float = 1.0) -> dict:
             key = f"{sname} | {lname}"
             tables[key] = row
             checks[f"{key}: coverage >= {COVERAGE_FLOOR}"] = row["candidate"]["coverage"] >= COVERAGE_FLOOR
+            if sname == "benchmark":
+                sd = row["bootstrap"]["candidate_sd"]["coverage"]
+                cov = row["candidate"]["coverage"]
+                checks[f"{key}: coverage {cov:.3f} >= target {COVERAGE_TARGET} - sd {sd:.4f}"] = (
+                    cov >= COVERAGE_TARGET - sd
+                )
             if pb is None or sname != "benchmark":
                 continue
             ci = row["bootstrap"]["diff_ci95"]
-            for m in METRICS:
+            for m in BASELINE_RELATIVE:
                 lo_, hi_ = ci[m]
                 regress = lo_ > 0 if m in LOWER_IS_BETTER else hi_ < 0
                 checks[f"{key}: {m} no regression (95% CI {lo_:+.4f} .. {hi_:+.4f})"] = not regress
             cand, base = row["candidate"], row["baseline"]
             checks[f"{key}: MAE floor (diff <= +{TOL['MAE']})"] = cand["MAE"] - base["MAE"] <= TOL["MAE"]
-            for m in ("BFE side", "coverage", "decided correct"):
+            for m in ("BFE side", "decided correct"):
                 checks[f"{key}: {m} floor (diff >= -{TOL[m]})"] = cand[m] - base[m] >= -TOL[m]
     return {"tables": tables, "checks": checks, "passed": all(checks.values())}
 
