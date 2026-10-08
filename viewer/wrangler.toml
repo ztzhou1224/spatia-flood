@@ -4,7 +4,8 @@ main = "src/worker.js"
 compatibility_date = "2025-09-01"
 workers_dev = false  # reachable only at the custom domain, never at *.workers.dev
 
-routes = [{ pattern = "flood.runspatia.com", custom_domain = true }]
+# flood.runspatia.com is attached as a Workers custom domain through the account API (2026-10-08), not here:
+# the deploy token has no zone Workers-routes permission. See README.md.
 
 [assets]
 directory = "./public"

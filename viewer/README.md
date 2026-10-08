@@ -21,6 +21,15 @@ Then point the Worker at it (`RELEASE` in `wrangler.toml`) and deploy.
 
 ## Deploy
 
+The custom domain is attached once, outside wrangler (the API token can manage account Workers domains but not zone
+routes):
+
+```bash
+curl -X PUT "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/domains" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+  --data '{"environment":"production","hostname":"flood.runspatia.com","service":"spatia-flood-viewer","zone_id":"<runspatia.com zone id>"}'
+```
+
 ```bash
 cd viewer
 npx wrangler@4.140.0 deploy                               # needs CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID
