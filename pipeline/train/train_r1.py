@@ -24,9 +24,11 @@ elevated-unflagged subgroup (diagram 5-9 and p <= 3, the handoff's 0.79), and of
 CAL-CV columns: the same q rule fitted on 4/5 of CAL blocks and scored on the other 1/5 (5 folds), a selection
 signal that does not look at TEST.
 Usage:  python pipeline/train/train_r1.py 12103 pinellas_2018 [--county]      # table -> out/r1_elevated_<FIPS>.txt
-        python pipeline/train/train_r1.py 12103 pinellas_2018 --save 'D2 raised90-elevq'  # + artefacts -> data/flood_v1/train_r1/
+        # + artefacts -> data/flood_v1/train_r1/:
+        python pipeline/train/train_r1.py 12103 pinellas_2018 --save 'D2 raised90-elevq'
 Never writes to data/flood_v1/train/ (release pinellas-r0).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -59,10 +61,14 @@ def load(fips: str, run: str):
     rng = np.random.default_rng(0)
     rng.shuffle(blocks)
     k = len(blocks)
-    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k): round(0.4 * k)])
+    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k) : round(0.4 * k)])
     part = np.where(d.block.isin(test_b), "test", np.where(d.block.isin(cal_b), "cal", "fit"))
-    return (d[part == "fit"].reset_index(drop=True), d[part == "cal"].reset_index(drop=True),
-            d[part == "test"].reset_index(drop=True), test_b)
+    return (
+        d[part == "fit"].reset_index(drop=True),
+        d[part == "cal"].reset_index(drop=True),
+        d[part == "test"].reset_index(drop=True),
+        test_b,
+    )
 
 
 def elevated(d: pd.DataFrame) -> np.ndarray:
@@ -229,57 +235,119 @@ def main() -> None:
     tab = pd.DataFrame(rows).T
     num = [c for c in tab.columns if c not in ("q", "elev-unfl 95% CI")]
     tab[num] = tab[num].astype(float).round(3)
-    head = (f"split as train.py: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)}; recomputed final model "
-            f"vs saved r0 model on TEST, max |diff| = {same_point:.2e} ft")
-    clf_line = (f"raised classifier (FIT, target diagram 5-9 or dh > 3; FIT OOF AUC among unflagged, target diagram "
-                f"5-9 = {auc:.3f}): t = {t:.4f} holds {SHARE:.0%} of FIT's unflagged elevated (OOF), "
-                f"{int(((oof <= 3) & (oof_c >= t)).sum())} of {int((oof <= 3).sum())} FIT unflagged score >= t; "
-                f"t90 = {t90:.4f} holds 90%, {int(((oof <= 3) & (oof_c >= t90)).sum())} score >= t90; bins cut at "
-                f"{np.round(tb, 4).tolist()} (FIT OOF unflagged score quantiles {BIN_Q})")
-    legend = ("Elevated (diagram 5-9) / raised (dh > 3) houses the model does not flag (p <= 3), TEST; CAL-CV; q per "
-              "group. Groups: one q = g0; B1 g0 unflagged, g1 flagged; B2 / C1 / C2 / C4 / D1 / D2 g0 unflagged low, "
-              "g1 unflagged high (old / high score), g2 flagged; C3 / D3 g0-g3 unflagged score bins, g4 flagged. "
-              "Asymmetric q: lower/upper. 'hi-score n' = TEST unflagged houses in the widened groups.")
-    rep = [f"# {a.fips} ({a.run}): r1 band options for elevated houses the model does not flag", "", head, clf_line,
-           "", "Main scores (TEST):", "",
-           tab[["n", "MAE", "BFE side", "coverage", "coverage flagged", "coverage not flagged",
-                "width median not flagged", "width median flagged", "BFE decided", "decided correct"]].to_markdown(),
-           "", legend, "",
-           tab[["elev-unfl n", "elev-unfl coverage", "elev-unfl 95% CI", "raised-unfl n", "raised-unfl coverage",
-                "TEST unfl hi-score n", "CAL-CV coverage", "CAL-CV elev-unfl coverage", "q"]].to_markdown()]
+    head = (
+        f"split as train.py: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)}; recomputed final model "
+        f"vs saved r0 model on TEST, max |diff| = {same_point:.2e} ft"
+    )
+    clf_line = (
+        f"raised classifier (FIT, target diagram 5-9 or dh > 3; FIT OOF AUC among unflagged, target diagram "
+        f"5-9 = {auc:.3f}): t = {t:.4f} holds {SHARE:.0%} of FIT's unflagged elevated (OOF), "
+        f"{int(((oof <= 3) & (oof_c >= t)).sum())} of {int((oof <= 3).sum())} FIT unflagged score >= t; "
+        f"t90 = {t90:.4f} holds 90%, {int(((oof <= 3) & (oof_c >= t90)).sum())} score >= t90; bins cut at "
+        f"{np.round(tb, 4).tolist()} (FIT OOF unflagged score quantiles {BIN_Q})"
+    )
+    legend = (
+        "Elevated (diagram 5-9) / raised (dh > 3) houses the model does not flag (p <= 3), TEST; CAL-CV; q per "
+        "group. Groups: one q = g0; B1 g0 unflagged, g1 flagged; B2 / C1 / C2 / C4 / D1 / D2 g0 unflagged low, "
+        "g1 unflagged high (old / high score), g2 flagged; C3 / D3 g0-g3 unflagged score bins, g4 flagged. "
+        "Asymmetric q: lower/upper. 'hi-score n' = TEST unflagged houses in the widened groups."
+    )
+    rep = [
+        f"# {a.fips} ({a.run}): r1 band options for elevated houses the model does not flag",
+        "",
+        head,
+        clf_line,
+        "",
+        "Main scores (TEST):",
+        "",
+        tab[
+            [
+                "n",
+                "MAE",
+                "BFE side",
+                "coverage",
+                "coverage flagged",
+                "coverage not flagged",
+                "width median not flagged",
+                "width median flagged",
+                "BFE decided",
+                "decided correct",
+            ]
+        ].to_markdown(),
+        "",
+        legend,
+        "",
+        tab[
+            [
+                "elev-unfl n",
+                "elev-unfl coverage",
+                "elev-unfl 95% CI",
+                "raised-unfl n",
+                "raised-unfl coverage",
+                "TEST unfl hi-score n",
+                "CAL-CV coverage",
+                "CAL-CV elev-unfl coverage",
+                "q",
+            ]
+        ].to_markdown(),
+    ]
     if a.county:
-        rep += ["", ("County residential houses (approx. assemble.py eligibility: lidar ok, lidar LAG, DOR 000-009; "
-                     "no labels): same final model, each option's bands"), "",
-                tab[["county n", "county widened n", "county width median not flagged",
-                     "county width median all"]].to_markdown()]
+        rep += [
+            "",
+            (
+                "County residential houses (approx. assemble.py eligibility: lidar ok, lidar LAG, DOR 000-009; "
+                "no labels): same final model, each option's bands"
+            ),
+            "",
+            tab[
+                ["county n", "county widened n", "county width median not flagged", "county width median all"]
+            ].to_markdown(),
+        ]
     out = Path(__file__).parent / "out" / f"r1_elevated_{a.fips}.txt"
     out.write_text("\n".join(rep) + "\n")
     print("\n".join(rep))
 
     if a.save:
         dk, gk, bands = fitted[a.save]
-        assert dk == "r0" and gk in ("one", "raised", "raised90"), "save supports r0's difficulty model, one q or C/D groups"
+        assert dk == "r0" and gk in ("one", "raised", "raised90"), (
+            "save supports r0's difficulty model, one q or C/D groups"
+        )
         OUT.mkdir(parents=True, exist_ok=True)
         model.booster_.save_model(str(OUT / f"model_{a.fips}.txt"))
         diffs[dk].booster_.save_model(str(OUT / f"difficulty_{a.fips}.txt"))
-        meta = {"q": bands.q[0][0] if gk == "one" else None, "c": C, "features": FEATS,
-                "n_fit": len(fit_d), "n_cal": len(cal_d), "n_test": len(test_d), "test_blocks": sorted(test_b),
-                "option": a.save}
+        meta = {
+            "q": bands.q[0][0] if gk == "one" else None,
+            "c": C,
+            "features": FEATS,
+            "n_fit": len(fit_d),
+            "n_cal": len(cal_d),
+            "n_test": len(test_d),
+            "test_blocks": sorted(test_b),
+            "option": a.save,
+        }
         if gk != "one":
             clf.booster_.save_model(str(OUT / f"raised_{a.fips}.txt"))
             gc = grp(gk, cal_d, pc)
             meta["groups"] = {
-                "doc": GROUPS_DOC, "threshold": t if gk == "raised" else t90, "flag_ft": 3.0,
+                "doc": GROUPS_DOC,
+                "threshold": t if gk == "raised" else t90,
+                "flag_ft": 3.0,
                 "q_lo": {n: bands.q[k][0] for k, n in enumerate(GROUP_NAMES)},
                 "q_hi": {n: bands.q[k][1] for k, n in enumerate(GROUP_NAMES)},
                 "n_cal": {n: int((gc == k).sum()) for k, n in enumerate(GROUP_NAMES)},
                 "n_cal_elevated": {n: int(((gc == k) & el_c).sum()) for k, n in enumerate(GROUP_NAMES)},
                 "elevated_q_groups": [GROUP_NAMES[k] for k in sorted(bands.elevq)],
-                "classifier": {"file": f"raised_{a.fips}.txt", "inputs": FEATS + ["p"], "trained_on": "FIT",
-                               "target": "certificate diagram 5-9 or dh > 3 ft (training target only)"}}
+                "classifier": {
+                    "file": f"raised_{a.fips}.txt",
+                    "inputs": [*FEATS, "p"],
+                    "trained_on": "FIT",
+                    "target": "certificate diagram 5-9 or dh > 3 ft (training target only)",
+                },
+            }
         (OUT / f"bands_{a.fips}.json").write_text(json.dumps(meta, indent=1))
         # re-read the saved artefacts from disk and re-score TEST, then the gate's checks against r0 (same houses)
         from gate import COVERAGE_FLOOR, TOL
+
         rows, per_group = {}, {}
         for nm, dd in (("candidate (from disk)", OUT), ("baseline r0 (from disk)", DATA / "train")):
             pp, lo, hi, gg = disk_bands(dd, a.fips, test_d)
@@ -288,31 +356,54 @@ def main() -> None:
             rows[nm]["elev-unfl coverage"] = cov[el_t & (pp <= 3)].mean()
             for k in np.unique(gg):
                 m = gg == k
-                per_group[(nm, k)] = {"TEST n": int(m.sum()), "coverage": cov[m].mean(),
-                                      "width median": np.median((hi - lo)[m]), "elev-unfl n": int((m & el_t & (pp <= 3)).sum()),
-                                      "elev-unfl covered": int((m & el_t & (pp <= 3) & cov).sum())}
+                per_group[(nm, k)] = {
+                    "TEST n": int(m.sum()),
+                    "coverage": cov[m].mean(),
+                    "width median": np.median((hi - lo)[m]),
+                    "elev-unfl n": int((m & el_t & (pp <= 3)).sum()),
+                    "elev-unfl covered": int((m & el_t & (pp <= 3) & cov).sum()),
+                }
         c, b = rows["candidate (from disk)"], rows["baseline r0 (from disk)"]
-        checks = {"coverage >= floor": c["coverage"] >= COVERAGE_FLOOR,
-                  "MAE": c["MAE"] <= b["MAE"] + TOL["MAE"],
-                  "BFE side": c["BFE side"] >= b["BFE side"] - TOL["BFE side"],
-                  "coverage": c["coverage"] >= b["coverage"] - TOL["coverage"],
-                  "decided correct": c["decided correct"] >= b["decided correct"] - TOL["decided correct"]}
+        checks = {
+            "coverage >= floor": c["coverage"] >= COVERAGE_FLOOR,
+            "MAE": c["MAE"] <= b["MAE"] + TOL["MAE"],
+            "BFE side": c["BFE side"] >= b["BFE side"] - TOL["BFE side"],
+            "coverage": c["coverage"] >= b["coverage"] - TOL["coverage"],
+            "decided correct": c["decided correct"] >= b["decided correct"] - TOL["decided correct"],
+        }
         print("saved", a.save, "->", OUT)
-        print(pd.DataFrame(rows).T[["n", "MAE", "BFE side", "coverage", "decided correct", "BFE decided",
-                                    "width median not flagged", "elev-unfl coverage"]].round(3).to_markdown())
+        print(
+            pd.DataFrame(rows)
+            .T[
+                [
+                    "n",
+                    "MAE",
+                    "BFE side",
+                    "coverage",
+                    "decided correct",
+                    "BFE decided",
+                    "width median not flagged",
+                    "elev-unfl coverage",
+                ]
+            ]
+            .round(3)
+            .to_markdown()
+        )
         for k, ok in checks.items():
             print(f"{'pass' if ok else 'FAIL'} {k} (gate.py rule, applied with disk_bands)")
         print(pd.DataFrame(per_group).T.round(3).to_markdown())
 
 
 GROUP_NAMES = ["unflagged", "possibly_raised", "flagged"]
-GROUPS_DOC = ("r1 group-conditional normalised conformal bands (top-level q is null on purpose: a reader that only "
-              "knows one q must fail). p = model_<FIPS>.txt(FEATS); s = max(difficulty_<FIPS>.txt(FEATS + p), 0.05); "
-              "r = raised_<FIPS>.txt(FEATS + p), lightgbm Booster.predict (binary: probability). group = 'flagged' if "
-              "p > flag_ft, else 'possibly_raised' if r >= threshold, else 'unflagged'. band = [p - q_lo[group] * s, "
-              "p + q_hi[group] * s]. q per group: finite-sample 90% quantile of |y - p| / s over the group's CAL "
-              "houses; in elevated_q_groups, the larger of that and the same quantile over the group's CAL houses "
-              "with certificate diagram 5-9 (the label is read only at calibration, never at prediction).")
+GROUPS_DOC = (
+    "r1 group-conditional normalised conformal bands (top-level q is null on purpose: a reader that only "
+    "knows one q must fail). p = model_<FIPS>.txt(FEATS); s = max(difficulty_<FIPS>.txt(FEATS + p), 0.05); "
+    "r = raised_<FIPS>.txt(FEATS + p), lightgbm Booster.predict (binary: probability). group = 'flagged' if "
+    "p > flag_ft, else 'possibly_raised' if r >= threshold, else 'unflagged'. band = [p - q_lo[group] * s, "
+    "p + q_hi[group] * s]. q per group: finite-sample 90% quantile of |y - p| / s over the group's CAL "
+    "houses; in elevated_q_groups, the larger of that and the same quantile over the group's CAL houses "
+    "with certificate diagram 5-9 (the label is read only at calibration, never at prediction)."
+)
 
 
 def disk_bands(d: Path, fips: str, x: pd.DataFrame):
@@ -328,6 +419,7 @@ def disk_bands(d: Path, fips: str, x: pd.DataFrame):
     grp = np.where(p > g["flag_ft"], "flagged", np.where(r >= g["threshold"], "possibly_raised", "unflagged"))
     ql, qh = pd.Series(grp).map(g["q_lo"]).values, pd.Series(grp).map(g["q_hi"]).values
     return p, p - ql * s, p + qh * s, grp
+
 
 if __name__ == "__main__":
     pd.set_option("display.width", 220)

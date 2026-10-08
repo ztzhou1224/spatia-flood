@@ -18,6 +18,7 @@ Outputs: pipeline/train/out/train_<FIPS>.txt (this report), data/flood_v1/train/
 difficulty_<FIPS>.txt, and bands_<FIPS>.json (q, split sizes).
 Usage: python pipeline/train/train.py 12103 pinellas_2018
 """
+
 import json
 import sys
 from pathlib import Path
@@ -31,12 +32,36 @@ from sklearn.model_selection import GroupKFold
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "flood_v1"
-P = dict(objective="l1", n_estimators=400, learning_rate=0.03, num_leaves=15, min_child_samples=30, subsample=0.8,
-         subsample_freq=1, colsample_bytree=0.8, verbose=-1, n_jobs=1)  # research eval_lpc.P
-LPC = ["bldg_share", "roof_p05", "roof_p50", "roof_p95", "eave_p10", "eave_p50", "eave_main", "ridge", "ground_in_share",
-       "ring_low_share", "ring_low_p90", "pts_m2"]
+P = dict(
+    objective="l1",
+    n_estimators=400,
+    learning_rate=0.03,
+    num_leaves=15,
+    min_child_samples=30,
+    subsample=0.8,
+    subsample_freq=1,
+    colsample_bytree=0.8,
+    verbose=-1,
+    n_jobs=1,
+)  # research eval_lpc.P
+LPC = [
+    "bldg_share",
+    "roof_p05",
+    "roof_p50",
+    "roof_p95",
+    "eave_p10",
+    "eave_p50",
+    "eave_main",
+    "ridge",
+    "ground_in_share",
+    "ring_low_share",
+    "ring_low_p90",
+    "pts_m2",
+]
 GROUND = ["g_p10", "g_med", "g_hag", "g_inside", "g_far"]
-FEATS = GROUND + LPC + ["year_built", "living_area", "fp_area_m2", "stories", "est_eave_p50", "est_eave_main", "est_split"]
+FEATS = (
+    GROUND + LPC + ["year_built", "living_area", "fp_area_m2", "stories", "est_eave_p50", "est_eave_main", "est_split"]
+)
 SLAB_FT = 1.0
 C = 0.90
 
@@ -83,12 +108,23 @@ def score(d, p, lo, hi) -> dict:
     lag, bfe, ffe = d.g_lag.values[s], d.cert_bfe_ft.values[s], d.ffe_ft.values[s]
     above, below = lag + lo[s] >= bfe, lag + hi[s] < bfe
     dec = above | below
-    return {"n": len(d), "MAE": np.abs(e).mean(), "within 1 ft": (np.abs(e) <= 1).mean(),
-            "raised n": int(r.sum()), "raised MAE": np.abs(e[r]).mean(), "raised recall": (p[r] > 3).mean(),
-            "SFHA with BFE": int(s.sum()), "BFE side": ((ffe >= bfe) == (lag + p[s] >= bfe)).mean(),
-            "coverage": cov.mean(), "coverage flagged": cov[flag].mean(), "coverage not flagged": cov[~flag].mean(),
-            "width median not flagged": np.median((hi - lo)[~flag]), "width median flagged": np.median((hi - lo)[flag]),
-            "BFE decided": dec.mean(), "decided correct": ((above & (ffe >= bfe)) | (below & (ffe < bfe)))[dec].mean()}
+    return {
+        "n": len(d),
+        "MAE": np.abs(e).mean(),
+        "within 1 ft": (np.abs(e) <= 1).mean(),
+        "raised n": int(r.sum()),
+        "raised MAE": np.abs(e[r]).mean(),
+        "raised recall": (p[r] > 3).mean(),
+        "SFHA with BFE": int(s.sum()),
+        "BFE side": ((ffe >= bfe) == (lag + p[s] >= bfe)).mean(),
+        "coverage": cov.mean(),
+        "coverage flagged": cov[flag].mean(),
+        "coverage not flagged": cov[~flag].mean(),
+        "width median not flagged": np.median((hi - lo)[~flag]),
+        "width median flagged": np.median((hi - lo)[flag]),
+        "BFE decided": dec.mean(),
+        "decided correct": ((above & (ffe >= bfe)) | (below & (ffe < bfe)))[dec].mean(),
+    }
 
 
 def main(fips: str, run: str) -> None:
@@ -103,9 +139,13 @@ def main(fips: str, run: str) -> None:
     rng = np.random.default_rng(0)
     rng.shuffle(blocks)
     k = len(blocks)
-    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k): round(0.4 * k)])
+    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k) : round(0.4 * k)])
     part = np.where(d.block.isin(test_b), "test", np.where(d.block.isin(cal_b), "cal", "fit"))
-    fit_d, cal_d, test_d = d[part == "fit"].reset_index(drop=True), d[part == "cal"].reset_index(drop=True), d[part == "test"].reset_index(drop=True)
+    fit_d, cal_d, test_d = (
+        d[part == "fit"].reset_index(drop=True),
+        d[part == "cal"].reset_index(drop=True),
+        d[part == "test"].reset_index(drop=True),
+    )
 
     oof = np.full(len(fit_d), np.nan)
     for a, b in GroupKFold(5).split(fit_d, groups=fit_d.block):
@@ -115,6 +155,7 @@ def main(fips: str, run: str) -> None:
 
     def s_of(x, p):
         return np.maximum(diff.predict(x[FEATS].assign(p=p)), 0.05)
+
     m_fit = fit(fit_d[FEATS], fit_d.dh)
     pc = m_fit.predict(cal_d[FEATS])
     q = abs_q(np.abs(cal_d.dh.values - pc) / s_of(cal_d, pc), C)
@@ -124,27 +165,51 @@ def main(fips: str, run: str) -> None:
     lo, hi = pt - q * st, pt + q * st
     rows = {"all held-out (screened)": score(test_d, pt, lo, hi)}
     dg = test_d.diagram.astype(str)
-    for name, m in (("slab 1A/1B", dg.isin(["1A", "1B"]).values), ("elevated / enclosed 5-9", dg.str[0].isin(list("56789")).values)):
+    for name, m in (
+        ("slab 1A/1B", dg.isin(["1A", "1B"]).values),
+        ("elevated / enclosed 5-9", dg.str[0].isin(list("56789")).values),
+    ):
         rows[name] = score(test_d[m].reset_index(drop=True), pt[m], lo[m], hi[m])
     pf = m_fit.predict(test_d[FEATS])
     rows["FIT-only model (same test)"] = score(test_d, pf, pf - q * s_of(test_d, pf), pf + q * s_of(test_d, pf))
 
     out = Path(__file__).parent / "out"
     out.mkdir(exist_ok=True)
-    rep = [f"# {fips} ({run}): floor model, held-out 20% by 1 km block", "",
-           f"labels joined to lidar features with ground and points: {n0}; after the label screen: {len(d)}; "
-           f"blocks {k}: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)} houses",
-           f"90% normalised conformal scale q = {q:.3f} (CAL, n = {len(cal_d)})", "",
-           pd.DataFrame(rows).T.round(3).to_markdown(), "",
-           "feature importance (gain, final model, top 12): " + ", ".join(
-               pd.Series(model.booster_.feature_importance("gain"), index=FEATS).sort_values(ascending=False).head(12).index)]
+    rep = [
+        f"# {fips} ({run}): floor model, held-out 20% by 1 km block",
+        "",
+        f"labels joined to lidar features with ground and points: {n0}; after the label screen: {len(d)}; "
+        f"blocks {k}: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)} houses",
+        f"90% normalised conformal scale q = {q:.3f} (CAL, n = {len(cal_d)})",
+        "",
+        pd.DataFrame(rows).T.round(3).to_markdown(),
+        "",
+        "feature importance (gain, final model, top 12): "
+        + ", ".join(
+            pd.Series(model.booster_.feature_importance("gain"), index=FEATS)
+            .sort_values(ascending=False)
+            .head(12)
+            .index
+        ),
+    ]
     (out / f"train_{fips}.txt").write_text("\n".join(rep) + "\n")
     print("\n".join(rep))
     model.booster_.save_model(str(DATA / "train" / f"model_{fips}.txt"))
     diff.booster_.save_model(str(DATA / "train" / f"difficulty_{fips}.txt"))
-    (DATA / "train" / f"bands_{fips}.json").write_text(json.dumps(
-        {"q": q, "c": C, "features": FEATS, "n_fit": len(fit_d), "n_cal": len(cal_d), "n_test": len(test_d),
-         "test_blocks": sorted(test_b)}, indent=1))
+    (DATA / "train" / f"bands_{fips}.json").write_text(
+        json.dumps(
+            {
+                "q": q,
+                "c": C,
+                "features": FEATS,
+                "n_fit": len(fit_d),
+                "n_cal": len(cal_d),
+                "n_test": len(test_d),
+                "test_blocks": sorted(test_b),
+            },
+            indent=1,
+        )
+    )
 
 
 if __name__ == "__main__":

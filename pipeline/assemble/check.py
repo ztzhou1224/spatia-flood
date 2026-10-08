@@ -7,6 +7,7 @@ table has one row per (parcel_key, geom_group) (review docs/07 DA4 / I2).
 Prints one line per rule with the number of violating rows; exits 1 when any rule is violated.
 Usage: python pipeline/assemble/check.py 12103 [DIR]   (DIR defaults to data/flood_v1/assemble)
 """
+
 import sys
 from pathlib import Path
 
@@ -35,14 +36,16 @@ def main(fips: str, d: Path) -> None:
             m = b[f"{stem}_class"] == "modeled"
             lo, hi = b[f"{stem}_band_lo"], b[f"{stem}_band_hi"]
             bad[f"{stem}: modeled has a band containing the value"] = int(
-                (m & ~((lo <= b[x] + 1e-9) & (b[x] <= hi + 1e-9))).sum())
+                (m & ~((lo <= b[x] + 1e-9) & (b[x] <= hi + 1e-9))).sum()
+            )
             bad[f"{stem}: band only on modeled"] = int((~m & lo.notna()).sum())
     bad["bfe_call: null without reason"] = int((b.bfe_call.isna() & b.bfe_call_null.isna()).sum())
     bad["owner / personal columns"] = sum(any(f in c.lower().split("_") for f in FORBIDDEN) for c in b.columns)
     p = pd.read_parquet(d / f"parcels_{fips}.parquet")
     bad["parcel table: (parcel_key, geom_group) unique"] = int(p.duplicated(["parcel_key", "geom_group"]).sum())
-    bad["parcel table: owner / personal columns"] = sum(any(f in c.lower().split("_") for f in FORBIDDEN)
-                                                        for c in p.columns)
+    bad["parcel table: owner / personal columns"] = sum(
+        any(f in c.lower().split("_") for f in FORBIDDEN) for c in p.columns
+    )
     print(f"{len(b)} rows, {len(b.columns)} columns; value columns checked: {', '.join(x for _, x in values)}")
     for k, n in bad.items():
         print(f"{'ok  ' if n == 0 else 'FAIL'} {k}: {n}")

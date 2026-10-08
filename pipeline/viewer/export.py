@@ -12,6 +12,7 @@ Written to data/flood_v1/viewer/<FIPS>/<release>/ and uploaded to R2 _flood/view
 bucket; the viewer Worker reads it server-side). Nothing here is public.
 Usage: python pipeline/viewer/export.py 12103 --release pinellas-r0 [--no-upload]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -34,8 +35,16 @@ SRC = ROOT / "data" / "flood_v1" / "assemble"
 CHUNK_RES = 7
 BROWSER_DROP = ("geometry", "chunk", "parcel_id_native", "parcel_key")
 OBJECTID = re.compile(r"\s*OBJECTID\s*\d+,?", re.IGNORECASE)
-MAP_FIELDS = ["building_id", "bfe_call", "ffh_class", "ffh_ft", "floor_minus_bfe_ft", "touches_sfha", "in_risk_area",
-              "zone_main"]
+MAP_FIELDS = [
+    "building_id",
+    "bfe_call",
+    "ffh_class",
+    "ffh_ft",
+    "floor_minus_bfe_ft",
+    "touches_sfha",
+    "in_risk_area",
+    "zone_main",
+]
 
 
 def clean(v, nd: int = 3):
@@ -84,39 +93,54 @@ def main() -> None:
     cols = [c for c in b.columns if c not in BROWSER_DROP and "objectid" not in c.lower()]
     index = []
     for cell, g in b.groupby("chunk"):
-        feats = [{"type": "Feature", "id": i, "geometry": coords(geom),
-                  "properties": {k: clean(r[k]) for k in MAP_FIELDS}}
-                 for i, (geom, (_, r)) in enumerate(zip(g.geometry.values, g[MAP_FIELDS].iterrows(), strict=True))]
+        feats = [
+            {"type": "Feature", "id": i, "geometry": coords(geom), "properties": {k: clean(r[k]) for k in MAP_FIELDS}}
+            for i, (geom, (_, r)) in enumerate(zip(g.geometry.values, g[MAP_FIELDS].iterrows(), strict=True))
+        ]
         write(out / "geo" / f"{cell}.json", {"type": "FeatureCollection", "features": feats})
-        recs = {r["building_id"]: {k: clean(r[k], 6 if k in ("lon", "lat") else 3) for k in cols}
-                for r in g[cols].to_dict("records")}
+        recs = {
+            r["building_id"]: {k: clean(r[k], 6 if k in ("lon", "lat") else 3) for k in cols}
+            for r in g[cols].to_dict("records")
+        }
         write(out / "rec" / f"{cell}.json", recs)
         x0, y0, x1, y1 = shapely.total_bounds(g.geometry.values)
         index.append({"cell": cell, "bbox": [round(x0, 5), round(y0, 5), round(x1, 5), round(y1, 5)], "n": len(g)})
     cov = gpd.read_parquet(SRC / f"coverage_{a.fips}_r8.parquet")
-    cov_feats = [{"type": "Feature", "geometry": coords(geom),
-                  "properties": {k: clean(v) for k, v in r.items()}}
-                 for geom, r in zip(cov.geometry.values, cov.drop(columns="geometry").to_dict("records"), strict=True)]
+    cov_feats = [
+        {"type": "Feature", "geometry": coords(geom), "properties": {k: clean(v) for k, v in r.items()}}
+        for geom, r in zip(cov.geometry.values, cov.drop(columns="geometry").to_dict("records"), strict=True)
+    ]
     write(out / "coverage.json", {"type": "FeatureCollection", "features": cov_feats})
     county = json.loads((ROOT / "pipeline" / "assemble" / "out" / f"coverage_{a.fips}.json").read_text())
     x0, y0, x1, y1 = shapely.total_bounds(b.geometry.values)
     write(out / "county.json", county | {"bbox": [x0, y0, x1, y1], "chunk_res": CHUNK_RES})
     write(out / "index.json", index)
     files = sorted(p for p in out.rglob("*.json"))
-    leaks = [p.name for p in files if re.search(rb"objectid|parcel_id_native|parcel_key", gzip.decompress(p.read_bytes()),
-                                                re.IGNORECASE)]
+    leaks = [
+        p.name
+        for p in files
+        if re.search(rb"objectid|parcel_id_native|parcel_key", gzip.decompress(p.read_bytes()), re.IGNORECASE)
+    ]
     assert not leaks, f"OBJECTID / parcel id left in the browser JSON: {leaks[:5]}"
     size = sum(p.stat().st_size for p in files)
     print(f"{len(index)} chunks, {len(files)} files, {size / 1e6:.1f} MB gzip -> {out}")
     if a.no_upload:
         return
-    s3 = boto3.client("s3", endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"], region_name="auto",
-                      aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
-                      aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"])
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"],
+        region_name="auto",
+        aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"],
+    )
     for p in files:
         key = f"_flood/viewer/{a.fips}/{a.release}/{p.relative_to(out).as_posix()}"
-        s3.upload_file(str(p), os.environ["CLOUDFLARE_R2_BUCKET"], key,
-                       ExtraArgs={"ContentType": "application/json", "ContentEncoding": "gzip"})
+        s3.upload_file(
+            str(p),
+            os.environ["CLOUDFLARE_R2_BUCKET"],
+            key,
+            ExtraArgs={"ContentType": "application/json", "ContentEncoding": "gzip"},
+        )
     print(f"uploaded {len(files)} files to _flood/viewer/{a.fips}/{a.release}/")
 
 

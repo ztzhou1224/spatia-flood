@@ -34,6 +34,7 @@ labels_combined_<FIPS>.parquet (labels_<FIPS> columns + label_source, county_obj
 licence), pipeline/labels_pinellas/out/build_<FIPS>.json.
 Usage: python pipeline/labels_pinellas/build.py 12103 pinellas_2018 2026-10-07
 """
+
 from __future__ import annotations
 
 import glob
@@ -67,9 +68,12 @@ def load(day: str) -> pd.DataFrame:
 
 def stats(s: pd.Series) -> dict:
     s = s.dropna()
-    return {"n": len(s), "median": round(float(s.median()), 3) if len(s) else None,
-            "within_0.5ft": round(float((s.abs() <= 0.5).mean()), 3) if len(s) else None,
-            "within_1ft": round(float((s.abs() <= 1.0).mean()), 3) if len(s) else None}
+    return {
+        "n": len(s),
+        "median": round(float(s.median()), 3) if len(s) else None,
+        "within_0.5ft": round(float((s.abs() <= 0.5).mean()), 3) if len(s) else None,
+        "within_1ft": round(float((s.abs() <= 1.0).mean()), 3) if len(s) else None,
+    }
 
 
 def main(fips: str, run: str, day: str) -> None:
@@ -91,18 +95,22 @@ def main(fips: str, run: str, day: str) -> None:
     e["next"] = np.where(pair, e.C2b_88, e.C2B_TOP_NEXT_HIGHER_FL_EL)
     e["lag"] = np.where(pair, e.C2f_88, e.C2F_LAG_ELEV)
     off = (e.C2a_29 - e.C2a_88)[pair]
-    res["datum"] = {"pair_C2a_29_88_filled": int(pair.sum()),
-                    "pair_C2A_equals_C2a_88_navd88_native": int(nat_pair.sum()),
-                    "pair_C2A_equals_C2a_29_ngvd29_with_county_navd88": int(from29.sum()),
-                    "pair_C2A_equals_neither": int((pair & ~nat_pair & ~from29).sum()),
-                    "no_pair_VERTICAL_DATUM_NAVD1988": int(nat_vd.sum()),
-                    "no_pair_VERTICAL_DATUM_NGVD1929_or_1927_dropped": int(ngvd_only.sum()),
-                    "no_pair_VERTICAL_DATUM_NGVD1929_dropped": int((~pair & (vd == "NGVD1929")).sum()),
-                    "no_pair_no_stated_datum_dropped": int((~pair & ~nat_vd & ~ngvd_only).sum()),
-                    "ngvd29_total_on_certificates": int(from29.sum() + (~pair & (vd == "NGVD1929")).sum()),
-                    "offset_C2a_29_minus_C2a_88_ft": {"min": round(float(off.min()), 3),
-                                                      "median": round(float(off.median()), 3),
-                                                      "max": round(float(off.max()), 3)}}
+    res["datum"] = {
+        "pair_C2a_29_88_filled": int(pair.sum()),
+        "pair_C2A_equals_C2a_88_navd88_native": int(nat_pair.sum()),
+        "pair_C2A_equals_C2a_29_ngvd29_with_county_navd88": int(from29.sum()),
+        "pair_C2A_equals_neither": int((pair & ~nat_pair & ~from29).sum()),
+        "no_pair_VERTICAL_DATUM_NAVD1988": int(nat_vd.sum()),
+        "no_pair_VERTICAL_DATUM_NGVD1929_or_1927_dropped": int(ngvd_only.sum()),
+        "no_pair_VERTICAL_DATUM_NGVD1929_dropped": int((~pair & (vd == "NGVD1929")).sum()),
+        "no_pair_no_stated_datum_dropped": int((~pair & ~nat_vd & ~ngvd_only).sum()),
+        "ngvd29_total_on_certificates": int(from29.sum() + (~pair & (vd == "NGVD1929")).sum()),
+        "offset_C2a_29_minus_C2a_88_ft": {
+            "min": round(float(off.min()), 3),
+            "median": round(float(off.median()), 3),
+            "max": round(float(off.max()), 3),
+        },
+    }
     e = e[e.route != ""].copy()
     res["after_datum"] = len(e)
 
@@ -143,13 +151,19 @@ def main(fips: str, run: str, day: str) -> None:
     res["after_plausibility"] = len(e)
     d = pd.to_numeric(e.D_DATE, errors="coerce")
     bad = d.notna() & ((d > fetched_ms) | (d < 0))
-    res["issue_date"] = {"field": "D_DATE", "null": int(d.isna().sum()), "set_null_invalid": int(bad.sum()),
-                         "invalid_values": pd.to_datetime(d[bad], unit="ms").dt.date.astype(str).tolist()}
+    res["issue_date"] = {
+        "field": "D_DATE",
+        "null": int(d.isna().sum()),
+        "set_null_invalid": int(bad.sum()),
+        "invalid_values": pd.to_datetime(d[bad], unit="ms").dt.date.astype(str).tolist(),
+    }
     e["issued_at"] = d.where(~bad).astype(float)
     ok = pd.to_datetime(e.issued_at, unit="ms")
-    res["issue_date"] |= {"min": str(ok.min().date()), "max": str(ok.max().date()),
-                          "by_5yr": ok.dt.year.floordiv(5).mul(5).value_counts().sort_index()
-                          .rename(lambda y: str(int(y))).to_dict()}
+    res["issue_date"] |= {
+        "min": str(ok.min().date()),
+        "max": str(ok.max().date()),
+        "by_5yr": ok.dt.year.floordiv(5).mul(5).value_counts().sort_index().rename(lambda y: str(int(y))).to_dict(),
+    }
 
     # 5. property dedupe, bbox, match (labels.py method)
     b = pd.read_parquet(DATA / "lidar" / run / "buildings.parquet")
@@ -192,14 +206,24 @@ def main(fips: str, run: str, day: str) -> None:
     conv = pd.to_numeric(mm.BFE_CONVERTED_TO_NAVD88, errors="coerce")
     bfe = np.where(b11 == "NAVD1988", mm.B9_BASE_FLOOD_ELEVATION, np.where(b11 == "NGVD1929", conv, np.nan))
     bfe = pd.Series(bfe, index=mm.index, dtype=float)
-    res["bfe"] = {"navd88_from_B9": int(((b11 == "NAVD1988") & mm.B9_BASE_FLOOD_ELEVATION.notna()).sum()),
-                  "navd88_from_county_conversion": int(((b11 == "NGVD1929") & conv.notna()).sum()),
-                  "outside_0_40_set_null": int((bfe.notna() & ~bfe.between(0, 40, inclusive="right")).sum())}
+    res["bfe"] = {
+        "navd88_from_B9": int(((b11 == "NAVD1988") & mm.B9_BASE_FLOOD_ELEVATION.notna()).sum()),
+        "navd88_from_county_conversion": int(((b11 == "NGVD1929") & conv.notna()).sum()),
+        "outside_0_40_set_null": int((bfe.notna() & ~bfe.between(0, 40, inclusive="right")).sum()),
+    }
     bfe = bfe.where(bfe.between(0, 40, inclusive="right"))
-    lab = pd.DataFrame({"building_id": mm.building_id.values, "cert_objectid": pd.array([pd.NA] * len(mm), "Int64"),
-                        "issued_at": mm.issued_at.values, "diagram": mm.diagram.values, "ffe_ft": mm.ffe_ft.values,
-                        "cert_zone": mm.B8_FLOOD_ZONE.fillna("").str.strip().str.upper().values,
-                        "cert_bfe_ft": bfe.values, "match": mm.match.values})
+    lab = pd.DataFrame(
+        {
+            "building_id": mm.building_id.values,
+            "cert_objectid": pd.array([pd.NA] * len(mm), "Int64"),
+            "issued_at": mm.issued_at.values,
+            "diagram": mm.diagram.values,
+            "ffe_ft": mm.ffe_ft.values,
+            "cert_zone": mm.B8_FLOOD_ZONE.fillna("").str.strip().str.upper().values,
+            "cert_bfe_ft": bfe.values,
+            "match": mm.match.values,
+        }
+    )
     lab["label_source"] = "pinellas_county"
     lab["county_objectid"] = pd.array(mm.OBJECTID.values, "Int64")
     lab["vertical_datum_route"] = mm.route.values
@@ -212,9 +236,14 @@ def main(fips: str, run: str, day: str) -> None:
 
     # 7. combine with FDEM
     fd = pd.read_parquet(DATA / "train" / f"labels_{fips}.parquet")
-    fd = fd.assign(cert_objectid=fd.cert_objectid.astype("Int64"), label_source="fdem",
-                   county_objectid=pd.array([pd.NA] * len(fd), "Int64"), vertical_datum_route="navd88_fdem",
-                   ffe_field="fdem_rule", licence=LIC_FDEM)
+    fd = fd.assign(
+        cert_objectid=fd.cert_objectid.astype("Int64"),
+        label_source="fdem",
+        county_objectid=pd.array([pd.NA] * len(fd), "Int64"),
+        vertical_datum_route="navd88_fdem",
+        ffe_field="fdem_rule",
+        licence=LIC_FDEM,
+    )
     both = fd.merge(lab, on="building_id", suffixes=("_f", "_c"))
     diff = both.ffe_ft_c - both.ffe_ft_f
     same_day = (both.issued_at_c - both.issued_at_f).abs() < 86400000 * 1.5
@@ -230,7 +259,8 @@ def main(fips: str, run: str, day: str) -> None:
     agree["share_abs_diff_gt_3"] = round(float((diff.abs() > 3).mean()), 3)
     res["fdem_agreement"] = agree
     bf = both[both.vertical_datum_route_c == "ngvd29_county_navd88"].merge(
-        e[["OBJECTID", "C2a_29"]], left_on="county_objectid_c", right_on="OBJECTID")
+        e[["OBJECTID", "C2a_29"]], left_on="county_objectid_c", right_on="OBJECTID"
+    )
     bb = bf.diagram_c.isin(LIVING_BOTTOM)
     agree["ngvd29_route_bottom_floor_fdem_equals_C2a_29"] = int(((bf.ffe_ft_f - bf.C2a_29).abs() < 0.01)[bb].sum())
     agree["ngvd29_route_bottom_floor_n"] = int(bb.sum())
@@ -239,28 +269,39 @@ def main(fips: str, run: str, day: str) -> None:
     gl = pd.read_parquet(DATA / "lidar" / run / "features.parquet", columns=["building_id", "g_lag"])
     lc = mm[["building_id", "lag", "route", "issued_at"]].merge(gl, on="building_id")
     lc = lc[lc.lag.notna() & (lc.lag != 0) & lc.g_lag.notna()]
-    era = pd.cut(pd.to_datetime(lc.issued_at, unit="ms").dt.year, [1900, 2004, 2009, 2014, 2030],
-                 labels=["<=2004", "2005-09", "2010-14", ">=2015"])
+    era = pd.cut(
+        pd.to_datetime(lc.issued_at, unit="ms").dt.year,
+        [1900, 2004, 2009, 2014, 2030],
+        labels=["<=2004", "2005-09", "2010-14", ">=2015"],
+    )
     res["datum_route_lidar_check"] = {
         f"{k[0]} {k[1]}": {"n": int(v["count"]), "median_cert_lag_minus_lidar_lag_ft": round(float(v["median"]), 3)}
-        for k, v in (lc.lag - lc.g_lag).groupby([era, lc.route], observed=True).agg(["count", "median"]).iterrows()}
+        for k, v in (lc.lag - lc.g_lag).groupby([era, lc.route], observed=True).agg(["count", "median"]).iterrows()
+    }
     lab = lab[lab.vertical_datum_route == "navd88_native"].reset_index(drop=True)
     res["county_labels_used_navd88_native"] = len(lab)
     both = both[both.vertical_datum_route_c == "navd88_native"]
-    county_wins = set(both.building_id[both.issued_at_c.notna() & both.issued_at_f.notna()
-                                       & (both.issued_at_c > both.issued_at_f)])
+    county_wins = set(
+        both.building_id[both.issued_at_c.notna() & both.issued_at_f.notna() & (both.issued_at_c > both.issued_at_f)]
+    )
     res["overlap_rule"] = "county replaces FDEM only when both dates are known and the county's is strictly later"
     res["overlap_county_kept"] = len(county_wins)
     res["overlap_fdem_kept"] = len(both) - len(county_wins)
-    comb = pd.concat([fd[~fd.building_id.isin(county_wins)],
-                      lab[~lab.building_id.isin(set(fd.building_id) - county_wins)]], ignore_index=True)
+    comb = pd.concat(
+        [fd[~fd.building_id.isin(county_wins)], lab[~lab.building_id.isin(set(fd.building_id) - county_wins)]],
+        ignore_index=True,
+    )
     assert comb.building_id.is_unique
-    res["combined"] = {"labels": len(comb), "by_source": comb.label_source.value_counts().to_dict(),
-                       "new_buildings_from_county": int((~lab.building_id.isin(set(fd.building_id))).sum())}
+    res["combined"] = {
+        "labels": len(comb),
+        "by_source": comb.label_source.value_counts().to_dict(),
+        "new_buildings_from_county": int((~lab.building_id.isin(set(fd.building_id))).sum()),
+    }
 
     # elevated + train.py screen on the new buildings (lidar g_lag; target only)
-    f = pd.read_parquet(DATA / "lidar" / run / "features.parquet",
-                        columns=["building_id", "g_lag", "lpc_status", "roof_p95"])
+    f = pd.read_parquet(
+        DATA / "lidar" / run / "features.parquet", columns=["building_id", "g_lag", "lpc_status", "roof_p95"]
+    )
     new = lab[~lab.building_id.isin(set(fd.building_id))].merge(f, on="building_id", how="left")
     new["dh"] = new.ffe_ft - new.g_lag
     lid = new.g_lag.notna() & (new.lpc_status == "ok")
@@ -268,22 +309,29 @@ def main(fips: str, run: str, day: str) -> None:
     elev = elev_dg | (new.dh > 3)
     fail = lid & ((new.roof_p95 - new.dh < 6) | (new.dh < -1))
     res["new_county_buildings"] = {
-        "n": len(new), "elevated_diagram_5_9": int(elev_dg.sum()), "elevated_dh_gt_3": int((new.dh > 3).sum()),
-        "elevated_either": int(elev.sum()), "no_lidar_ground_or_points": int((~lid).sum()),
-        "fail_train_screen": int(fail.sum()), "fail_screen_dh_lt_-1": int((lid & (new.dh < -1)).sum()),
+        "n": len(new),
+        "elevated_diagram_5_9": int(elev_dg.sum()),
+        "elevated_dh_gt_3": int((new.dh > 3).sum()),
+        "elevated_either": int(elev.sum()),
+        "no_lidar_ground_or_points": int((~lid).sum()),
+        "fail_train_screen": int(fail.sum()),
+        "fail_screen_dh_lt_-1": int((lid & (new.dh < -1)).sum()),
         "fail_screen_roof_p95_minus_dh_lt_6": int((lid & (new.roof_p95 - new.dh < 6)).sum()),
         "usable_after_screen": int((lid & ~fail).sum()),
         "usable_elevated_either": int((lid & ~fail & elev).sum()),
         "usable_elevated_diagram_5_9": int((lid & ~fail & elev_dg).sum()),
-        "by_route_usable": new[lid & ~fail].vertical_datum_route.value_counts().to_dict()}
+        "by_route_usable": new[lid & ~fail].vertical_datum_route.value_counts().to_dict(),
+    }
     fdj = fd.merge(f, on="building_id", how="left")
     fdj["dh"] = fdj.ffe_ft - fdj.g_lag
     lf = fdj.g_lag.notna() & (fdj.lpc_status == "ok")
     ff = lf & ~((fdj.roof_p95 - fdj.dh < 6) | (fdj.dh < -1))
-    res["fdem_reference"] = {"n": len(fd), "usable_after_screen": int(ff.sum()),
-                             "usable_elevated_diagram_5_9": int((ff & fdj.diagram.str[0].isin(list("56789"))).sum()),
-                             "usable_elevated_either": int((ff & (fdj.diagram.str[0].isin(list("56789"))
-                                                                  | (fdj.dh > 3))).sum())}
+    res["fdem_reference"] = {
+        "n": len(fd),
+        "usable_after_screen": int(ff.sum()),
+        "usable_elevated_diagram_5_9": int((ff & fdj.diagram.str[0].isin(list("56789"))).sum()),
+        "usable_elevated_either": int((ff & (fdj.diagram.str[0].isin(list("56789")) | (fdj.dh > 3))).sum()),
+    }
     comb.to_parquet(OUTD / f"labels_combined_{fips}.parquet", index=False)
     out = Path(__file__).parent / "out"
     out.mkdir(exist_ok=True)

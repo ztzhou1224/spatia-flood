@@ -22,6 +22,7 @@ pipeline/train/out/labels_<FIPS>.json (with how many buildings' selected certifi
 r0's labels in data/flood_v1/train_r0/).
 Usage: python pipeline/train/labels.py 12103 pinellas_2018 [--compare data/flood_v1/train_r0/labels_12103.parquet]
 """
+
 import argparse
 import json
 import sys
@@ -34,21 +35,27 @@ from pyproj import Transformer
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "pipeline" / "phase0"))
-from risk_area import connect  # noqa: E402
+from risk_area import connect
 
 OUT = ROOT / "data" / "flood_v1" / "train"
 LIVING_BOTTOM = ("1A", "1B", "5")
 PARCELS = "layers/state/FL/fl_parcels.parquet"
 FINISHED = "finished_construction"
-OPENINGS = {"crawlspaceSqft": "enclosure_sqft", "crawlspaceNumFloodOpenings": "enclosure_flood_openings",
-            "crawlspaceNumEngineeredOpenings": "enclosure_engineered_openings", "attachedGarageSqft": "garage_sqft",
-            "attachedGarageNumFloodOpenings": "garage_flood_openings", "breakawayWalls": "breakaway_walls"}
+OPENINGS = {
+    "crawlspaceSqft": "enclosure_sqft",
+    "crawlspaceNumFloodOpenings": "enclosure_flood_openings",
+    "crawlspaceNumEngineeredOpenings": "enclosure_engineered_openings",
+    "attachedGarageSqft": "garage_sqft",
+    "attachedGarageNumFloodOpenings": "garage_flood_openings",
+    "breakawayWalls": "breakaway_walls",
+}
 
 
 def latest(df: pd.DataFrame, key: str) -> pd.DataFrame:
     """The last certificate per key under the documented order (issuedAt, OBJECTID), missing issuedAt first."""
-    return (df.sort_values(["issuedAt", "OBJECTID"], na_position="first", kind="stable")
-            .drop_duplicates(key, keep="last"))
+    return df.sort_values(["issuedAt", "OBJECTID"], na_position="first", kind="stable").drop_duplicates(
+        key, keep="last"
+    )
 
 
 def main(fips: str, run: str, compare: Path | None) -> None:
@@ -64,12 +71,20 @@ def main(fips: str, run: str, compare: Path | None) -> None:
     fetch = json.loads((ROOT / "data" / "fl" / "ec_all.meta.json").read_text())
     n_all = len(e)
     assert n_all == fetch["count"], "ec_all.json does not match its meta"
-    e = e[(e.verticalDatum == "navd_1988") & (e.buildingUse == "residential") & e.lon.between(x0, x1) & e.lat.between(y0, y1)]
+    e = e[
+        (e.verticalDatum == "navd_1988")
+        & (e.buildingUse == "residential")
+        & e.lon.between(x0, x1)
+        & e.lat.between(y0, y1)
+    ]
     e = latest(e, "propertyId").copy()
     dg = e.buildingDiagramNumber.astype(str).str.strip().str.upper()
     e["diagram"] = dg
-    e["ffe_ft"] = np.where(dg.isin(LIVING_BOTTOM), e.topOfBottomFloor,
-                           np.where(dg.str[0].isin(list("2346789")), e.topOfNextHigherFloor, np.nan))
+    e["ffe_ft"] = np.where(
+        dg.isin(LIVING_BOTTOM),
+        e.topOfBottomFloor,
+        np.where(dg.str[0].isin(list("2346789")), e.topOfNextHigherFloor, np.nan),
+    )
     e["ffe_ft"] = pd.to_numeric(e.ffe_ft, errors="coerce")
     e = e[e.ffe_ft.between(-20, 200)].reset_index(drop=True)
     ex, ey = tr.transform(e.lon.values, e.lat.values)
@@ -87,12 +102,38 @@ def main(fips: str, run: str, compare: Path | None) -> None:
     e["building_id"] = np.where(match >= 0, b.building_id.values[np.maximum(match, 0)], None)
     e["match"] = kind
     m = latest(e[e.building_id.notna()], "building_id")
-    keep = ["building_id", "OBJECTID", "issuedAt", "diagram", "ffe_ft", "floodZone", "baseFloodElevation", "match",
-            "buildingElevationSource", "topOfBottomFloor", "lowestAdjacentGrade", "formYear", *OPENINGS]
-    cert = m[keep].rename(columns={"OBJECTID": "cert_objectid", "issuedAt": "issued_at", "floodZone": "cert_zone",
-                                   "baseFloodElevation": "cert_bfe_ft", "buildingElevationSource": "record_stage",
-                                   "topOfBottomFloor": "lowest_floor_ft", "lowestAdjacentGrade": "cert_lag_ft",
-                                   "formYear": "form_year", **OPENINGS}).reset_index(drop=True)
+    keep = [
+        "building_id",
+        "OBJECTID",
+        "issuedAt",
+        "diagram",
+        "ffe_ft",
+        "floodZone",
+        "baseFloodElevation",
+        "match",
+        "buildingElevationSource",
+        "topOfBottomFloor",
+        "lowestAdjacentGrade",
+        "formYear",
+        *OPENINGS,
+    ]
+    cert = (
+        m[keep]
+        .rename(
+            columns={
+                "OBJECTID": "cert_objectid",
+                "issuedAt": "issued_at",
+                "floodZone": "cert_zone",
+                "baseFloodElevation": "cert_bfe_ft",
+                "buildingElevationSource": "record_stage",
+                "topOfBottomFloor": "lowest_floor_ft",
+                "lowestAdjacentGrade": "cert_lag_ft",
+                "formYear": "form_year",
+                **OPENINGS,
+            }
+        )
+        .reset_index(drop=True)
+    )
     for col in ("cert_bfe_ft", "lowest_floor_ft", "cert_lag_ft", *OPENINGS.values()):
         cert[col] = pd.to_numeric(cert[col], errors="coerce")
     cert["lowest_floor_ft"] = cert.lowest_floor_ft.where(cert.lowest_floor_ft.between(-20, 200))
@@ -115,27 +156,45 @@ def main(fips: str, run: str, compare: Path | None) -> None:
     rec["parcels_containing"] = pd.Series(bj).value_counts().reindex(first.b.values).values
     rec.to_parquet(OUT / f"records_{fips}.parquet", index=False)
 
-    res = {"fips": fips, "run": run, "buildings": len(b), "fdem_records_statewide": n_all, "fdem_extract": fetch,
-           "selection_rule": "latest by (issuedAt, OBJECTID), missing issuedAt first, stable; per property then building",
-           "certificates_residential_navd88_latest_in_bbox_with_target": len(e),
-           "matched_within": int((kind == "within").sum()), "matched_nearest_10m": int((kind == "nearest_10m").sum()),
-           "unmatched": int((match < 0).sum()), "certificates_one_per_building": len(cert),
-           "certificates_by_stage": cert.record_stage.fillna("null").value_counts().to_dict(),
-           "labels_one_per_building_finished_construction": len(lab),
-           "certificates_with_lowest_floor": int(cert.lowest_floor_ft.notna().sum()),
-           "certificates_with_enclosure_openings": int(cert.enclosure_flood_openings.notna().sum()),
-           "diagrams": lab.diagram.value_counts().head(10).to_dict(),
-           "buildings_with_parcel": len(rec), "residential_parcel_000_009": int((rec.dor_uc < "010").sum())}
+    res = {
+        "fips": fips,
+        "run": run,
+        "buildings": len(b),
+        "fdem_records_statewide": n_all,
+        "fdem_extract": fetch,
+        "selection_rule": "latest by (issuedAt, OBJECTID), missing issuedAt first, stable; per property then building",
+        "certificates_residential_navd88_latest_in_bbox_with_target": len(e),
+        "matched_within": int((kind == "within").sum()),
+        "matched_nearest_10m": int((kind == "nearest_10m").sum()),
+        "unmatched": int((match < 0).sum()),
+        "certificates_one_per_building": len(cert),
+        "certificates_by_stage": cert.record_stage.fillna("null").value_counts().to_dict(),
+        "labels_one_per_building_finished_construction": len(lab),
+        "certificates_with_lowest_floor": int(cert.lowest_floor_ft.notna().sum()),
+        "certificates_with_enclosure_openings": int(cert.enclosure_flood_openings.notna().sum()),
+        "diagrams": lab.diagram.value_counts().head(10).to_dict(),
+        "buildings_with_parcel": len(rec),
+        "residential_parcel_000_009": int((rec.dor_uc < "010").sum()),
+    }
     if compare is not None:
         old = pd.read_parquet(compare)[["building_id", "cert_objectid"]]
-        j = old.merge(cert[["building_id", "cert_objectid", "record_stage"]], on="building_id", how="outer",
-                      suffixes=("_old", "_new"), indicator=True)
+        j = old.merge(
+            cert[["building_id", "cert_objectid", "record_stage"]],
+            on="building_id",
+            how="outer",
+            suffixes=("_old", "_new"),
+            indicator=True,
+        )
         both = j[j._merge == "both"]
-        res["compare"] = {"against": str(compare), "old_labels": len(old), "buildings_in_both": len(both),
-                          "selected_certificate_changed": int((both.cert_objectid_old != both.cert_objectid_new).sum()),
-                          "only_old": int((j._merge == "left_only").sum()),
-                          "only_new_any_stage": int((j._merge == "right_only").sum()),
-                          "old_labels_now_not_finished": int(both.record_stage.ne(FINISHED).sum())}
+        res["compare"] = {
+            "against": str(compare),
+            "old_labels": len(old),
+            "buildings_in_both": len(both),
+            "selected_certificate_changed": int((both.cert_objectid_old != both.cert_objectid_new).sum()),
+            "only_old": int((j._merge == "left_only").sum()),
+            "only_new_any_stage": int((j._merge == "right_only").sum()),
+            "old_labels_now_not_finished": int(both.record_stage.ne(FINISHED).sum()),
+        }
     (Path(__file__).parent / "out" / f"labels_{fips}.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1))
 

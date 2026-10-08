@@ -12,6 +12,7 @@ Usage:
   python pipeline/lidar/prepare.py RUN --bbox -82.64,27.78,-82.60,27.84        # trial area
   add --local DIR to write file:// URLs to local tiles in DIR (a test run on this machine; nothing uploaded)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,7 +32,7 @@ from shapely import wkt as swkt
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "pipeline" / "phase0"))
-from risk_area import BLDG, connect  # noqa: E402
+from risk_area import BLDG, connect
 
 TNM = "https://tnmaccess.nationalmap.gov/api/v1/products"
 DATASETS = {"lpc": "Lidar Point Cloud (LPC)", "dem": "Digital Elevation Model (DEM) 1 meter"}
@@ -43,13 +44,16 @@ def tnm(dataset: str, bbox, area, project: str) -> list[dict]:
     while True:
         for attempt in range(5):
             try:
-                r = requests.get(TNM, params={"datasets": dataset, "bbox": ",".join(map(str, bbox)), "max": 1000,
-                                              "offset": off}, timeout=120)
+                r = requests.get(
+                    TNM,
+                    params={"datasets": dataset, "bbox": ",".join(map(str, bbox)), "max": 1000, "offset": off},
+                    timeout=120,
+                )
                 r.raise_for_status()
                 d = r.json()
                 break
             except (requests.RequestException, ValueError):
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         else:
             raise RuntimeError(f"TNM query failed: {dataset}")
         items += d.get("items", [])
@@ -73,6 +77,7 @@ def ept_plan(base: str, bl: pd.DataFrame, metric: str, depth: int = 7, pad: floa
     import numpy as np
     from ept import hierarchy
     from pyproj import Transformer
+
     g = shapely.from_wkb(bl.wkb.values)
     tr = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
     g = shapely.transform(g, lambda xy: np.c_[tr.transform(xy[:, 0], xy[:, 1])])
@@ -80,7 +85,7 @@ def ept_plan(base: str, bl: pd.DataFrame, metric: str, depth: int = 7, pad: floa
     bbox = (b[:, 0].min() - pad, b[:, 1].min() - pad, b[:, 2].max() + pad, b[:, 3].max() + pad)
     nodes, meta = hierarchy(base, bbox)
     cube = meta["bounds"]
-    size = (cube[3] - cube[0]) / 2 ** depth
+    size = (cube[3] - cube[0]) / 2**depth
     cells = set()
     for x0, y0, x1, y1 in b:
         for cx in range(int((x0 - pad - cube[0]) // size), int((x1 + pad - cube[0]) // size) + 1):
@@ -98,9 +103,16 @@ def ept_plan(base: str, bl: pd.DataFrame, metric: str, depth: int = 7, pad: floa
         d, x, y, _ = map(int, k.split("-"))
         if d >= depth:
             have.add((x >> (d - depth), y >> (d - depth)))
-    return {"base": base, "cube": cube, "srs": meta.get("srs", {}).get("horizontal"), "chunk_depth": depth,
-            "chunks": sorted(cells & have), "nodes": keep, "metric_crs": metric,
-            "vertical": "NAVD88 metres (EPT z; matches the source LAZ NAVD88 ftUS heights to 5 mm, 99th pct)"}
+    return {
+        "base": base,
+        "cube": cube,
+        "srs": meta.get("srs", {}).get("horizontal"),
+        "chunk_depth": depth,
+        "chunks": sorted(cells & have),
+        "nodes": keep,
+        "metric_crs": metric,
+        "vertical": "NAVD88 metres (EPT z; matches the source LAZ NAVD88 ftUS heights to 5 mm, 99th pct)",
+    }
 
 
 def main() -> None:
@@ -122,7 +134,8 @@ def main() -> None:
     else:
         c.execute(f"CREATE TABLE area AS SELECT geom FROM read_parquet('{ROOT}/data/flood_v1/risk_{a.fips}.parquet')")
     x0, y0, x1, y1, wkt = c.execute(
-        "SELECT ST_XMin(geom), ST_YMin(geom), ST_XMax(geom), ST_YMax(geom), ST_AsText(geom) FROM area").fetchone()
+        "SELECT ST_XMin(geom), ST_YMin(geom), ST_XMax(geom), ST_YMax(geom), ST_AsText(geom) FROM area"
+    ).fetchone()
     t0 = time.time()
     bl = c.execute(f"""SELECT b.id AS building_id, ST_AsWKB(b.geom) AS wkb FROM read_parquet('{b}/{BLDG}') b, area
                        WHERE b.lon BETWEEN {x0} AND {x1} AND b.lat BETWEEN {y0} AND {y1}
@@ -134,12 +147,16 @@ def main() -> None:
     tiles["project"] = a.project
     if a.ept:
         tiles["ept"] = ept_plan(a.ept, bl, a.metric_crs)
-        print(f"EPT: {len(tiles['ept']['chunks'])} chunks of depth {tiles['ept']['chunk_depth']}, "
-              f"{len(tiles['ept']['nodes'])} nodes, {sum(tiles['ept']['nodes'].values()):,} points")
+        print(
+            f"EPT: {len(tiles['ept']['chunks'])} chunks of depth {tiles['ept']['chunk_depth']}, "
+            f"{len(tiles['ept']['nodes'])} nodes, {sum(tiles['ept']['nodes'].values()):,} points"
+        )
     (out / "tiles.json").write_text(json.dumps(tiles, indent=1))
     gb = sum(t["bytes"] or 0 for t in tiles["lpc"] + tiles["dem"]) / 1e9
-    print(f"{a.run}: {len(bl)} buildings ({time.time() - t0:.0f} s); {len(tiles['lpc'])} LPC + {len(tiles['dem'])} "
-          f"DEM tiles of {a.project}, {gb:.1f} GB")
+    print(
+        f"{a.run}: {len(bl)} buildings ({time.time() - t0:.0f} s); {len(tiles['lpc'])} LPC + {len(tiles['dem'])} "
+        f"DEM tiles of {a.project}, {gb:.1f} GB"
+    )
 
     if a.local:
         loc = Path(a.local).resolve()
@@ -151,15 +168,26 @@ def main() -> None:
         tiles["dem"] = [t for t in tiles["dem"] if Path(t["url"][7:]).exists()]
         (out / "tiles_local.json").write_text(json.dumps(tiles, indent=1))
         urls = {"buildings": f"file://{out / 'buildings.parquet'}", "tiles": f"file://{out / 'tiles_local.json'}"}
-        urls |= {k: f"file://{out / ('out_' + f)}" for k, f in
-                 (("features", "features.parquet"), ("meta", "meta.json"), ("status", "status.json"), ("log", "log.txt"))}
+        urls |= {
+            k: f"file://{out / ('out_' + f)}"
+            for k, f in (
+                ("features", "features.parquet"),
+                ("meta", "meta.json"),
+                ("status", "status.json"),
+                ("log", "log.txt"),
+            )
+        }
         (out / "urls.json").write_text(json.dumps(urls))
         print(f"local run: {len(tiles['lpc'])} LPC + {len(tiles['dem'])} DEM tiles found in {loc}")
         return
 
-    s3 = boto3.client("s3", endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"], region_name="auto",
-                      aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
-                      aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"])
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"],
+        region_name="auto",
+        aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"],
+    )
     bucket, pre = os.environ["CLOUDFLARE_R2_BUCKET"], f"_flood/lidar/{a.run}"
     code = io.BytesIO()
     with tarfile.open(fileobj=code, mode="w:gz") as tar:
@@ -171,10 +199,21 @@ def main() -> None:
 
     def sign(op: str, key: str) -> str:
         return s3.generate_presigned_url(op, Params={"Bucket": bucket, "Key": f"{pre}/{key}"}, ExpiresIn=WEEK)
-    urls = {"code": sign("get_object", "inputs/code.tgz"), "buildings": sign("get_object", "inputs/buildings.parquet"),
-            "tiles": sign("get_object", "inputs/tiles.json")}
-    urls |= {k: sign("put_object", f"out/{f}") for k, f in
-             (("features", "features.parquet"), ("meta", "meta.json"), ("status", "status.json"), ("log", "log.txt"))}
+
+    urls = {
+        "code": sign("get_object", "inputs/code.tgz"),
+        "buildings": sign("get_object", "inputs/buildings.parquet"),
+        "tiles": sign("get_object", "inputs/tiles.json"),
+    }
+    urls |= {
+        k: sign("put_object", f"out/{f}")
+        for k, f in (
+            ("features", "features.parquet"),
+            ("meta", "meta.json"),
+            ("status", "status.json"),
+            ("log", "log.txt"),
+        )
+    }
     p = out / "urls.json"
     p.write_text(json.dumps(urls))
     p.chmod(0o600)

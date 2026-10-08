@@ -17,6 +17,7 @@ columns (added 2026-10-07 for r1b, whose held-out blocks include Pinellas County
 the original behaviour).
 Usage: python pipeline/train/gate.py 12103 pinellas_2018 --candidate DIR [--baseline DIR] --release NAME [--labels FILE]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,7 +30,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from train import DATA, FEATS, features, score  # noqa: E402
+from train import DATA, FEATS, features, score
 
 TOL = {"MAE": 0.05, "BFE side": 0.01, "coverage": 0.01, "decided correct": 0.01}
 COVERAGE_FLOOR = 0.88
@@ -38,8 +39,11 @@ COVERAGE_FLOOR = 0.88
 def load(d: Path, fips: str):
     bands = json.loads((d / f"bands_{fips}.json").read_text())
     assert bands["features"] == FEATS, f"{d}: model features differ from train.py's"
-    return (lgb.Booster(model_file=str(d / f"model_{fips}.txt")),
-            lgb.Booster(model_file=str(d / f"difficulty_{fips}.txt")), bands)
+    return (
+        lgb.Booster(model_file=str(d / f"model_{fips}.txt")),
+        lgb.Booster(model_file=str(d / f"difficulty_{fips}.txt")),
+        bands,
+    )
 
 
 def scored(d: Path, fips: str, t: pd.DataFrame) -> dict:
@@ -70,21 +74,42 @@ def main() -> None:
     base = scored(a.baseline, a.fips, t) if a.baseline else None
     checks = {"coverage >= floor": cand["coverage"] >= COVERAGE_FLOOR}
     if base:
-        checks |= {"MAE": cand["MAE"] <= base["MAE"] + TOL["MAE"],
-                   "BFE side": cand["BFE side"] >= base["BFE side"] - TOL["BFE side"],
-                   "coverage": cand["coverage"] >= base["coverage"] - TOL["coverage"],
-                   "decided correct": cand["decided correct"] >= base["decided correct"] - TOL["decided correct"]}
+        checks |= {
+            "MAE": cand["MAE"] <= base["MAE"] + TOL["MAE"],
+            "BFE side": cand["BFE side"] >= base["BFE side"] - TOL["BFE side"],
+            "coverage": cand["coverage"] >= base["coverage"] - TOL["coverage"],
+            "decided correct": cand["decided correct"] >= base["decided correct"] - TOL["decided correct"],
+        }
     rows = {"candidate": cand} | ({"baseline": base} if base else {})
     print(f"held-out houses: {len(t)} in {len(test)} blocks (candidate's test split)")
-    print(pd.DataFrame(rows).T[["n", "MAE", "BFE side", "coverage", "decided correct", "BFE decided"]].round(3).to_markdown())
+    print(
+        pd.DataFrame(rows)
+        .T[["n", "MAE", "BFE side", "coverage", "decided correct", "BFE decided"]]
+        .round(3)
+        .to_markdown()
+    )
     for k, ok in checks.items():
         print(f"{'pass' if ok else 'FAIL'} {k}")
     passed = all(checks.values())
     out = Path(__file__).parent / "out" / f"gate_{a.fips}_{a.release}.json"
-    out.write_text(json.dumps({"fips": a.fips, "release": a.release, "candidate": str(a.candidate),
-                               "baseline": str(a.baseline) if a.baseline else None, "labels": str(labels), "n_test": len(t),
-                               "tolerances": TOL, "coverage_floor": COVERAGE_FLOOR, "scores": rows,
-                               "checks": checks, "passed": passed}, indent=1))
+    out.write_text(
+        json.dumps(
+            {
+                "fips": a.fips,
+                "release": a.release,
+                "candidate": str(a.candidate),
+                "baseline": str(a.baseline) if a.baseline else None,
+                "labels": str(labels),
+                "n_test": len(t),
+                "tolerances": TOL,
+                "coverage_floor": COVERAGE_FLOOR,
+                "scores": rows,
+                "checks": checks,
+                "passed": passed,
+            },
+            indent=1,
+        )
+    )
     print("GATE", "PASSED" if passed else "FAILED")
     sys.exit(0 if passed else 1)
 

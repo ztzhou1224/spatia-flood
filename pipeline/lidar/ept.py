@@ -5,6 +5,7 @@ the same flight re-indexed into an octree of LAZ nodes, reprojected to EPSG:3857
 and quantised to 0.01 units; ept.json carries the bounds cube, schema and srs. A node key is "D-X-Y-Z"; its cube is
 the root cube split 2^D times per axis. Hierarchy pages map key -> point count, -1 = see the page of that key.
 """
+
 from __future__ import annotations
 
 import time
@@ -20,14 +21,14 @@ def get_json(url: str) -> dict:
             r.raise_for_status()
             return r.json()
         except (requests.RequestException, ValueError):
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
     raise RuntimeError(f"EPT read failed: {url}")
 
 
 def node_box(key: str, cube: list[float]) -> tuple[float, float, float, float]:
     """XY bounds (EPSG:3857) of node D-X-Y-Z inside the root cube [xmin, ymin, zmin, xmax, ymax, zmax]."""
     d, x, y, _ = map(int, key.split("-"))
-    sx, sy = (cube[3] - cube[0]) / 2 ** d, (cube[4] - cube[1]) / 2 ** d
+    sx, sy = (cube[3] - cube[0]) / 2**d, (cube[4] - cube[1]) / 2**d
     return cube[0] + x * sx, cube[1] + y * sy, cube[0] + (x + 1) * sx, cube[1] + (y + 1) * sy
 
 

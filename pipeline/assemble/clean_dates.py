@@ -12,6 +12,7 @@ Outputs: data/flood_v1/assemble/dates_clean_<FIPS>.parquet and pipeline/assemble
 (certificate OBJECTID, raw fields, answer; no personal data).
 Usage: python pipeline/assemble/clean_dates.py 12103
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -25,8 +26,10 @@ import requests
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "flood_v1"
-FDEM = ("https://services8.arcgis.com/4L6VuYsPSGSEJ0qe/arcgis/rest/services/Public_FDEM_Elevation_Certificates/"
-        "FeatureServer/0/query")
+FDEM = (
+    "https://services8.arcgis.com/4L6VuYsPSGSEJ0qe/arcgis/rest/services/Public_FDEM_Elevation_Certificates/"
+    "FeatureServer/0/query"
+)
 OPENAI_MODEL = "gpt-5.5-2026-04-23"
 FIELDS = "OBJECTID,issuedAt,formYear,firmPanelEffectiveDate,buildingElevationSource,buildingDiagramNumber"
 LO = pd.Timestamp("1990-01-01")
@@ -47,8 +50,16 @@ Records:
 def fetch(ids: list[int]) -> pd.DataFrame:
     rows = []
     for k in range(0, len(ids), 400):
-        r = requests.post(FDEM, data={"objectIds": ",".join(map(str, ids[k:k + 400])), "outFields": FIELDS,
-                                      "returnGeometry": "false", "f": "json"}, timeout=120)
+        r = requests.post(
+            FDEM,
+            data={
+                "objectIds": ",".join(map(str, ids[k : k + 400])),
+                "outFields": FIELDS,
+                "returnGeometry": "false",
+                "f": "json",
+            },
+            timeout=120,
+        )
         r.raise_for_status()
         rows += [f["attributes"] for f in r.json()["features"]]
     f = pd.DataFrame(rows)
@@ -58,14 +69,29 @@ def fetch(ids: list[int]) -> pd.DataFrame:
 
 
 def ask(batch: pd.DataFrame, today: str) -> list[dict]:
-    recs = "\n".join(json.dumps({"objectid": int(r.OBJECTID), "issuedAt_raw": r.issuedAt, "formYear": r.formYear,
-                                 "firmPanelEffectiveDate": r.firmPanelEffectiveDate,
-                                 "buildingElevationSource": r.buildingElevationSource,
-                                 "buildingDiagramNumber": r.buildingDiagramNumber}) for r in batch.itertuples())
-    r = requests.post("https://api.openai.com/v1/chat/completions", timeout=600,
-                      headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
-                      json={"model": OPENAI_MODEL, "response_format": {"type": "json_object"},
-                            "messages": [{"role": "user", "content": PROMPT.format(today=today, records=recs)}]})
+    recs = "\n".join(
+        json.dumps(
+            {
+                "objectid": int(r.OBJECTID),
+                "issuedAt_raw": r.issuedAt,
+                "formYear": r.formYear,
+                "firmPanelEffectiveDate": r.firmPanelEffectiveDate,
+                "buildingElevationSource": r.buildingElevationSource,
+                "buildingDiagramNumber": r.buildingDiagramNumber,
+            }
+        )
+        for r in batch.itertuples()
+    )
+    r = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        timeout=600,
+        headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
+        json={
+            "model": OPENAI_MODEL,
+            "response_format": {"type": "json_object"},
+            "messages": [{"role": "user", "content": PROMPT.format(today=today, records=recs)}],
+        },
+    )
     r.raise_for_status()
     return json.loads(r.json()["choices"][0]["message"]["content"])["rows"]
 
@@ -88,18 +114,27 @@ def main(fips: str) -> None:
     print(f"certificates with a missing or invalid issue date: {len(ids)}; fetched {len(f)}")
     out = []
     for k in range(0, len(f), 100):
-        part = f.iloc[k:k + 100]
+        part = f.iloc[k : k + 100]
         ans = {int(a["objectid"]): a for a in ask(part, today.date().isoformat()) if "objectid" in a}
         for r in part.itertuples():
             a = ans.get(int(r.OBJECTID), {})
             ok = valid(a, today)
-            out.append({"cert_objectid": int(r.OBJECTID), "issued_raw": r.issuedAt, "form_year": r.formYear,
-                        "firm_date_raw": r.firmPanelEffectiveDate, "estimate": a.get("estimate") if ok else None,
-                        "window_start": a.get("window_start") if ok else None,
-                        "window_end": a.get("window_end") if ok else None,
-                        "confidence": a.get("confidence") if ok else None, "reason": a.get("reason"),
-                        "valid": ok, "model": OPENAI_MODEL})
-        print(f"batch {k // 100 + 1}: {len(part)} rows, {sum(o['valid'] for o in out[-len(part):])} valid", flush=True)
+            out.append(
+                {
+                    "cert_objectid": int(r.OBJECTID),
+                    "issued_raw": r.issuedAt,
+                    "form_year": r.formYear,
+                    "firm_date_raw": r.firmPanelEffectiveDate,
+                    "estimate": a.get("estimate") if ok else None,
+                    "window_start": a.get("window_start") if ok else None,
+                    "window_end": a.get("window_end") if ok else None,
+                    "confidence": a.get("confidence") if ok else None,
+                    "reason": a.get("reason"),
+                    "valid": ok,
+                    "model": OPENAI_MODEL,
+                }
+            )
+        print(f"batch {k // 100 + 1}: {len(part)} rows, {sum(o['valid'] for o in out[-len(part) :])} valid", flush=True)
     d = pd.DataFrame(out)
     d.to_parquet(DATA / "assemble" / f"dates_clean_{fips}.parquet", index=False)
     d.to_csv(Path(__file__).parent / "out" / f"dates_clean_{fips}.csv", index=False)

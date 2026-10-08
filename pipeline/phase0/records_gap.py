@@ -10,6 +10,7 @@ centroid lies in a residential fl_parcels parcel (DOR use codes 000-009). Per ho
 Counts only; no addresses or owner fields are read or written.
 Usage: python pipeline/phase0/records_gap.py 12103
 """
+
 import json
 import sys
 import time
@@ -17,7 +18,6 @@ import time
 import numpy as np
 import pandas as pd
 import shapely
-
 from risk_area import BLDG, DATA, OUT, ROOT, connect
 
 PARCELS = "layers/state/FL/fl_parcels.parquet"
@@ -38,7 +38,8 @@ def main(fips: str) -> None:
     print(f"read {len(br)} buildings, {len(pa)} residential parcels in {time.time() - t0:.0f} s", flush=True)
     fp = shapely.from_wkb(br.wkb.map(bytes).values)
     bj, _ = shapely.STRtree(shapely.from_wkb(pa.wkb.map(bytes).values)).query(
-        shapely.points(br.lon.values, br.lat.values), predicate="within")
+        shapely.points(br.lon.values, br.lat.values), predicate="within"
+    )
     house = np.zeros(len(br), bool)
     house[bj] = True
     tree = shapely.STRtree(fp)
@@ -69,13 +70,18 @@ def main(fips: str) -> None:
 
     floors = br.num_floors.notna().values & (br.num_floors.fillna(0).values > 0)
     h = house
-    res = {"fips": fips, "risk_buildings": len(br), "houses_on_residential_parcels": int(h.sum()),
-           "overture_num_floors": int((h & floors).sum()), "overture_height": int((h & br.height.notna().values).sum()),
-           "fdem_certificate_foundation": int((h & cert).sum()),
-           "free_clean_floors_and_foundation": int((h & floors & cert).sum()),
-           "free_clean_neither": int((h & ~floors & ~cert).sum()),
-           "nsi_point_in_footprint_num_story": int((h & nsi_story).sum()),
-           "nsi_point_in_footprint_found_type": int((h & nsi_found).sum())}
+    res = {
+        "fips": fips,
+        "risk_buildings": len(br),
+        "houses_on_residential_parcels": int(h.sum()),
+        "overture_num_floors": int((h & floors).sum()),
+        "overture_height": int((h & br.height.notna().values).sum()),
+        "fdem_certificate_foundation": int((h & cert).sum()),
+        "free_clean_floors_and_foundation": int((h & floors & cert).sum()),
+        "free_clean_neither": int((h & ~floors & ~cert).sum()),
+        "nsi_point_in_footprint_num_story": int((h & nsi_story).sum()),
+        "nsi_point_in_footprint_found_type": int((h & nsi_found).sum()),
+    }
     (OUT / f"records_gap_{fips}.json").write_text(json.dumps(res, indent=1))
     print(json.dumps(res, indent=1), f"\n{time.time() - t0:.0f} s")
 

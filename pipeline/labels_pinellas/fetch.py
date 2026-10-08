@@ -14,6 +14,7 @@ Output: data/flood_v1/labels_pinellas/raw/<date>/layer.json, page_<NNN>.json (1,
 OBJECTID), and fetch.json (counts).
 Usage: python pipeline/labels_pinellas/fetch.py [YYYY-MM-DD]
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -28,18 +29,56 @@ ROOT = Path(__file__).resolve().parents[2]
 URL = "https://egis.pinellas.gov/gis/rest/services/ElevationCertsApp/ElevationCertsApp/MapServer/0"
 PAGE = 1000
 FIELDS = [
-    "OBJECTID", "GLOBALID", "STR_PIN",  # parcel id: used only to keep one certificate per property, never written out
-    "A4_BUILDING_USE", "A5_LATITUDE", "A5_LONGITUDE", "A5_HORIZ_DATUM", "A7_BUILDING_DIAG_NUM",
-    "B6_FIRM_INDEX_DATE", "B7_FIRM_EFFECTIVE_REVISE_DATE", "B8_FLOOD_ZONE", "B9_BASE_FLOOD_ELEVATION",
-    "B10_BFE_SOURCE", "B11_ELEVATION_DATUM", "BFE_CONVERTED_TO_NAVD88",
-    "C1_BUILDING_ELEVATION_SOURCE", "C2_BENCHMARK_VERT_DATUM", "VERTICAL_DATUM", "MEASUREMENT_UNITS",
-    "C2A_TOP_BOTTOM_FLOOR_EL", "C2B_TOP_NEXT_HIGHER_FL_EL", "C2C_BOTTOM_LOW_STRUCT_EL", "C2D_ATTACHED_GARAGE_ELEV",
-    "C2E_LOWEST_MACHINERY_EQ_EL", "C2F_LAG_ELEV", "C2G_HAG_ELEV", "C2H_LOWEST_ADJACENT_GRADE",
-    "C2a_29", "C2a_88", "C2b_29", "C2b_88", "C2f_29", "C2f_88", "C2g_29", "C2g_88",
-    "D_DATE", "D_CERTIFICATE_SEALED", "E5_ZONE_AO",
-    "G4_PERMIT_NUMBER", "G5_DATE_PERMIT_ISSUED", "G6_CERT_COMPLIANCE_OCC_IS", "G7_PERMIT_ISSUED_FOR",
-    "G8_ASBUILT_LOWEST_FL_ELEV", "G8_ASBUILT_LOWEST_FL_UNITS", "G8_ASBUILT_OWEST_FL_DATUM",
-    "DATE_ENTERED", "CREATED_DATE", "LAST_EDITED_DATE", "POINT_TYPE", "REDACTED",
+    "OBJECTID",
+    "GLOBALID",
+    "STR_PIN",  # parcel id: used only to keep one certificate per property, never written out
+    "A4_BUILDING_USE",
+    "A5_LATITUDE",
+    "A5_LONGITUDE",
+    "A5_HORIZ_DATUM",
+    "A7_BUILDING_DIAG_NUM",
+    "B6_FIRM_INDEX_DATE",
+    "B7_FIRM_EFFECTIVE_REVISE_DATE",
+    "B8_FLOOD_ZONE",
+    "B9_BASE_FLOOD_ELEVATION",
+    "B10_BFE_SOURCE",
+    "B11_ELEVATION_DATUM",
+    "BFE_CONVERTED_TO_NAVD88",
+    "C1_BUILDING_ELEVATION_SOURCE",
+    "C2_BENCHMARK_VERT_DATUM",
+    "VERTICAL_DATUM",
+    "MEASUREMENT_UNITS",
+    "C2A_TOP_BOTTOM_FLOOR_EL",
+    "C2B_TOP_NEXT_HIGHER_FL_EL",
+    "C2C_BOTTOM_LOW_STRUCT_EL",
+    "C2D_ATTACHED_GARAGE_ELEV",
+    "C2E_LOWEST_MACHINERY_EQ_EL",
+    "C2F_LAG_ELEV",
+    "C2G_HAG_ELEV",
+    "C2H_LOWEST_ADJACENT_GRADE",
+    "C2a_29",
+    "C2a_88",
+    "C2b_29",
+    "C2b_88",
+    "C2f_29",
+    "C2f_88",
+    "C2g_29",
+    "C2g_88",
+    "D_DATE",
+    "D_CERTIFICATE_SEALED",
+    "E5_ZONE_AO",
+    "G4_PERMIT_NUMBER",
+    "G5_DATE_PERMIT_ISSUED",
+    "G6_CERT_COMPLIANCE_OCC_IS",
+    "G7_PERMIT_ISSUED_FOR",
+    "G8_ASBUILT_LOWEST_FL_ELEV",
+    "G8_ASBUILT_LOWEST_FL_UNITS",
+    "G8_ASBUILT_OWEST_FL_DATUM",
+    "DATE_ENTERED",
+    "CREATED_DATE",
+    "LAST_EDITED_DATE",
+    "POINT_TYPE",
+    "REDACTED",
 ]
 FORBIDDEN = ("OWNER", "NAME", "ADDRESS", "TELEPHONE", "LICENSE", "COMPANY", "COMMENTS", "_USER", "_BY", "TITLE")
 FORBIDDEN_PREFIX = ("A1_", "A2_", "A3_", "D_CITY", "D_STATE", "D_ZIP", "F_", "DELIVERY")
@@ -75,8 +114,18 @@ def main(day: str) -> None:
     total = get({"where": "1=1", "returnCountOnly": "true", "f": "json"})["count"]
     n, page = 0, 0
     while n < total:
-        d = get({"where": "1=1", "outFields": ",".join(FIELDS), "orderByFields": "OBJECTID",
-                 "resultOffset": n, "resultRecordCount": PAGE, "outSR": 4326, "returnGeometry": "true", "f": "json"})
+        d = get(
+            {
+                "where": "1=1",
+                "outFields": ",".join(FIELDS),
+                "orderByFields": "OBJECTID",
+                "resultOffset": n,
+                "resultRecordCount": PAGE,
+                "outSR": 4326,
+                "returnGeometry": "true",
+                "f": "json",
+            }
+        )
         k = len(d["features"])
         if not k:
             break
@@ -85,9 +134,17 @@ def main(day: str) -> None:
         (out / f"page_{page:03d}.json").write_text(json.dumps(d))
         n, page = n + k, page + 1
         print(f"page {page}: {n}/{total}")
-    res = {"url": URL, "fetched": day, "count_server": total, "records_fetched": n, "pages": page,
-           "out_fields": FIELDS, "out_sr": 4326, "layer_name": layer.get("name"),
-           "layer_has_licence_text": False}
+    res = {
+        "url": URL,
+        "fetched": day,
+        "count_server": total,
+        "records_fetched": n,
+        "pages": page,
+        "out_fields": FIELDS,
+        "out_sr": 4326,
+        "layer_name": layer.get("name"),
+        "layer_has_licence_text": False,
+    }
     (out / "fetch.json").write_text(json.dumps(res, indent=1))
     print(json.dumps({k: v for k, v in res.items() if k != "out_fields"}, indent=1))
 

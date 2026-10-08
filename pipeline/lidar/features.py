@@ -7,6 +7,7 @@ Point cloud (research/harris_mini/lpc_features.py, default flight, class-6 rule)
 7, 9, 10, 14, 17, 18 dropped; returns in a disc around the footprint centroid (Hausdorff radius + 3.5 m).
 Units: point-cloud coordinates in US survey feet are scaled to metres by the caller (metric twin CRS).
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -17,17 +18,32 @@ from shapely.geometry import mapping
 USFT = 1200 / 3937  # m per US survey foot
 DROP = (7, 9, 10, 14, 17, 18)  # noise, water, rail, wire conductor, bridge deck, high noise
 GROUND_COLS = ["lag", "p10", "med", "hag", "inside", "far"]
-LPC_COLS = ["n_in", "pts_m2", "bldg_share", "roof_p05", "roof_p50", "roof_p95", "eave_p10", "eave_p50", "eave_main",
-            "ridge", "ground_in_share", "ring_low_share", "ring_low_p90"]
+LPC_COLS = [
+    "n_in",
+    "pts_m2",
+    "bldg_share",
+    "roof_p05",
+    "roof_p50",
+    "roof_p95",
+    "eave_p10",
+    "eave_p50",
+    "eave_main",
+    "ridge",
+    "ground_in_share",
+    "ring_low_share",
+    "ring_low_p90",
+]
 MAX_AREA_M2 = 2000.0  # point-cloud features only for footprints up to this area (the training population)
 
 
 def ground_stats(g, a: np.ndarray, t) -> dict:
     """g: footprint in the DEM CRS; a: DEM window (metres, NaN = nodata) covering g buffered 31 m; t: its transform."""
+
     def stat(geom):
         v = a[~geometry_mask([mapping(geom)], a.shape, t)]
         v = v[np.isfinite(v)]
         return v / USFT
+
     rec: dict = {}
     v, vi, vf = stat(g.buffer(2.5).difference(g.buffer(0.5))), stat(g), stat(g.buffer(30).difference(g.buffer(10)))
     if v.size >= 5:
@@ -77,11 +93,19 @@ def lpc_stats(fp, pts: np.ndarray, lag_ft: float) -> dict:
 
     def q(v, p):
         return float(np.percentile(v, p)) if v.size >= 5 else np.nan
+
     return dict(
-        n_in=int(ins.sum()), pts_m2=float(ins.sum() / max(inner03.area, 1.0)),
+        n_in=int(ins.sum()),
+        pts_m2=float(ins.sum() / max(inner03.area, 1.0)),
         bldg_share=float(ng.sum() / max(ins.sum(), 1)),
-        roof_p05=q(hz[ng], 5), roof_p50=q(hz[ng], 50), roof_p95=q(hz[ng], 95),
-        eave_p10=q(hz[edge], 10), eave_p50=q(hz[edge], 50), eave_main=main_eave(hz[edge]),
+        roof_p05=q(hz[ng], 5),
+        roof_p50=q(hz[ng], 50),
+        roof_p95=q(hz[ng], 95),
+        eave_p10=q(hz[edge], 10),
+        eave_p50=q(hz[edge], 50),
+        eave_main=main_eave(hz[edge]),
         ridge=q(hz[ng], 99),
         ground_in_share=float((core & (pc == 2)).sum() / max(core.sum(), 1)),
-        ring_low_share=float(low.sum() / max(ring.sum(), 1)), ring_low_p90=q(hz[low], 90))
+        ring_low_share=float(low.sum() / max(ring.sum(), 1)),
+        ring_low_p90=q(hz[low], 90),
+    )

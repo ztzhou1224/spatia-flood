@@ -11,6 +11,7 @@ The box holds no credentials: every R2 object it reads or writes is a presigned 
 A heartbeat uploads status.json every 60 s; the log is uploaded at each stage and at the end.
 Usage (on the box): python job.py /opt/flood/urls.json /mnt/work [--workers N]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -38,8 +39,8 @@ from rasterio.windows import from_bounds
 from scipy.spatial import cKDTree
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ept import node_box  # noqa: E402
-from features import DROP, LPC_COLS, MAX_AREA_M2, USFT, disc_radius, ground_stats, lpc_stats  # noqa: E402
+from ept import node_box
+from features import DROP, LPC_COLS, MAX_AREA_M2, USFT, disc_radius, ground_stats, lpc_stats
 
 METRIC_TWIN = {6443: 6442, 6438: 6437, 6441: 6440}  # NAD83(2011) Florida West / East / North: ftUS -> metres
 LOG = io.StringIO()
@@ -73,7 +74,7 @@ def put(url: str, data: bytes, ctype: str = "application/octet-stream") -> None:
             r.raise_for_status()
             return
         except requests.RequestException:
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
     raise RuntimeError("upload failed after 5 attempts")
 
 
@@ -82,7 +83,7 @@ def heartbeat(urls: dict, stop: threading.Event) -> None:
         try:
             STATUS["t"] = time.time()
             put(urls["status"], json.dumps(STATUS).encode(), "application/json")
-        except Exception:  # noqa: BLE001 - a missed heartbeat must not kill the job
+        except Exception:
             pass
 
 
@@ -119,11 +120,12 @@ def download(url: str, dest: Path) -> int:
                 return dest.stat().st_size
         except (requests.RequestException, OSError) as e:
             log.info("retry %s (%s)", dest.name, str(e)[:200])
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
     raise RuntimeError(f"download failed: {url}")
 
 
 # ---------------------------------------------------------------- ground (DEM)
+
 
 def _dem_worker(args):
     path, all_paths, items = args
@@ -140,7 +142,11 @@ def _dem_worker(args):
                 tile = Path(path).name
             else:  # straddles DEM tiles: mosaic of every tile touching the window
                 srcs = [rasterio.open(p) for p in all_paths]
-                hit = [s for s in srcs if s.bounds.left < x1 and x0 < s.bounds.right and s.bounds.bottom < y1 and y0 < s.bounds.top]
+                hit = [
+                    s
+                    for s in srcs
+                    if s.bounds.left < x1 and x0 < s.bounds.right and s.bounds.bottom < y1 and y0 < s.bounds.top
+                ]
                 tile = "+".join(sorted(Path(s.name).name for s in hit))
                 if hit:
                     a, t = merge(hit, bounds=(x0, y0, x1, y1), nodata=np.nan, dtype="float64")
@@ -168,8 +174,10 @@ def ground(fp_dem: list, dem_paths: list[Path], workers: int) -> pd.DataFrame:
     for k, b in enumerate(bounds):  # first tile holding the centroid
         m = (assign < 0) & (cx >= b.left) & (cx < b.right) & (cy >= b.bottom) & (cy < b.top)
         assign[m] = k
-    jobs = [(str(dem_paths[k]), [str(p) for p in dem_paths], [(i, fp_dem[i]) for i in np.where(assign == k)[0]])
-            for k in range(len(dem_paths))]
+    jobs = [
+        (str(dem_paths[k]), [str(p) for p in dem_paths], [(i, fp_dem[i]) for i in np.where(assign == k)[0]])
+        for k in range(len(dem_paths))
+    ]
     jobs = [j for j in jobs if j[2]]
     rows: dict = {}
     with Pool(workers) as pool:
@@ -184,6 +192,7 @@ def ground(fp_dem: list, dem_paths: list[Path], workers: int) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------- point cloud
+
 
 def load_points(src: tuple) -> tuple[np.ndarray, ...]:
     """x, y, z in metres (metric CRS) and class (+100 for single returns), classes in DROP removed.
@@ -214,7 +223,9 @@ def load_points(src: tuple) -> tuple[np.ndarray, ...]:
             xs.append(x[keep])
             ys.append(y[keep])
             zs.append(np.asarray(las.z)[keep])
-            cs.append(np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16))
+            cs.append(
+                np.where(np.asarray(las.number_of_returns)[keep] == 1, cls[keep] + 100, cls[keep]).astype(np.int16)
+            )
     if not xs:
         return tuple(np.empty(0) for _ in range(4))
     x, y = np.concatenate(xs), np.concatenate(ys)
@@ -232,7 +243,7 @@ def fetch_retry(url: str) -> bytes:
             r.raise_for_status()
             return r.content
         except requests.RequestException:
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
     raise RuntimeError(f"fetch failed: {url}")
 
 
@@ -240,7 +251,11 @@ def _lpc_worker(args):
     name, src, items = args  # items: (i, cx, cy, r, fp, lag_ft, complete_here)
     x, y, z, c = load_points(src)
     if not len(x):
-        return name, [(i, None) for i, *_, done in items if done], [(i, np.empty((0, 4))) for i, *_, done in items if not done]
+        return (
+            name,
+            [(i, None) for i, *_, done in items if done],
+            [(i, np.empty((0, 4))) for i, *_, done in items if not done],
+        )
     # coarse 4 m grid of cells touched by any search disc: points elsewhere are never read
     gx0, gy0, cell = x.min(), y.min(), 4.0
     nx, ny = int((x.max() - gx0) // cell) + 2, int((y.max() - gy0) // cell) + 2
@@ -249,7 +264,7 @@ def _lpc_worker(args):
         i0, i1 = int(max((cx - r - gx0) // cell, 0)), int(min((cx + r - gx0) // cell + 1, nx - 1))
         j0, j1 = int(max((cy - r - gy0) // cell, 0)), int(min((cy + r - gy0) // cell + 1, ny - 1))
         if i1 >= i0 and j1 >= j0:
-            need[i0:i1 + 1, j0:j1 + 1] = True
+            need[i0 : i1 + 1, j0 : j1 + 1] = True
     k = need[((x - gx0) // cell).astype(int), ((y - gy0) // cell).astype(int)]
     pts = np.c_[x[k], y[k], z[k], c[k]]
     del x, y, z, c, k
@@ -288,14 +303,18 @@ def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[str, tuple, tuple]], w
     need = np.zeros(n, int)
     for i in todo:
         r = rad[i]
-        hit = np.where((tb[:, 0] < cx[i] + r) & (cx[i] - r < tb[:, 2]) & (tb[:, 1] < cy[i] + r) & (cy[i] - r < tb[:, 3]))[0]
+        hit = np.where(
+            (tb[:, 0] < cx[i] + r) & (cx[i] - r < tb[:, 2]) & (tb[:, 1] < cy[i] + r) & (cy[i] - r < tb[:, 3])
+        )[0]
         need[i] = len(hit)
         for k in hit:
             per_tile[k].append(i)
     status[(status == "ok") & (need == 0)] = "no_coverage"
-    jobs = [(tiles[k][0], tiles[k][2],
-             [(i, cx[i], cy[i], rad[i], fp_m[i], lag_ft[i], need[i] == 1) for i in per_tile[k]])
-            for k in sorted(per_tile, key=lambda k: (tb[k, 1], tb[k, 0])) if per_tile[k]]
+    jobs = [
+        (tiles[k][0], tiles[k][2], [(i, cx[i], cy[i], rad[i], fp_m[i], lag_ft[i], need[i] == 1) for i in per_tile[k]])
+        for k in sorted(per_tile, key=lambda k: (tb[k, 1], tb[k, 0]))
+        if per_tile[k]
+    ]
     rows: dict = {}
     parts: dict[int, list] = {}
     got = np.zeros(n, int)
@@ -311,8 +330,14 @@ def lpc(fp_m: list, lag_ft: np.ndarray, tiles: list[tuple[str, tuple, tuple]], w
                     rows[i] = lpc_stats(fp_m[i], a, lag_ft[i]) if len(a) else None
             STATUS["lpc_done"] = m
             STATUS["lpc_pending_buildings"] = len(parts)
-            log.info("lpc tile %d of %d (%s): %d finished, %d buildings waiting on neighbours",
-                     m, len(jobs), name, len(done), len(parts))
+            log.info(
+                "lpc tile %d of %d (%s): %d finished, %d buildings waiting on neighbours",
+                m,
+                len(jobs),
+                name,
+                len(done),
+                len(parts),
+            )
     out = pd.DataFrame.from_dict({i: r for i, r in rows.items() if r}, orient="index").reindex(range(n))
     out = out[LPC_COLS]
     status[(status == "ok") & out["n_in"].isna().values] = "no_points"
@@ -346,6 +371,7 @@ def ept_chunks(e: dict, metric: str) -> list[tuple[str, tuple, tuple]]:
 
 # ---------------------------------------------------------------- main
 
+
 def run(urls: dict, work: Path, workers: int) -> None:
     work.mkdir(parents=True, exist_ok=True)
     stage("inputs", urls)
@@ -357,8 +383,9 @@ def run(urls: dict, work: Path, workers: int) -> None:
     (work / "lpc").mkdir(exist_ok=True)
     (work / "dem").mkdir(exist_ok=True)
     lpc_list = [] if "ept" in tl else tl["lpc"]  # an EPT source is streamed chunk by chunk, never stored
-    jobs = [(t["url"], work / "lpc" / t["url"].rsplit("/", 1)[1]) for t in lpc_list] + \
-           [(t["url"], work / "dem" / t["url"].rsplit("/", 1)[1]) for t in tl["dem"]]
+    jobs = [(t["url"], work / "lpc" / t["url"].rsplit("/", 1)[1]) for t in lpc_list] + [
+        (t["url"], work / "dem" / t["url"].rsplit("/", 1)[1]) for t in tl["dem"]
+    ]
     total = 0
     with ThreadPoolExecutor(16) as ex:
         for k, size in enumerate(ex.map(lambda a: download(*a), jobs), 1):
@@ -423,18 +450,35 @@ def run(urls: dict, work: Path, workers: int) -> None:
     log.info("lpc: %s", f.lpc_status.value_counts().to_dict())
 
     stage("upload", urls)
-    out = pd.concat([b[["building_id"]].reset_index(drop=True),
-                     pd.Series(shapely.area(np.array(fp_m, dtype=object)), name="fp_area_m2"),
-                     g.add_prefix("g_").rename(columns={"g_ground_status": "ground_status", "g_dem_tiles": "dem_tiles"}),
-                     f], axis=1)
+    out = pd.concat(
+        [
+            b[["building_id"]].reset_index(drop=True),
+            pd.Series(shapely.area(np.array(fp_m, dtype=object)), name="fp_area_m2"),
+            g.add_prefix("g_").rename(columns={"g_ground_status": "ground_status", "g_dem_tiles": "dem_tiles"}),
+            f,
+        ],
+        axis=1,
+    )
     buf = io.BytesIO()
     out.to_parquet(buf, index=False)
     put(urls["features"], buf.getvalue())
-    meta = {"rows": len(out), "metric_crs": metric, "fp_area_crs": metric, "dem_crs": dem,
-            "lpc_vertical_crs": sorted(vcrs_set), "units": "ft (US survey) NAVD88 for g_* and heights; m2 for area",
-            "lpc_tiles": len(tiles), "lpc_source": "ept" if "ept" in tl else "laz", "dem_tiles": len(dem_paths), "downloaded_gb": STATUS.get("downloaded_gb"),
-            "ground_status": g.ground_status.value_counts().to_dict(), "lpc_status": f.lpc_status.value_counts().to_dict(),
-            "workers": workers, "cpu_count": os.cpu_count(), "timings_s": STATUS["timings_s"]}
+    meta = {
+        "rows": len(out),
+        "metric_crs": metric,
+        "fp_area_crs": metric,
+        "dem_crs": dem,
+        "lpc_vertical_crs": sorted(vcrs_set),
+        "units": "ft (US survey) NAVD88 for g_* and heights; m2 for area",
+        "lpc_tiles": len(tiles),
+        "lpc_source": "ept" if "ept" in tl else "laz",
+        "dem_tiles": len(dem_paths),
+        "downloaded_gb": STATUS.get("downloaded_gb"),
+        "ground_status": g.ground_status.value_counts().to_dict(),
+        "lpc_status": f.lpc_status.value_counts().to_dict(),
+        "workers": workers,
+        "cpu_count": os.cpu_count(),
+        "timings_s": STATUS["timings_s"],
+    }
     put(urls["meta"], json.dumps(meta, indent=1, default=str).encode(), "application/json")
     stage("done", urls)
 
@@ -451,7 +495,7 @@ def main() -> None:
     threading.Thread(target=heartbeat, args=(urls, stop), daemon=True).start()
     try:
         run(urls, Path(a.work), a.workers)
-    except Exception:  # noqa: BLE001 - report the failure through R2, then exit non-zero
+    except Exception:
         log.error(traceback.format_exc())
         STATUS.update(stage="failed", error=traceback.format_exc()[-2000:], t=time.time())
         put(urls["status"], json.dumps(STATUS).encode(), "application/json")

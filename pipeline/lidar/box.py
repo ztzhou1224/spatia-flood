@@ -11,6 +11,7 @@ firewall with no inbound rules; the box holds only presigned R2 URLs (prepare.py
     python pipeline/lidar/box.py list                # every server in the project: catch a leftover box
 Credentials from the environment, never printed: HETZNER_DEFAULT_PROJECT_API_TOKEN, CLOUDFLARE_R2_*.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -21,7 +22,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,9 +32,15 @@ LABELS = {"managed-by": "spatia-flood", "purpose": "lidar"}
 
 
 def hz(method: str, path: str, body: dict | None = None) -> dict:
-    req = urllib.request.Request(API + path, method=method, data=json.dumps(body).encode() if body else None,
-                                 headers={"Authorization": f"Bearer {os.environ['HETZNER_DEFAULT_PROJECT_API_TOKEN']}",
-                                          "Content-Type": "application/json"})
+    req = urllib.request.Request(
+        API + path,
+        method=method,
+        data=json.dumps(body).encode() if body else None,
+        headers={
+            "Authorization": f"Bearer {os.environ['HETZNER_DEFAULT_PROJECT_API_TOKEN']}",
+            "Content-Type": "application/json",
+        },
+    )
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             return json.loads(r.read() or b"{}")
@@ -53,21 +60,24 @@ def find_server(name: str) -> dict | None:
 def user_data(run: str) -> str:
     urls = (ROOT / "data" / "flood_v1" / "lidar" / run / "urls.json").read_bytes()
     runsh = (Path(__file__).parent / "run.sh").read_bytes()
-    return "\n".join([
-        "#cloud-config",
-        "write_files:",
-        "  - path: /opt/flood/urls.json",
-        "    permissions: '0600'",
-        "    encoding: b64",
-        f"    content: {base64.b64encode(urls).decode()}",
-        "  - path: /opt/flood/run.sh",
-        "    permissions: '0700'",
-        "    encoding: b64",
-        f"    content: {base64.b64encode(runsh).decode()}",
-        "runcmd:",
-        "  - [systemctl, disable, --now, ssh.socket, ssh.service]",
-        "  - [bash, /opt/flood/run.sh]",
-        ""])
+    return "\n".join(
+        [
+            "#cloud-config",
+            "write_files:",
+            "  - path: /opt/flood/urls.json",
+            "    permissions: '0600'",
+            "    encoding: b64",
+            f"    content: {base64.b64encode(urls).decode()}",
+            "  - path: /opt/flood/run.sh",
+            "    permissions: '0700'",
+            "    encoding: b64",
+            f"    content: {base64.b64encode(runsh).decode()}",
+            "runcmd:",
+            "  - [systemctl, disable, --now, ssh.socket, ssh.service]",
+            "  - [bash, /opt/flood/run.sh]",
+            "",
+        ]
+    )
 
 
 def sources_up(run: str) -> None:
@@ -100,19 +110,35 @@ def create(a) -> None:
     ud = user_data(a.run)
     if len(ud) > 32 * 1024:
         raise SystemExit(f"user_data {len(ud)} bytes exceeds Hetzner's 32 KiB")
-    r = hz("POST", "/servers", {"name": name, "server_type": a.type, "image": "ubuntu-24.04", "location": a.location,
-                                "user_data": ud, "labels": LABELS | {"run": a.run.replace("_", "-")},
-                                "firewalls": [{"firewall": fw_id}], "start_after_create": True,
-                                "public_net": {"enable_ipv4": True, "enable_ipv6": True}})
+    r = hz(
+        "POST",
+        "/servers",
+        {
+            "name": name,
+            "server_type": a.type,
+            "image": "ubuntu-24.04",
+            "location": a.location,
+            "user_data": ud,
+            "labels": LABELS | {"run": a.run.replace("_", "-")},
+            "firewalls": [{"firewall": fw_id}],
+            "start_after_create": True,
+            "public_net": {"enable_ipv4": True, "enable_ipv6": True},
+        },
+    )
     s = r["server"]  # r["root_password"] is never printed; sshd is disabled and inbound is closed anyway
     print(f"server {name}: created id={s['id']} {a.type} in {a.location} at {s['created']}")
 
 
 def r2_status(run: str) -> dict | None:
     import boto3
-    s3 = boto3.client("s3", endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"], region_name="auto",
-                      aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
-                      aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"])
+
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"],
+        region_name="auto",
+        aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"],
+    )
     try:
         o = s3.get_object(Bucket=os.environ["CLOUDFLARE_R2_BUCKET"], Key=f"_flood/lidar/{run}/out/status.json")
         return json.loads(o["Body"].read())
@@ -123,7 +149,7 @@ def r2_status(run: str) -> dict | None:
 def status(a) -> None:
     s = find_server(server_name(a.run))
     if s:
-        hours = (datetime.now(timezone.utc) - datetime.fromisoformat(s["created"])).total_seconds() / 3600
+        hours = (datetime.now(UTC) - datetime.fromisoformat(s["created"])).total_seconds() / 3600
         print(f"server {s['name']}: {s['status']} {s['server_type']['name']}, up {hours:.2f} h")
     else:
         print("server: none")

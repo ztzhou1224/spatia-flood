@@ -3,6 +3,7 @@ data/inbox/viewer_flags/<release>/ (gitignored: notes are reviewer text) and pri
 The Worker (viewer/src/worker.js, POST /flag) is the only writer; each object is one flag as JSON.
 Usage: python pipeline/viewer/pull_flags.py --release pinellas-r0
 """
+
 from __future__ import annotations
 
 import argparse
@@ -20,9 +21,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--release", required=True)
     a = ap.parse_args()
-    s3 = boto3.client("s3", endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"], region_name="auto",
-                      aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
-                      aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"])
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=os.environ["CLOUDFLARE_R2_ENDPOINT"],
+        region_name="auto",
+        aws_access_key_id=os.environ["CLOUDFLARE_R2_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["CLOUDFLARE_R2_SECRET_ACCESS_KEY"],
+    )
     bucket, prefix = os.environ["CLOUDFLARE_R2_BUCKET"], f"_flood/inbox/viewer_flags/{a.release}/"
     out = ROOT / "data" / "inbox" / "viewer_flags" / a.release
     out.mkdir(parents=True, exist_ok=True)

@@ -11,6 +11,7 @@ Outputs (r0's file layout): <out>/model_<FIPS>.txt, difficulty_<FIPS>.txt, bands
 (the report train.py writes to pipeline/train/out/), plus split_<FIPS>.parquet (building_id, part) for the r1b report.
 Usage: python pipeline/train/train_r1b.py 12103 pinellas_2018 --labels FILE --out DIR
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,7 +25,7 @@ import pandas as pd
 from sklearn.model_selection import GroupKFold
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from train import C, FEATS, P, abs_q, features, fit, score  # noqa: E402
+from train import FEATS, C, P, abs_q, features, fit, score
 
 
 def main(fips: str, run: str, labels: Path, outd: Path) -> None:
@@ -40,9 +41,13 @@ def main(fips: str, run: str, labels: Path, outd: Path) -> None:
     rng = np.random.default_rng(0)
     rng.shuffle(blocks)
     k = len(blocks)
-    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k): round(0.4 * k)])
+    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k) : round(0.4 * k)])
     part = np.where(d.block.isin(test_b), "test", np.where(d.block.isin(cal_b), "cal", "fit"))
-    fit_d, cal_d, test_d = d[part == "fit"].reset_index(drop=True), d[part == "cal"].reset_index(drop=True), d[part == "test"].reset_index(drop=True)
+    fit_d, cal_d, test_d = (
+        d[part == "fit"].reset_index(drop=True),
+        d[part == "cal"].reset_index(drop=True),
+        d[part == "test"].reset_index(drop=True),
+    )
 
     oof = np.full(len(fit_d), np.nan)
     for a, b in GroupKFold(5).split(fit_d, groups=fit_d.block):
@@ -52,6 +57,7 @@ def main(fips: str, run: str, labels: Path, outd: Path) -> None:
 
     def s_of(x, p):
         return np.maximum(diff.predict(x[FEATS].assign(p=p)), 0.05)
+
     m_fit = fit(fit_d[FEATS], fit_d.dh)
     pc = m_fit.predict(cal_d[FEATS])
     q = abs_q(np.abs(cal_d.dh.values - pc) / s_of(cal_d, pc), C)
@@ -61,26 +67,51 @@ def main(fips: str, run: str, labels: Path, outd: Path) -> None:
     lo, hi = pt - q * st, pt + q * st
     rows = {"all held-out (screened)": score(test_d, pt, lo, hi)}
     dg = test_d.diagram.astype(str)
-    for name, m in (("slab 1A/1B", dg.isin(["1A", "1B"]).values), ("elevated / enclosed 5-9", dg.str[0].isin(list("56789")).values)):
+    for name, m in (
+        ("slab 1A/1B", dg.isin(["1A", "1B"]).values),
+        ("elevated / enclosed 5-9", dg.str[0].isin(list("56789")).values),
+    ):
         rows[name] = score(test_d[m].reset_index(drop=True), pt[m], lo[m], hi[m])
     pf = m_fit.predict(test_d[FEATS])
     rows["FIT-only model (same test)"] = score(test_d, pf, pf - q * s_of(test_d, pf), pf + q * s_of(test_d, pf))
 
-    rep = [f"# {fips} ({run}): floor model, held-out 20% by 1 km block", "",
-           f"labels: {labels}",
-           f"labels joined to lidar features with ground and points: {n0}; after the label screen: {len(d)}; "
-           f"blocks {k}: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)} houses",
-           f"90% normalised conformal scale q = {q:.3f} (CAL, n = {len(cal_d)})", "",
-           pd.DataFrame(rows).T.round(3).to_markdown(), "",
-           "feature importance (gain, final model, top 12): " + ", ".join(
-               pd.Series(model.booster_.feature_importance("gain"), index=FEATS).sort_values(ascending=False).head(12).index)]
+    rep = [
+        f"# {fips} ({run}): floor model, held-out 20% by 1 km block",
+        "",
+        f"labels: {labels}",
+        f"labels joined to lidar features with ground and points: {n0}; after the label screen: {len(d)}; "
+        f"blocks {k}: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)} houses",
+        f"90% normalised conformal scale q = {q:.3f} (CAL, n = {len(cal_d)})",
+        "",
+        pd.DataFrame(rows).T.round(3).to_markdown(),
+        "",
+        "feature importance (gain, final model, top 12): "
+        + ", ".join(
+            pd.Series(model.booster_.feature_importance("gain"), index=FEATS)
+            .sort_values(ascending=False)
+            .head(12)
+            .index
+        ),
+    ]
     (outd / f"train_{fips}.txt").write_text("\n".join(rep) + "\n")
     print("\n".join(rep))
     model.booster_.save_model(str(outd / f"model_{fips}.txt"))
     diff.booster_.save_model(str(outd / f"difficulty_{fips}.txt"))
-    (outd / f"bands_{fips}.json").write_text(json.dumps(
-        {"q": q, "c": C, "features": FEATS, "n_fit": len(fit_d), "n_cal": len(cal_d), "n_test": len(test_d),
-         "test_blocks": sorted(test_b), "labels": str(labels)}, indent=1))
+    (outd / f"bands_{fips}.json").write_text(
+        json.dumps(
+            {
+                "q": q,
+                "c": C,
+                "features": FEATS,
+                "n_fit": len(fit_d),
+                "n_cal": len(cal_d),
+                "n_test": len(test_d),
+                "test_blocks": sorted(test_b),
+                "labels": str(labels),
+            },
+            indent=1,
+        )
+    )
     pd.DataFrame({"building_id": d.building_id, "part": part}).to_parquet(outd / f"split_{fips}.parquet", index=False)
 
 
