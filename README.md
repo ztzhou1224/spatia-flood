@@ -20,5 +20,8 @@ This repo starts with research and one pilot:
 - [`research/`](research/) — the scripts behind the Florida Elevation Certificate backtest and the
   public-source survey (reproducible; they download public data, no data is committed).
 
-Status: **planning** (pilot plan GIS-reviewed, approved with changes). Nothing is built yet; the pilot is implemented by a separate session from
-`docs/01-plan-harris-pilot.md`.
+Status: **first edition built** (2026-10-08). The flood layer v1 plan (`docs/04-plan-flood-layer-v1.md`) is in phase 1:
+Pinellas County `pinellas-r0` is assembled, gated and published as a spatia-data pilot layer, with an internal viewer
+(`docs/05-handoff-2026-10-07.md`). Its multi-angle review is `docs/07-review-pinellas-r0.md`; the outreach program is
+`docs/08-outreach-program.md` (facts in `docs/08a-outreach-facts-2026-10-08.md`). The Harris plan above is the research
+basis and the planned accuracy proof.

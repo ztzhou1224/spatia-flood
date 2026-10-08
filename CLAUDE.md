@@ -14,8 +14,12 @@ compared with the FEMA base flood elevation (BFE). It is a sibling of
 The product is B2B (data licence, API, flood portal over one per-building table):
 `docs/03-product-b2b.md`. Anything that will be sold must use licence-clean inputs (its §5).
 
-Current work: the Harris County pilot, `docs/01-plan-harris-pilot.md`. Implement it phase by phase;
-each phase has acceptance criteria. Do not widen scope beyond the plan without asking the owner.
+Current work: flood layer v1, `docs/04-plan-flood-layer-v1.md` (Florida statewide, Harris County as the accuracy
+proof; the earlier Harris plan `docs/01-plan-harris-pilot.md` is the research basis). The first edition, Pinellas
+`pinellas-r0`, is built and published as a spatia-data pilot layer (`docs/05-handoff-2026-10-07.md`); its review and
+the fixes required before the next release are in `docs/07-review-pinellas-r0.md`; the outreach program (public
+records in, floodplain managers' review of the map) is `docs/08-outreach-program.md`. Implement phase by phase; each
+phase has acceptance criteria. Do not widen scope beyond the plan without asking the owner.
 
 ## Rules that are not optional
 
