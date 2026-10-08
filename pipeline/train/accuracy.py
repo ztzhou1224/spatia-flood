@@ -17,7 +17,9 @@ review found under-covers: M2), coverage with a Wilson 95% interval. Plus, from 
 population, how many of its `above` / `below` calls a surveyed certificate contradicts (certificate floor vs the
 table's BFE).
 Output: pipeline/train/out/accuracy_<FIPS>_<release>.json and a markdown table on stdout.
-Usage: python pipeline/train/accuracy.py 12103 pinellas_2018 --model data/flood_v1/train_r0 --release pinellas-r0
+Usage: python pipeline/train/accuracy.py 12103 pinellas_2018 --model DIR --release NAME [--no-table] [--all-stages]
+       (the r0 card: --model data/flood_v1/train_r0 --release pinellas-r0
+        --county-labels data/flood_v1/labels_pinellas/r0/labels_pinellas_12103.parquet)
 """
 
 from __future__ import annotations
@@ -103,6 +105,11 @@ def main() -> None:
         action="store_true",
         help="skip the published-table check (run before assemble.py writes the release's table)",
     )
+    ap.add_argument(
+        "--all-stages",
+        action="store_true",
+        help="keep county certificates of every stage (the r0 card was scored before stages were read)",
+    )
     ap.add_argument("--county-labels", type=Path, default=DATA / "labels_pinellas" / "labels_pinellas_12103.parquet")
     a = ap.parse_args()
     model, diff, bands = load(a.model, a.fips)
@@ -111,6 +118,8 @@ def main() -> None:
     fd = pd.read_parquet(a.model / f"labels_{a.fips}.parquet")  # the labels this model was trained on
     co = pd.read_parquet(a.county_labels)
     co_native = co[co.vertical_datum_route == "navd88_native"]
+    if "record_stage" in co.columns and not a.all_stages:  # finished construction only (docs/09 B4)
+        co_native = co_native[co_native.record_stage == "finished_construction"]
     fdem_any = set(fd.building_id)
     cert = DATA / "train" / f"certificates_{a.fips}.parquet"  # any-stage FDEM certificates (labels.py, r1 on)
     if cert.exists():

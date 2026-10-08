@@ -21,13 +21,22 @@ were ever requested). Steps, each counted in pipeline/labels_pinellas/out/build_
    certificate's own LAG (C2f, same datum route) within [-2, 40] ft when the LAG is present (outside = keying /
    unit error). Issue date = D_DATE (section D signature date); dates after the fetch date or before 1970 are set to
    null (counted).
-5. One certificate per property (STR_PIN, latest D_DATE; undated never beats dated), bbox of the run's buildings,
-   matched as labels.py: point in footprint, else nearest footprint within 10 m, EPSG:6442; one per building (latest).
+5. One certificate per property (STR_PIN), bbox of the run's buildings, matched as labels.py: point in footprint,
+   else nearest footprint within 10 m, EPSG:6442; one per building. "Latest" = labels.py's rule (r1 plan docs/09
+   B1): ordered by (D_DATE, OBJECTID), undated first, stable sort, last kept.
+5b. Stage (docs/09 B2 / B4): `record_stage` from C1_BUILDING_ELEVATION_SOURCE (STAGES below; blank = not_stated).
+   labels_pinellas_<FIPS>.parquet keeps every stage; only FINISHED_STAGES enter the combined labels. The county's
+   "ACTUAL" value is mapped by measurement: build_<FIPS>.json `stage_vs_fdem_same_day` cross-tabulates it against
+   FDEM's stage on same-day certificates of the same building; it has none, so ACTUAL is excluded. The two sources
+   also disagree on the stage of the same certificate (same-day pairs: county DRAWING vs FDEM finished 50 of 66);
+   each source's own stage decides its own label, and on a tie FDEM's certificate is the one used.
 6. BFE (cert_bfe_ft): B9 when B11_ELEVATION_DATUM = NAVD1988; the county's BFE_CONVERTED_TO_NAVD88 when B11 is
    NGVD1929 and that field is numeric; else null. Kept within (0, 40] ft.
-7. Combine with data/flood_v1/train/labels_<FIPS>.parquet (read only): one label per building. Rule: the county
-   certificate replaces the FDEM one only when both issue dates are known and the county's is strictly later;
-   otherwise FDEM is kept (FDEM wins ties and missing dates).
+7. Combine with data/flood_v1/train/labels_<FIPS>.parquet (FDEM, finished construction only; read only): one label
+   per building. Rule: the county certificate replaces FDEM's only when both issue dates are known and the county's
+   is strictly later than FDEM's latest certificate of ANY stage (train/certificates_<FIPS>.parquet); otherwise
+   FDEM is kept (FDEM wins ties and missing dates). A building whose winning certificate is not a
+   finished-construction survey gets no label. County rows: native NAVD88 only.
 
 Outputs: data/flood_v1/labels_pinellas/labels_pinellas_<FIPS>.parquet (county labels, matched),
 labels_combined_<FIPS>.parquet (labels_<FIPS> columns + label_source, county_objectid, vertical_datum_route,
@@ -53,7 +62,17 @@ OUTD = DATA / "labels_pinellas"
 LIVING_BOTTOM = ("1A", "1B", "5")
 VALID = {"1A", "1B", "2", "2A", "2B", "2C", "2D", "3", "4", "5", "6", "7", "8", "9"}
 LIC_COUNTY = "pinellas_county_ec:terms_unread"
-LIC_FDEM = "fdem_certificates:terms_unread"  # the tag pipeline/assemble/assemble.py uses for FDEM certificates
+LIC_FDEM = "fdem_certificates:forerunner_internal_noncommercial"  # assemble.py's tag for FDEM certificates
+STAGES = {
+    "FINISHED": "finished_construction",
+    # "ACTUAL" is not a FEMA form option; 59 matched certificates, issued 2003-2017, none with a same-day FDEM
+    # certificate to compare (build_12103.json stage_vs_fdem_same_day, 2026-10-08): not shown to be finished, excluded
+    "ACTUAL": "actual_unverified",
+    "ACTUAL CONSTRUCTION": "actual_unverified",
+    "UNDERCONST": "building_under_construction",
+    "DRAWING": "construction_drawings",
+}
+FINISHED_STAGES = {"finished_construction"}
 
 
 def load(day: str) -> pd.DataFrame:
@@ -169,7 +188,11 @@ def main(fips: str, run: str, day: str) -> None:
     b = pd.read_parquet(DATA / "lidar" / run / "buildings.parquet")
     g = shapely.from_wkb(b.wkb.values)
     x0, y0, x1, y1 = shapely.total_bounds(g)
-    e = e.sort_values("issued_at", na_position="first")
+    c1 = e.C1_BUILDING_ELEVATION_SOURCE.fillna("").str.strip().str.upper()
+    e["record_stage"] = c1.map(STAGES).fillna("not_stated")
+    e["c1_raw"] = c1.replace("", "(blank)")
+    res["stage_raw"] = e.c1_raw.value_counts().to_dict()
+    e = e.sort_values(["issued_at", "OBJECTID"], na_position="first", kind="stable")
     pin = e.STR_PIN.fillna("").str.strip()
     dup = (pin != "") & pin.duplicated(keep="last")
     res["older_certificate_same_property_dropped"] = int(dup.sum())
@@ -197,7 +220,7 @@ def main(fips: str, run: str, day: str) -> None:
     res["matched_within"] = int((kind == "within").sum())
     res["matched_nearest_10m"] = int((kind == "nearest_10m").sum())
     res["unmatched"] = int((match < 0).sum())
-    mm = e[e.building_id.notna()].sort_values("issued_at", na_position="first")
+    mm = e[e.building_id.notna()].sort_values(["issued_at", "OBJECTID"], na_position="first", kind="stable")
     res["older_certificate_same_building_dropped"] = int(mm.building_id.duplicated(keep="last").sum())
     mm = mm.drop_duplicates("building_id", keep="last")
 
@@ -229,6 +252,11 @@ def main(fips: str, run: str, day: str) -> None:
     lab["vertical_datum_route"] = mm.route.values
     lab["ffe_field"] = mm.ffe_field.values
     lab["licence"] = LIC_COUNTY
+    lab["record_stage"] = mm.record_stage.values
+    lab["c1_raw"] = mm.c1_raw.values
+    lab["lowest_floor_ft"] = pd.to_numeric(pd.Series(mm.bottom.values), errors="coerce").values
+    lab["cert_lag_ft"] = pd.to_numeric(pd.Series(mm.lag.values), errors="coerce").values
+    res["county_labels_by_stage"] = lab.record_stage.value_counts().to_dict()
     res["county_labels_one_per_building"] = len(lab)
     res["county_labels_by_route"] = lab.vertical_datum_route.value_counts().to_dict()
     res["county_labels_diagrams"] = lab.diagram.value_counts().to_dict()
@@ -236,6 +264,16 @@ def main(fips: str, run: str, day: str) -> None:
 
     # 7. combine with FDEM
     fd = pd.read_parquet(DATA / "train" / f"labels_{fips}.parquet")
+    fc = pd.read_parquet(DATA / "train" / f"certificates_{fips}.parquet")  # FDEM latest per building, any stage
+    sd = fc[["building_id", "issued_at", "record_stage"]].merge(
+        lab[["building_id", "issued_at", "c1_raw"]], on="building_id", suffixes=("_f", "_c")
+    )
+    sd = sd[(sd.issued_at_c - sd.issued_at_f).abs() < 86400000 * 1.5]
+    res["stage_vs_fdem_same_day"] = {
+        "rule": "county C1 raw value (rows) vs FDEM buildingElevationSource (cols), same building, issue dates "
+        "within 1.5 d",
+        "table": pd.crosstab(sd.c1_raw, sd.record_stage.fillna("null")).to_dict(orient="index"),
+    }
     fd = fd.assign(
         cert_objectid=fd.cert_objectid.astype("Int64"),
         label_source="fdem",
@@ -280,29 +318,37 @@ def main(fips: str, run: str, day: str) -> None:
     }
     lab = lab[lab.vertical_datum_route == "navd88_native"].reset_index(drop=True)
     res["county_labels_used_navd88_native"] = len(lab)
-    both = both[both.vertical_datum_route_c == "navd88_native"]
+    # overlap against FDEM's latest certificate of ANY stage (a newer FDEM drawing still outranks an older county one)
+    ov = fc[["building_id", "issued_at"]].merge(
+        lab[["building_id", "issued_at"]], on="building_id", suffixes=("_f", "_c")
+    )
     county_wins = set(
-        both.building_id[both.issued_at_c.notna() & both.issued_at_f.notna() & (both.issued_at_c > both.issued_at_f)]
+        ov.building_id[ov.issued_at_c.notna() & ov.issued_at_f.notna() & (ov.issued_at_c > ov.issued_at_f)]
     )
-    res["overlap_rule"] = "county replaces FDEM only when both dates are known and the county's is strictly later"
+    fdem_has = set(fc.building_id)
+    res["overlap_rule"] = (
+        "county replaces FDEM only when both dates are known and the county's is strictly later than FDEM's latest "
+        "certificate of any stage; the winner must be finished construction to be a label"
+    )
+    res["overlap_buildings"] = len(ov)
     res["overlap_county_kept"] = len(county_wins)
-    res["overlap_fdem_kept"] = len(both) - len(county_wins)
-    comb = pd.concat(
-        [fd[~fd.building_id.isin(county_wins)], lab[~lab.building_id.isin(set(fd.building_id) - county_wins)]],
-        ignore_index=True,
-    )
+    res["overlap_fdem_kept"] = len(ov) - len(county_wins)
+    county_ok = lab.record_stage.isin(FINISHED_STAGES)
+    res["county_native_not_finished_dropped"] = int((~county_ok).sum())
+    use_c = lab[county_ok & (~lab.building_id.isin(fdem_has) | lab.building_id.isin(county_wins))]
+    comb = pd.concat([fd[~fd.building_id.isin(county_wins)], use_c], ignore_index=True)
     assert comb.building_id.is_unique
     res["combined"] = {
         "labels": len(comb),
         "by_source": comb.label_source.value_counts().to_dict(),
-        "new_buildings_from_county": int((~lab.building_id.isin(set(fd.building_id))).sum()),
+        "new_buildings_from_county": int((~use_c.building_id.isin(set(fd.building_id))).sum()),
     }
 
     # elevated + train.py screen on the new buildings (lidar g_lag; target only)
     f = pd.read_parquet(
         DATA / "lidar" / run / "features.parquet", columns=["building_id", "g_lag", "lpc_status", "roof_p95"]
     )
-    new = lab[~lab.building_id.isin(set(fd.building_id))].merge(f, on="building_id", how="left")
+    new = use_c[~use_c.building_id.isin(set(fd.building_id))].merge(f, on="building_id", how="left")
     new["dh"] = new.ffe_ft - new.g_lag
     lid = new.g_lag.notna() & (new.lpc_status == "ok")
     elev_dg = new.diagram.str[0].isin(list("56789"))

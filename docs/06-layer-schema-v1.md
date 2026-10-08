@@ -81,7 +81,7 @@ buildings from the building table, never by summing this one.
 ## Accuracy of modeled floors (two populations; review `docs/07` DA1)
 
 The floor model is scored on two populations, and neither number stands alone. Source:
-`python pipeline/train/accuracy.py 12103 pinellas_2018 --model data/flood_v1/train_r0 --release pinellas-r0`
+`python pipeline/train/accuracy.py 12103 pinellas_2018 --model data/flood_v1/train_r0 --release pinellas-r0 --county-labels data/flood_v1/labels_pinellas/r0/labels_pinellas_12103.parquet` (the county labels as r0 matched them, before B1 / B4)
 (`pipeline/train/out/accuracy_12103_pinellas-r0.json`). Target = certificate first living floor − lidar ground, the
 `train.py` screen applied; BFE side and decided calls are measured against the certificate's own zone and BFE.
 

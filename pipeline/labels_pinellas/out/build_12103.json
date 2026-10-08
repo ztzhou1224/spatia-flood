@@ -71,28 +71,42 @@
    "2020": 180
   }
  },
+ "stage_raw": {
+  "FINISHED": 5674,
+  "UNDERCONST": 330,
+  "DRAWING": 146,
+  "ACTUAL": 64,
+  "(blank)": 27
+ },
  "older_certificate_same_property_dropped": 617,
  "outside_run_bbox": 0,
  "to_match": 5624,
- "matched_within": 4759,
- "matched_nearest_10m": 724,
+ "matched_within": 4758,
+ "matched_nearest_10m": 725,
  "unmatched": 141,
  "older_certificate_same_building_dropped": 236,
  "bfe": {
-  "navd88_from_B9": 4903,
+  "navd88_from_B9": 4899,
   "navd88_from_county_conversion": 0,
-  "outside_0_40_set_null": 53
+  "outside_0_40_set_null": 52
+ },
+ "county_labels_by_stage": {
+  "finished_construction": 4905,
+  "building_under_construction": 159,
+  "construction_drawings": 102,
+  "actual_unverified": 59,
+  "not_stated": 22
  },
  "county_labels_one_per_building": 5247,
  "county_labels_by_route": {
-  "navd88_native": 5019,
-  "ngvd29_county_navd88": 228
+  "navd88_native": 5018,
+  "ngvd29_county_navd88": 229
  },
  "county_labels_diagrams": {
-  "1A": 2991,
-  "7": 738,
+  "1A": 2989,
+  "7": 739,
   "1B": 565,
-  "8": 386,
+  "8": 387,
   "6": 373,
   "5": 131,
   "3": 35,
@@ -102,45 +116,74 @@
   "2B": 2,
   "2A": 1
  },
+ "stage_vs_fdem_same_day": {
+  "rule": "county C1 raw value (rows) vs FDEM buildingElevationSource (cols), same building, issue dates within 1.5 d",
+  "table": {
+   "(blank)": {
+    "building_under_construction": 0,
+    "construction_drawings": 0,
+    "finished_construction": 4,
+    "null": 11
+   },
+   "DRAWING": {
+    "building_under_construction": 0,
+    "construction_drawings": 15,
+    "finished_construction": 50,
+    "null": 1
+   },
+   "FINISHED": {
+    "building_under_construction": 36,
+    "construction_drawings": 22,
+    "finished_construction": 3044,
+    "null": 4
+   },
+   "UNDERCONST": {
+    "building_under_construction": 50,
+    "construction_drawings": 0,
+    "finished_construction": 7,
+    "null": 0
+   }
+  }
+ },
  "fdem_agreement": {
-  "buildings_in_both": 3665,
+  "buildings_in_both": 3487,
   "all": {
-   "n": 3665,
+   "n": 3487,
    "median": 0.0,
-   "within_0.5ft": 0.944,
-   "within_1ft": 0.968
+   "within_0.5ft": 0.95,
+   "within_1ft": 0.973
   },
   "navd88_native": {
-   "n": 3603,
+   "n": 3425,
    "median": 0.0,
-   "within_0.5ft": 0.96,
-   "within_1ft": 0.969
+   "within_0.5ft": 0.966,
+   "within_1ft": 0.975
   },
   "ngvd29_county_navd88": {
    "n": 62,
    "median": -0.86,
-   "within_0.5ft": 0.016,
-   "within_1ft": 0.871
+   "within_0.5ft": 0.048,
+   "within_1ft": 0.903
   },
   "issue_dates_within_1_day": {
-   "n": 3222,
+   "n": 3105,
    "median": 0.0,
-   "within_0.5ft": 0.982,
+   "within_0.5ft": 0.981,
    "within_1ft": 0.998
   },
   "issue_dates_differ": {
-   "n": 318,
+   "n": 283,
    "median": 0.0,
-   "within_0.5ft": 0.566,
-   "within_1ft": 0.654
+   "within_0.5ft": 0.604,
+   "within_1ft": 0.696
   },
-  "same_diagram_share": 0.966,
+  "same_diagram_share": 0.973,
   "median_abs_diff": 0.0,
-  "share_abs_diff_le_0.5": 0.944,
-  "share_abs_diff_le_1": 0.968,
-  "share_abs_diff_gt_3": 0.022,
+  "share_abs_diff_le_0.5": 0.95,
+  "share_abs_diff_le_1": 0.973,
+  "share_abs_diff_gt_3": 0.017,
   "ngvd29_route_bottom_floor_fdem_equals_C2a_29": 38,
-  "ngvd29_route_bottom_floor_n": 40
+  "ngvd29_route_bottom_floor_n": 41
  },
  "datum_route_lidar_check": {
   "<=2004 navd88_native": {
@@ -161,53 +204,55 @@
   },
   "2010-14 navd88_native": {
    "n": 517,
-   "median_cert_lag_minus_lidar_lag_ft": 0.576
+   "median_cert_lag_minus_lidar_lag_ft": 0.57
   },
   "2010-14 ngvd29_county_navd88": {
    "n": 8,
    "median_cert_lag_minus_lidar_lag_ft": -0.03
   },
   ">=2015 navd88_native": {
-   "n": 3963,
-   "median_cert_lag_minus_lidar_lag_ft": 0.482
+   "n": 3962,
+   "median_cert_lag_minus_lidar_lag_ft": 0.481
   },
   ">=2015 ngvd29_county_navd88": {
-   "n": 59,
-   "median_cert_lag_minus_lidar_lag_ft": -0.334
+   "n": 60,
+   "median_cert_lag_minus_lidar_lag_ft": -0.3
   }
  },
- "county_labels_used_navd88_native": 5019,
- "overlap_rule": "county replaces FDEM only when both dates are known and the county's is strictly later",
+ "county_labels_used_navd88_native": 5018,
+ "overlap_rule": "county replaces FDEM only when both dates are known and the county's is strictly later than FDEM's latest certificate of any stage; the winner must be finished construction to be a label",
+ "overlap_buildings": 3602,
  "overlap_county_kept": 15,
- "overlap_fdem_kept": 3588,
+ "overlap_fdem_kept": 3587,
+ "county_native_not_finished_dropped": 266,
  "combined": {
-  "labels": 8931,
+  "labels": 8231,
   "by_source": {
-   "fdem": 7500,
-   "pinellas_county": 1431
+   "fdem": 6932,
+   "pinellas_county": 1299
   },
-  "new_buildings_from_county": 1416
+  "new_buildings_from_county": 1287
  },
  "new_county_buildings": {
-  "n": 1416,
-  "elevated_diagram_5_9": 763,
-  "elevated_dh_gt_3": 870,
-  "elevated_either": 924,
-  "no_lidar_ground_or_points": 29,
-  "fail_train_screen": 37,
-  "fail_screen_dh_lt_-1": 14,
-  "fail_screen_roof_p95_minus_dh_lt_6": 23,
-  "usable_after_screen": 1350,
-  "usable_elevated_either": 877,
-  "usable_elevated_diagram_5_9": 727,
+  "n": 1287,
+  "elevated_diagram_5_9": 666,
+  "elevated_dh_gt_3": 770,
+  "elevated_either": 818,
+  "no_lidar_ground_or_points": 25,
+  "fail_train_screen": 33,
+  "fail_screen_dh_lt_-1": 13,
+  "fail_screen_roof_p95_minus_dh_lt_6": 20,
+  "usable_after_screen": 1229,
+  "usable_elevated_either": 778,
+  "usable_elevated_diagram_5_9": 637,
   "by_route_usable": {
-   "navd88_native": 1350
+   "navd88_native": 1229
   }
  },
  "fdem_reference": {
-  "n": 7515,
-  "usable_after_screen": 7187,
-  "usable_elevated_diagram_5_9": 1396,
-  "usable_elevated_either": 2283
+  "n": 6944,
+  "usable_after_screen": 6754,
+  "usable_elevated_diagram_5_9": 1288,
+  "usable_elevated_either": 2082
  }
 }
