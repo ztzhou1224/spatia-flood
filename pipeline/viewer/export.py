@@ -5,6 +5,9 @@ From data/flood_v1/assemble/: buildings_<FIPS>.parquet, coverage_<FIPS>_r8.parqu
 centroid into two files per cell: geo/<cell>.json (GeoJSON footprints with the few fields the map styles on) and
 rec/<cell>.json (every column of every building, keyed by building_id, for the click-through record). Plus
 index.json (cells with their bounding boxes and counts), coverage.json (coverage cells, GeoJSON), county.json.
+The browser record leaves out what resolves to a person (review docs/07 I6, r1 plan docs/09 A3 / Q10): FDEM
+certificate OBJECTIDs (the public FDEM layer carries owner names) are cut out of every string, and the parcel ids
+(`parcel_id_native`, `parcel_key`) are dropped. The table itself keeps them; the export fails if an OBJECTID survives.
 Written to data/flood_v1/viewer/<FIPS>/<release>/ and uploaded to R2 _flood/viewer/<FIPS>/<release>/ (private
 bucket; the viewer Worker reads it server-side). Nothing here is public.
 Usage: python pipeline/viewer/export.py 12103 --release pinellas-r0 [--no-upload]
@@ -16,6 +19,7 @@ import gzip
 import json
 import math
 import os
+import re
 from pathlib import Path
 
 import boto3
@@ -28,6 +32,8 @@ import shapely
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "data" / "flood_v1" / "assemble"
 CHUNK_RES = 7
+BROWSER_DROP = ("geometry", "chunk", "parcel_id_native", "parcel_key")
+OBJECTID = re.compile(r"\s*OBJECTID\s*\d+,?", re.IGNORECASE)
 MAP_FIELDS = ["building_id", "bfe_call", "ffh_class", "ffh_ft", "floor_minus_bfe_ft", "touches_sfha", "in_risk_area",
               "zone_main"]
 
@@ -52,6 +58,8 @@ def clean(v, nd: int = 3):
         return {k: clean(x) for k, x in v.items()}
     if v is pd.NA or v is pd.NaT:
         return None
+    if isinstance(v, str):
+        return OBJECTID.sub("", v)
     return v
 
 
@@ -73,7 +81,7 @@ def main() -> None:
     out = ROOT / "data" / "flood_v1" / "viewer" / a.fips / a.release
     b = gpd.read_parquet(SRC / f"buildings_{a.fips}.parquet")
     b["chunk"] = [h3.latlng_to_cell(la, lo, CHUNK_RES) for la, lo in zip(b.lat, b.lon, strict=True)]
-    cols = [c for c in b.columns if c not in ("geometry", "chunk")]
+    cols = [c for c in b.columns if c not in BROWSER_DROP and "objectid" not in c.lower()]
     index = []
     for cell, g in b.groupby("chunk"):
         feats = [{"type": "Feature", "id": i, "geometry": coords(geom),
@@ -95,6 +103,9 @@ def main() -> None:
     write(out / "county.json", county | {"bbox": [x0, y0, x1, y1], "chunk_res": CHUNK_RES})
     write(out / "index.json", index)
     files = sorted(p for p in out.rglob("*.json"))
+    leaks = [p.name for p in files if re.search(rb"objectid|parcel_id_native|parcel_key", gzip.decompress(p.read_bytes()),
+                                                re.IGNORECASE)]
+    assert not leaks, f"OBJECTID / parcel id left in the browser JSON: {leaks[:5]}"
     size = sum(p.stat().st_size for p in files)
     print(f"{len(index)} chunks, {len(files)} files, {size / 1e6:.1f} MB gzip -> {out}")
     if a.no_upload:

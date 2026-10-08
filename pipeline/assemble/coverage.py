@@ -2,7 +2,9 @@
 owner can see where to request data next.
 
 Input: data/flood_v1/assemble/buildings_<FIPS>.parquet (assemble.py) and the release gate report
-(pipeline/train/out/gate_<FIPS>_<release>.json) for the county's held-out accuracy. Cell = H3 cell of the building
+(pipeline/train/out/gate_<FIPS>_<release>.json) and the accuracy card (pipeline/train/accuracy.py ->
+pipeline/train/out/accuracy_<FIPS>_<release>.json: the model scored on FDEM held-out AND on the independent county
+certificates, each with its population; review docs/07 DA1). Cell = H3 cell of the building
 centroid (lat, lon order for h3), resolution --res (default 8, ~0.74 km2: coarse enough to hold labels, fine enough
 to show gaps; the owner left the choice to the viewer step).
 Per cell / county: buildings, in the risk area, touching the SFHA; record floors (labels held) and record floors on
@@ -49,6 +51,19 @@ def summarise(g: pd.DataFrame) -> pd.Series:
     })
 
 
+def accuracy_card(fips: str, release: str) -> dict:
+    """Both populations' scores for the county card (docs/09 A1); fails if accuracy.py has not been run."""
+    acc = json.loads((ROOT / "pipeline" / "train" / "out" / f"accuracy_{fips}_{release}.json").read_text())
+    keep = ("n", "MAE", "median error", "within 1 ft", "BFE side", "coverage", "coverage CI95", "decided correct")
+    pops = {pop: {g: {k: v[k] for k in keep} for g, v in acc[pop].items()}
+            for pop in ("fdem_held_out", "county_independent")}
+    eu = acc["county_independent"].get("elevated 5-9 not flagged", {})
+    return {"populations": acc["populations"], **pops,
+            "table_calls_vs_county_certificate": acc.get("table_calls_vs_county_certificate"),
+            "warning": ("90% band not guaranteed for elevated houses the model does not flag as raised: on county "
+                        f"certificates its coverage is {eu.get('coverage')} (n {eu.get('n')})") if eu else None}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("fips")
@@ -75,6 +90,7 @@ def main() -> None:
     county |= {"fips": a.fips, "release": a.release, "h3_res": a.res, "cells": len(cells), "band_calibration": calib,
                "held_out_accuracy": {k: round(cand[k], 3) for k in ("n", "MAE", "BFE side", "coverage",
                                                                     "decided correct")},
+               "accuracy": accuracy_card(a.fips, a.release),
                "cells_with_sfha": int((cells.touches_sfha > 0).sum()),
                "cells_with_sfha_and_no_record_floor": int(((cells.touches_sfha > 0) & (cells.floor_record == 0)).sum()),
                "cells_sfha_decided_share_quartiles": cells.sfha_decided_share.quantile([.25, .5, .75]).round(3).tolist()}

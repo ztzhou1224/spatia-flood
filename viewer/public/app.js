@@ -22,11 +22,35 @@ async function getJSON(path) {
   return r.json();
 }
 
+const DATUM = "Elevations: feet NAVD88 (US survey feet); lidar geoid GEOID12B; certificates: geoid not stated.";
+
 const fmt = (v, d = 2) => (v === null || v === undefined ? "—" : typeof v === "number" ? (Number.isInteger(v) ? v.toLocaleString() : v.toFixed(d)) : String(v));
 const pct = (v) => (v === null || v === undefined ? "—" : `${(100 * v).toFixed(1)}%`);
 
 function stat(value, label) {
   return el("div", { class: "stat" }, el("b", {}, value), el("span", {}, label));
+}
+
+// Both scores side by side, each with its population (review DA1): FDEM held-out is the release gate's set; the
+// county certificates are the independent check. Falls back to the single gate score for an old county.json.
+function accuracyTable(acc, gate) {
+  if (!acc) {
+    return el("table", {}, ...[["houses scored (FDEM held-out)", fmt(gate.n)], ["MAE (ft)", fmt(gate.MAE, 3)],
+      ["90% band coverage", pct(gate.coverage)]].map(([k, v]) => el("tr", {}, el("td", {}, k), el("td", {}, v))));
+  }
+  const f = acc.fdem_held_out.all, k = acc.county_independent.all;
+  const fe = acc.fdem_held_out["elevated 5-9"] || {}, ke = acc.county_independent["elevated 5-9"] || {};
+  const row = (label, a, b) => el("tr", {}, el("td", {}, label), el("td", {}, a), el("td", {}, b));
+  return el("table", { class: "acc" },
+    el("tr", {}, el("th", {}, ""), el("th", { title: acc.populations.fdem_held_out }, "FDEM held-out"),
+      el("th", { title: acc.populations.county_independent }, "County certificates")),
+    row("houses scored", fmt(f.n), fmt(k.n)),
+    row("MAE (ft)", fmt(f.MAE, 2), fmt(k.MAE, 2)),
+    row("within 1 ft", pct(f["within 1 ft"]), pct(k["within 1 ft"])),
+    row("BFE side correct", pct(f["BFE side"]), pct(k["BFE side"])),
+    row("90% band coverage", pct(f.coverage), pct(k.coverage)),
+    row("decided calls correct", pct(f["decided correct"]), pct(k["decided correct"])),
+    row("elevated houses (diagram 5-9): MAE ft (n)", `${fmt(fe.MAE, 2)} (${fmt(fe.n)})`, `${fmt(ke.MAE, 2)} (${fmt(ke.n)})`));
 }
 
 function renderCard(c) {
@@ -38,11 +62,12 @@ function renderCard(c) {
       stat(fmt(c.buildings), "buildings"), stat(fmt(c.in_risk_area), "in the risk area"),
       stat(fmt(c.touches_sfha), "touch the SFHA"), stat(pct(c.sfha_decided_share), "SFHA with a decided call"),
       stat(fmt(c.sfha_below), "SFHA below the BFE"), stat(fmt(c.floor_record), "certificate floors")),
-    el("h2", {}, "Held-out accuracy (floor model)"),
+    el("h2", {}, "Floor model accuracy (two populations)"),
+    accuracyTable(c.accuracy, a),
+    ...(c.accuracy && c.accuracy.warning ? [el("p", { class: "warn" }, c.accuracy.warning)] : []),
     el("table", {},
-      ...[["houses scored", fmt(a.n)], ["MAE (ft)", fmt(a.MAE, 3)], ["BFE side correct", pct(a["BFE side"])],
-        ["90% band coverage", pct(a.coverage)], ["decided calls correct", pct(a["decided correct"])],
-        ["band calibration", c.band_calibration], ["lidar", c.lidar]].map(([k, v]) => el("tr", {}, el("td", {}, k), el("td", {}, v)))),
+      ...[["band calibration", c.band_calibration], ["lidar", c.lidar]].map(([k, v]) => el("tr", {}, el("td", {}, k), el("td", {}, v)))),
+    el("p", { class: "datum" }, DATUM),
     el("p", { class: "hint" }, "Pilot data: modeled values carry 90% bands; not for decisions without the record."),
   );
 }
@@ -78,7 +103,8 @@ function renderRecord(r) {
     el("table", {},
       plainRow("address", r.address ? `${r.address}` : `null: ${r.address_null}`),
       plainRow("address source", r.address_source),
-      plainRow("building id", r.building_id), plainRow("parcel", r.parcel_key),
+      plainRow("building id", r.building_id),
+      plainRow("parcels at the centroid", r.parcels_at_centroid > 1 ? `${r.parcels_at_centroid}: condo / stacked parcel (floor model is for single buildings)` : r.parcels_at_centroid),
       plainRow("footprint", `${fmt(r.footprint_area_m2, 0)} m²`), plainRow("in the risk area", r.in_risk_area)),
     el("h2", {}, "Verdict"),
     el("table", {},
@@ -102,9 +128,39 @@ function renderRecord(r) {
       valueRow(r, "living area", "living_area_sqft", "living_area_sqft", "sq ft")),
     el("h2", {}, "Provenance"),
     el("table", {}, plainRow("release", r.release), plainRow("model", r.model_version), plainRow("inputs", (r.input_licences || []).join(", "))),
+    el("p", { class: "datum" }, DATUM),
+    flagBox(r),
     el("details", {}, el("summary", {}, "all columns"), el("pre", {}, JSON.stringify(r, null, 1))),
   );
   box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// "Flag this building" (r1 plan docs/09 A4): the note goes to the Worker, which files it under the data team's inbox in
+// the private bucket. Nothing on the map changes.
+const FLAG_REASONS = [["floor", "floor height / elevation looks wrong"], ["ground", "ground looks wrong (water, seawall, slope)"],
+  ["call", "above / below call looks wrong"], ["zone", "flood zone or BFE looks wrong"], ["building", "wrong building / address / condo"], ["other", "other"]];
+
+function flagBox(r) {
+  const reason = el("select", {}, ...FLAG_REASONS.map(([v, t]) => el("option", { value: v }, t)));
+  const note = el("textarea", { maxlength: "2000", placeholder: "What looks wrong, and how do you know? (no personal data)" });
+  const status = el("span", { class: "src" }, "");
+  const btn = el("button", { type: "button" }, "Send flag");
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    status.textContent = "sending…";
+    try {
+      const res = await fetch("/flag", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ building_id: r.building_id, release: r.release, reason: reason.value, note: note.value }) });
+      if (!res.ok) throw new Error(`${res.status}`);
+      status.textContent = `sent (${(await res.json()).id})`;
+      note.value = "";
+    } catch (err) {
+      status.textContent = `not sent: ${err.message}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  return el("div", { class: "flag" }, el("b", {}, "Flag this building"), el("label", {}, "reason", reason), note, btn, status);
 }
 
 function legend(metric) {

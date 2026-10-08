@@ -40,3 +40,18 @@ npx wrangler@4.140.0 secret put VIEWER_PASSWORD           # first deploy, or to 
 
 Serve `public/` plus `/config.json` and `/data/...` from `data/flood_v1/viewer/` with any static server that sends
 the files with `Content-Encoding: gzip` (they are stored gzipped), then open `http://127.0.0.1:8787/`.
+
+## Live test (after every deploy)
+
+```bash
+node viewer/tests/live.mjs "$VIEWER_PASSWORD"   # 15 checks: login, limitations page, card, record, flag round trip
+python pipeline/viewer/pull_flags.py --release pinellas-r0   # confirm the test flag landed
+```
+
+## Flags
+
+"Flag this building" posts to `/flag`; the Worker validates it (building id format, the deployed release, a reason
+from a fixed list, note ≤ 2,000 characters, same origin) and writes one JSON object to
+`_flood/inbox/viewer_flags/<release>/` in the private bucket, with the login name. Nothing else is writable.
+`pipeline/viewer/pull_flags.py` copies them to `data/inbox/viewer_flags/` (gitignored). The live test files one flag
+with the note "automated live test"; ignore those.

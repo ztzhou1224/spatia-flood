@@ -66,9 +66,11 @@ LINES_EDITION = BFE_LINES.split("@")[1].split("/")[0]
 BFE_ROUND_FT = 0.5  # FIRM BFEs are whole feet: an interpolated BFE carries +-0.5 ft beyond its two lines
 Z90 = 1.645
 RAISED_FT = 3.0  # train.py raised flag
+FINISHED = "finished_construction"  # the only certificate stage used as a record (docs/09 Q5 / E7)
+CONFLICT_LAG_FT = 3.0  # certificate LAG this far from ground_ft: the certificate conflicts with the lidar (docs/09 E2)
 QL_RMSEZ_FT = {"QL 0": 5 / 30.48006, "QL 1": 10 / 30.48006, "QL 2": 10 / 30.48006, "QL 3": 20 / 30.48006}  # 3DEP LBS
 LIC = {"bldg": "overture_buildings:ODbL-1.0", "nfhl": "fema_nfhl:public", "3dep": "usgs_3dep:public_domain",
-       "dor": "fl_dor_nal:public_record", "fdem": "fdem_certificates:terms_unread",
+       "dor": "fl_dor_nal:public_record", "fdem": "fdem_certificates:forerunner_internal_noncommercial",
        "oaddr": "overture_addresses:FL_public_domain", "geocodio": "geocodio:stored_per_terms",
        "osm": "openstreetmap:ODbL-1.0"}
 
@@ -221,6 +223,9 @@ def main() -> None:
     ap.add_argument("fips")
     ap.add_argument("run")
     ap.add_argument("--release", required=True)
+    ap.add_argument("--model-dir", type=Path, default=DATA / "train",
+                    help="train.py artefacts + the labels they were trained on (default data/flood_v1/train)")
+    ap.add_argument("--out", type=Path, default=OUT, help="where the building / parcel tables go (caches stay in OUT)")
     a = ap.parse_args()
     fips, run = a.fips, a.run
     OUT.mkdir(parents=True, exist_ok=True)
@@ -415,14 +420,15 @@ def main() -> None:
 
     # ---------------------------------------------------------------- floor: model (all eligible) and record
     m = features(fips, run)
-    model = lgb.Booster(model_file=str(DATA / "train" / f"model_{fips}.txt"))
-    diff = lgb.Booster(model_file=str(DATA / "train" / f"difficulty_{fips}.txt"))
-    bands = json.loads((DATA / "train" / f"bands_{fips}.json").read_text())
+    md = a.model_dir
+    model = lgb.Booster(model_file=str(md / f"model_{fips}.txt"))
+    diff = lgb.Booster(model_file=str(md / f"difficulty_{fips}.txt"))
+    bands = json.loads((md / f"bands_{fips}.json").read_text())
     assert bands["features"] == FEATS, "train.py features changed since the model was saved"
     q = bands["q"]
     h = hashlib.sha256()
     for fn in (f"model_{fips}.txt", f"difficulty_{fips}.txt", f"bands_{fips}.json"):
-        h.update((DATA / "train" / fn).read_bytes())
+        h.update((md / fn).read_bytes())
     version = f"E-lgbm-{fips}-{h.hexdigest()[:12]}"
 
     def predict(x: pd.DataFrame):
@@ -431,7 +437,7 @@ def main() -> None:
         return p, p - q * s, p + q * s
 
     # gate re-check: the saved artefacts must reproduce train.py's held-out score
-    lab = pd.read_parquet(DATA / "train" / f"labels_{fips}.parquet")
+    lab = pd.read_parquet(md / f"labels_{fips}.parquet")
     d = lab.merge(m, on="building_id")
     d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
     d["dh"] = d.ffe_ft - d.g_lag
@@ -442,19 +448,28 @@ def main() -> None:
                            "coverage": round(float(((t.dh >= lo) & (t.dh <= hi)).mean()), 3), "q": q}
     assert len(t) == bands["n_test"], f"held-out set changed: {len(t)} vs {bands['n_test']}"
     print(f"gate re-check from saved artefacts: {rep['gate_recheck']}", flush=True)
+    # the accuracy card (docs/09 A1): both populations, from pipeline/train/accuracy.py --no-table for this release
+    acc = json.loads((ROOT / "pipeline" / "train" / "out" / f"accuracy_{fips}_{a.release}.json").read_text())
+    assert acc["fdem_held_out"]["all"]["n"] == len(t), "accuracy card scored a different held-out set"
+    accuracy = {k: acc[k] for k in ("populations", "fdem_held_out", "county_independent")}
 
     mm = b[["building_id"]].merge(m, on="building_id", how="left")
     elig = risk & residential & (mm.lpc_status == "ok").values & mm.g_lag.notna().values
     p = np.full(len(b), np.nan)
     plo, phi = p.copy(), p.copy()
     p[elig], plo[elig], phi[elig] = predict(mm[elig])
-    b["raised_flag"] = pd.array(np.where(elig, p > RAISED_FT, pd.NA), dtype="boolean")
     why_not = np.where(~risk, "not_evaluated", np.where(~has_p, "no_coverage", np.where(~residential, "not_evaluated",
                        lpc_null.values)))
-    b["raised_flag_null"] = np.where(elig, None, why_not)
 
-    lab = lab.merge(cached(OUT / f"fdem_lag_{fips}.parquet", lambda: fdem_lag(sorted(lab.cert_objectid.astype(int)))),
-                    on="cert_objectid", how="left")
+    # records: the latest certificate per building whatever its stage (labels.py certificates_<FIPS>.parquet, which
+    # carries the certificate's own LAG and stage); r0 read the labels and fetched the LAG by OBJECTID
+    cpath_ = DATA / "train" / f"certificates_{fips}.parquet"
+    lab = pd.read_parquet(cpath_) if cpath_.exists() else lab
+    if "cert_lag_ft" not in lab.columns:
+        lab = lab.merge(cached(OUT / f"fdem_lag_{fips}.parquet", lambda: fdem_lag(sorted(lab.cert_objectid.astype(int)))),
+                        on="cert_objectid", how="left")
+    if "record_stage" not in lab.columns:
+        lab["record_stage"] = FINISHED
     lab["cert_lag_ft"] = pd.to_numeric(lab.cert_lag_ft, errors="coerce").where(lambda s: s.between(-20, 200))
     r = b[["building_id"]].merge(lab, on="building_id", how="left")
     rec = r.ffe_ft.notna().values
@@ -477,12 +492,18 @@ def main() -> None:
     # A certificate is used only if its floor is physically plausible against our independent lidar ground: certificate
     # FFE minus ground_ft within RECORD_FFH_FT (GIS review 2026-10-07: the impossible values are FFEs, not LAGs). A
     # rejected certificate falls back to the model where the building is model-eligible; record_note says why.
+    # A certificate that is not a finished-construction survey (drawings, under construction, stage missing) is a design,
+    # not a measurement: never a record; the row falls back to the model, record_note says why (docs/09 Q5 / E7).
     ground_v = b.ground_ft.values
     cert_ffe = r.ffe_ft.values
-    rec_raw = ~np.isnan(cert_ffe)
+    has_cert = ~np.isnan(cert_ffe)
+    stage = r.record_stage.where(pd.Series(has_cert, index=r.index)).values
+    staged = has_cert & (stage != FINISHED)
+    rec_raw = has_cert & ~staged
     d_ground = cert_ffe - ground_v
     rec = rec_raw & (np.isnan(ground_v) | ((d_ground >= RECORD_FFH_FT[0]) & (d_ground <= RECORD_FFH_FT[1])))
     rejected = rec_raw & ~rec
+    b["record_stage"] = np.where(has_cert, pd.Series(stage).fillna("not_stated").values, None)
     ffh_cert = (r.ffe_ft - r.cert_lag_ft).values
     ffh_ok = rec & ~np.isnan(ffh_cert) & (ffh_cert >= RECORD_FFH_FT[0]) & (ffh_cert <= RECORD_FFH_FT[1])
     model_floor = ~rec & elig
@@ -493,9 +514,12 @@ def main() -> None:
     b["ffh_vintage"] = np.where(ffh_ok, issued, np.where(model_floor, lidar_vint, None))
     b["ffh_band_lo"] = np.where(model_floor, plo, np.nan)
     b["ffh_band_hi"] = np.where(model_floor, phi, np.nan)
-    b["ffh_null"] = np.where(b.ffh_ft.notna(), None, np.where(rec, "not_determinable", why_not))
     oid_s = r.cert_objectid.astype("Int64").astype(str)
-    b["record_note"] = np.where(
+    staged_note = ("FDEM certificate OBJECTID " + oid_s + " not used as a record: its stage is "
+                   + pd.Series(stage).fillna("not stated").astype(str).str.replace("_", " ")
+                   + " (a design or a survey before completion, not the finished building); its floor "
+                   + pd.Series(cert_ffe).round(2).astype(str) + " ft NAVD88")
+    b["record_note"] = np.where(staged, staged_note, np.where(
         rejected, "FDEM certificate OBJECTID " + oid_s + " not used: its floor " + pd.Series(cert_ffe).round(2).astype(str)
         + " ft NAVD88 is " + pd.Series(d_ground).round(2).astype(str) + f" ft from the lidar ground (outside "
         f"{RECORD_FFH_FT[0]:g}..{RECORD_FFH_FT[1]:g} ft)",
@@ -503,7 +527,7 @@ def main() -> None:
                  "floor height (its floor elevation is used)",
                  np.where(rec & ~ffh_ok, "certificate floor minus its own lowest adjacent grade = "
                           + pd.Series(ffh_cert).round(2).astype(str) + f" ft, outside {RECORD_FFH_FT[0]:g}.."
-                          f"{RECORD_FFH_FT[1]:g} ft: no record floor height (its floor elevation is used)", None)))
+                          f"{RECORD_FFH_FT[1]:g} ft: no record floor height (its floor elevation is used)", None))))
     ffe = np.where(rec, cert_ffe, np.where(model_floor, ground_v + p, np.nan))
     b["ffe_ft"] = ffe
     b["ffe_class"] = np.where(rec, "record", np.where(model_floor, "modeled", None))
@@ -514,9 +538,19 @@ def main() -> None:
     b["record_vintage_note"] = np.where(rec, note, None)
     b["ffe_datum"] = np.where(rec, "NAVD88 ft (certificate, vertical datum filtered to NAVD 1988; geoid not stated)",
                               np.where(model_floor, "NAVD88 ft US survey, " + w.geoid.astype(str), None))
-    b["ffe_null"] = np.where(b.ffe_ft.notna(), None, np.where(rejected, "not_determinable", why_not))
-    screen = (mm.roof_p95.values - d_ground < 6) | (d_ground < -1)
-    b["ffe_record_lidar_conflict"] = pd.array(np.where(rejected, True, np.where(rec & ok, screen, pd.NA)), dtype="boolean")
+    b["ffe_null"] = np.where(b.ffe_ft.notna(), None, np.where(rejected | staged, "not_determinable", why_not))
+    b["ffh_null"] = np.where(b.ffh_ft.notna(), None, np.where(rec | rejected | staged, "not_determinable", why_not))
+    # conflict screen (train.py's label screen, plus the certificate's own LAG against our ground, review DA6): a
+    # conflicting certificate keeps its value but produces no above / below call (docs/09 Q2 / E2)
+    lag_off = np.abs(r.cert_lag_ft.values - ground_v)
+    screen = ((mm.roof_p95.values - d_ground < 6) | (d_ground < -1)) & ok
+    screen = screen | (~np.isnan(lag_off) & (lag_off > CONFLICT_LAG_FT))
+    b["ffe_record_lidar_conflict"] = pd.array(np.where(rejected, True, np.where(rec, screen, pd.NA)), dtype="boolean")
+    # raised flag: from the record floor height where there is one (docs/09 E3, review V1), else the model's
+    b["raised_flag"] = pd.array(np.where(ffh_ok, ffh_cert > RAISED_FT, np.where(elig, p > RAISED_FT, pd.NA)),
+                                dtype="boolean")
+    b["raised_flag_source"] = np.where(ffh_ok, "record ffh_ft > 3 ft", np.where(elig, "model point estimate > 3 ft", None))
+    b["raised_flag_null"] = np.where(b.raised_flag.notna(), None, why_not)
     b["lift_or_rebuild"] = pd.array([pd.NA] * len(b), dtype="boolean")
     b["lift_or_rebuild_null"] = "not_evaluated"  # one lidar flight (owner answer 3); so no record is marked stale
 
@@ -534,11 +568,14 @@ def main() -> None:
                         np.where(ffe >= bhi, "above", np.where(ffe < blo, "below", "too_close")))
     mod_call = np.where(flo >= bhi, "above", np.where(fhi < blo, "below", "too_close"))
     call = np.where(~b.touches_sfha.values, "not_applicable", np.where(have, np.where(rec, rec_call, mod_call), None))
+    conflict = b.ffe_record_lidar_conflict.fillna(False).values.astype(bool) & rec
+    rep["calls_nulled_for_conflict"] = {k: int(((call == k) & conflict).sum()) for k in ("above", "below", "too_close")}
+    call = np.where(conflict & have, None, call)
     b["bfe_call"] = call
-    conflict = b.ffe_record_lidar_conflict.fillna(False).values.astype(bool)
-    b["bfe_call_basis"] = np.where(have, np.where(rec, np.where(conflict, "record_lidar_conflict", "record"), "modeled_band")
+    b["bfe_call_basis"] = np.where(have & ~conflict, np.where(rec, "record", "modeled_band")
                                    + np.where(b.bfe_method.values == "interpolated", "+interpolated_bfe", ""), None)
-    b["bfe_call_null"] = np.where(pd.isna(call), np.where(np.isnan(bfe), b.bfe_null, b.ffe_null), None)
+    b["bfe_call_null"] = np.where(pd.isna(call), np.where(conflict & have, "not_determinable",
+                                                          np.where(np.isnan(bfe), b.bfe_null, b.ffe_null)), None)
 
     # ---------------------------------------------------------------- addresses
     def read_addr():
@@ -585,7 +622,7 @@ def main() -> None:
             s.append(LIC["3dep"])
         if has_p[i]:
             s.append(LIC["dor"])
-        if rec_raw[i]:
+        if has_cert[i]:
             s.append(LIC["fdem"])
         src = asrc.iat[i]
         if isinstance(src, str):
@@ -594,7 +631,11 @@ def main() -> None:
                 s.append(LIC["osm"])
         lic.append(sorted(set(s)))
     b["input_licences"] = lic
-    b["provider"] = "public"
+    # provider: "public" only when every input is open; else the restricted providers this row used (review S3):
+    # FDEM via Forerunner (internal, non-commercial terms) and Geocodio (paid, stored per its terms)
+    restricted = [("fdem_forerunner" if LIC["fdem"] in s else "") + ("+geocodio" if LIC["geocodio"] in s else "")
+                  for s in lic]
+    b["provider"] = [x.strip("+") or "public" for x in restricted]
     b["model_version"] = np.where(elig, version, None)
     b["release"] = a.release
 
@@ -604,7 +645,10 @@ def main() -> None:
     sf = b.touches_sfha & b.in_risk_area
     rep["floor"] = {"model_eligible": int(elig.sum()), "record": int(rec.sum()),
                     "record_without_cert_lag": int((rec & r.cert_lag_ft.isna().values).sum()),
-                    "certificates_matched": int(rec_raw.sum()), "certificates_rejected_vs_lidar": int(rejected.sum()),
+                    "certificates_matched": int(has_cert.sum()),
+                    "certificates_by_stage": pd.Series(stage[has_cert]).fillna("not_stated").value_counts().to_dict(),
+                    "certificates_not_finished_fallback": int(staged.sum()),
+                    "certificates_rejected_vs_lidar": int(rejected.sum()),
                     "record_ffh_not_usable": int((rec & ~ffh_ok).sum()),
                     "record_lidar_conflict": int(b.ffe_record_lidar_conflict.sum()),
                     "record_issue_date_unknown": int((rec & ~issued_ok.values).sum()),
@@ -648,23 +692,26 @@ def main() -> None:
     out_p["buildings"] = out_p.buildings.fillna(0).astype(int)
     out_p["any_building_below_bfe"] = out_p.below.fillna(0) > 0
     out_p["release"] = a.release
-    out_p.to_parquet(OUT / f"parcels_{fips}.parquet", index=False)
+    # one row per (parcel_key, geom_group): fl_parcels carries a few exact duplicate units (r0: 254 rows; docs/07 DA4)
+    out_p = out_p.drop_duplicates(["parcel_key", "geom_group"]).reset_index(drop=True)
+    a.out.mkdir(parents=True, exist_ok=True)
+    out_p.to_parquet(a.out / f"parcels_{fips}.parquet", index=False)
     rep["parcel_table"] = {"rows": len(out_p), "distinct_geometries": len(ug), "with_building": int((out_p.buildings > 0).sum()),
                            "any_building_below_bfe": int(out_p.any_building_below_bfe.sum()),
                            "buildings_spanning_parcels": int(b.spans_parcels.sum())}
 
     gdf = gpd.GeoDataFrame(b.drop(columns="wkb"), geometry=g, crs="OGC:CRS84")
-    path = OUT / f"buildings_{fips}.parquet"
+    path = a.out / f"buildings_{fips}.parquet"
     gdf.to_parquet(path, index=False)
     # provenance inside the file itself (so a consumer pinning the file's hash can prove every parent's edition)
     import pyarrow.parquet as pq
     t = pq.read_table(path)
     prov = {"producer": "spatia-flood pipeline/assemble/assemble.py", "fips": fips, "run": run, "release": a.release,
             "built": rep["built"], "model_version": version, "inputs": rep["inputs"],
-            "lidar_workunits": rep["lidar"]["workunits"], "gate": rep["gate_recheck"]}
+            "lidar_workunits": rep["lidar"]["workunits"], "gate": rep["gate_recheck"], "accuracy": accuracy}
     t = t.replace_schema_metadata({**(t.schema.metadata or {}), b"spatia_flood": json.dumps(prov, default=str).encode()})
     pq.write_table(t, path)
-    (REPORT / f"assemble_{fips}.json").write_text(json.dumps(rep, indent=1, default=str))
+    (REPORT / f"assemble_{fips}_{a.release}.json").write_text(json.dumps(rep, indent=1, default=str))
     print(json.dumps(rep, indent=1, default=str))
 
 

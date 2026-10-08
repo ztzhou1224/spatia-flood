@@ -25,6 +25,129 @@
   "coverage": 0.918,
   "decided correct": 0.983
  },
+ "accuracy": {
+  "populations": {
+   "fdem_held_out": "FDEM certificates (statewide EC layer via Forerunner) in the model's held-out 1 km test blocks (102 blocks); the release gate's set",
+   "county_independent": "Pinellas County certificate layer, native NAVD88, buildings with no FDEM label (never a training label), all blocks; certificate first living floor (C2a for 1A/1B/5, C2b otherwise)"
+  },
+  "fdem_held_out": {
+   "all": {
+    "n": 1315,
+    "MAE": 1.039,
+    "median error": 0.037,
+    "within 1 ft": 0.742,
+    "BFE side": 0.897,
+    "coverage": 0.918,
+    "coverage CI95": [
+     0.902,
+     0.932
+    ],
+    "decided correct": 0.983
+   },
+   "slab 1A/1B": {
+    "n": 1079,
+    "MAE": 0.803,
+    "median error": 0.096,
+    "within 1 ft": 0.8,
+    "BFE side": 0.91,
+    "coverage": 0.93,
+    "coverage CI95": [
+     0.914,
+     0.944
+    ],
+    "decided correct": 0.987
+   },
+   "elevated 5-9": {
+    "n": 226,
+    "MAE": 2.142,
+    "median error": -0.844,
+    "within 1 ft": 0.478,
+    "BFE side": 0.84,
+    "coverage": 0.854,
+    "coverage CI95": [
+     0.802,
+     0.894
+    ],
+    "decided correct": 0.946
+   },
+   "elevated 5-9 not flagged": {
+    "n": 119,
+    "MAE": 1.319,
+    "median error": -0.627,
+    "within 1 ft": 0.689,
+    "BFE side": 0.864,
+    "coverage": 0.79,
+    "coverage CI95": [
+     0.708,
+     0.853
+    ],
+    "decided correct": 0.966
+   }
+  },
+  "county_independent": {
+   "all": {
+    "n": 1348,
+    "MAE": 2.215,
+    "median error": -0.161,
+    "within 1 ft": 0.484,
+    "BFE side": 0.808,
+    "coverage": 0.88,
+    "coverage CI95": [
+     0.861,
+     0.896
+    ],
+    "decided correct": 0.933
+   },
+   "slab 1A/1B": {
+    "n": 609,
+    "MAE": 1.119,
+    "median error": 0.203,
+    "within 1 ft": 0.704,
+    "BFE side": 0.884,
+    "coverage": 0.897,
+    "coverage CI95": [
+     0.87,
+     0.918
+    ],
+    "decided correct": 0.97
+   },
+   "elevated 5-9": {
+    "n": 726,
+    "MAE": 3.121,
+    "median error": -1.364,
+    "within 1 ft": 0.302,
+    "BFE side": 0.753,
+    "coverage": 0.872,
+    "coverage CI95": [
+     0.846,
+     0.894
+    ],
+    "decided correct": 0.851
+   },
+   "elevated 5-9 not flagged": {
+    "n": 100,
+    "MAE": 3.644,
+    "median error": -1.535,
+    "within 1 ft": 0.37,
+    "BFE side": 0.602,
+    "coverage": 0.56,
+    "coverage CI95": [
+     0.462,
+     0.653
+    ],
+    "decided correct": 0.729
+   }
+  },
+  "table_calls_vs_county_certificate": {
+   "table": "buildings_12103.parquet",
+   "decided calls on county-only modeled rows": 456,
+   "above": 222,
+   "above contradicted (certificate floor < table BFE)": 5,
+   "below": 234,
+   "below contradicted (certificate floor >= table BFE)": 28
+  },
+  "warning": "90% band not guaranteed for elevated houses the model does not flag as raised: on county certificates its coverage is 0.56 (n 100)"
+ },
  "cells_with_sfha": 866,
  "cells_with_sfha_and_no_record_floor": 253,
  "cells_sfha_decided_share_quartiles": [

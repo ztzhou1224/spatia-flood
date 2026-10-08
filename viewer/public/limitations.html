@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Known Limitations</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { display: block; overflow-y: auto; }
+  main.doc { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; font-size: 15px; line-height: 1.55; }
+  main.doc h1 { font-size: 22px; margin-bottom: 4px; }
+  main.doc h2 { font-size: 13px; margin-top: 28px; }
+  main.doc li { margin: 8px 0; }
+</style>
+</head>
+<body>
+<main class="doc">
+  <p class="banner">Screening, not a determination. Not for insurance rating, permitting or a purchase decision without
+    the building's Elevation Certificate.</p>
+  <h1>What this map can and cannot tell you</h1>
+  <p class="sub">Release pinellas-r0 (Pinellas County, FL). From the internal review of this release
+    (spatia-flood <code>docs/07</code>); each item is fixed in the next release (<code>docs/09</code>).</p>
+
+  <h2>1. Modeled floors are less accurate on elevated houses than the headline number</h2>
+  <p>Most buildings have no Elevation Certificate, so their floor is estimated from lidar. Scored against certificates
+    from the state (FDEM) the estimate is off by about 1 ft on average; scored against the county's own certificates,
+    which the model never saw and which are mostly newer, elevated houses, it is off by about 2.2 ft. For an elevated
+    house that the model does <b>not</b> mark as raised, the shown range contains the real floor only a bit more than
+    half the time, and the misses are mostly floors that are higher than shown. A "below the BFE" on such a house is
+    the call most likely to be wrong. Both scores are on the county card, each with the houses it was measured on.</p>
+
+  <h2>2. Some values are not what their label says</h2>
+  <ul>
+    <li><b>Ground.</b> "Ground" is the lowest lidar point in a narrow ring around the footprint. Next to a canal or a
+      seawall that is the water or the seawall base, not the yard; on sloped lots it is the low side. On those lots
+      the floor height above ground looks too high, and the building may be marked "raised" when it is not.</li>
+    <li><b>Certificates that are designs.</b> Some certificates were filed from construction drawings or during
+      construction. They are shown as records but describe a planned floor, not a measured one.</li>
+    <li><b>Buildings newer than the lidar.</b> The lidar was flown in winter 2018-19. A building built later is
+      estimated from the ground as it was before construction, even though its date says 2018-19.</li>
+  </ul>
+
+  <h2>3. "Above" or "below" compares the first living floor</h2>
+  <p>The call compares the first floor people live on with the BFE. For an elevated house with an enclosed area
+    underneath (garage, storage), the NFIP "lowest floor" is that enclosure, which is usually below the BFE even when
+    the living floor is above it. For AO zones (shallow flooding with a depth, not an elevation) the call uses a
+    neighbouring zone's BFE and should be ignored. Some "above" calls rest on certificates that disagree with the lidar
+    by many feet; those are marked on the building's record.</p>
+
+  <h2>4. What a local reviewer will check first is not in the map yet</h2>
+  <ul>
+    <li>FEMA issued a preliminary countywide FIRM for Pinellas on 2025-05-15; the map uses the effective FIRM.</li>
+    <li>Letters of Map Amendment (LOMAs) that take a building out of the floodplain are not applied.</li>
+    <li>The county has three FIRM effective dates; each building shows the date of the panel it sits on.</li>
+  </ul>
+
+  <h2>Units and datum</h2>
+  <p>Elevations are feet NAVD88 (US survey feet). Lidar values use the GEOID12B geoid; certificates do not state their
+    geoid. Heights (floor, roof, eave) are feet above the lidar ground described above.</p>
+
+  <h2>Something looks wrong?</h2>
+  <p>Open the building on the map and use <b>Flag this building</b>. Flags go to the data team with the release name
+    and your note; nothing on the map changes until a release fixes it.</p>
+  <p><a href="/">Back to the map</a></p>
+</main>
+</body>
+</html>

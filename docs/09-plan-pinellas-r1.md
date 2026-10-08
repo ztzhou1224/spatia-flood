@@ -37,6 +37,13 @@ published with tags, model and interpolation allowed, FEMA parents declared (wit
 
 ## 3. Work, in the review's order (`docs/07` §5)
 
+Progress (2026-10-08, first batch): A1-A5 shipped to the r0 viewer and docs (the spatia-data sidecar note of A1 is
+the one open piece); B1-B3 and B5's FDEM extract (`fetch_fdem.py`, on R2) are in `labels.py`; E2, E3, E7 and E10 are
+in `assemble.py`, checked on a dev build with the r0 model (`--model-dir data/flood_v1/train_r0 --out
+data/flood_v1/assemble_dev`): every `check.py` rule passes, 0 `record_lidar_conflict` calls (307 nulled), 0
+`raised_flag` contradictions on record rows, records only from finished-construction certificates (571 fall back).
+r0's training artefacts are frozen in `data/flood_v1/train_r0/` (the gate baseline and the benchmark's source).
+
 Each item names the finding, the files, and what "done" is. Acceptance numbers are measured by the named command, never
 copied from this doc.
 

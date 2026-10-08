@@ -2,9 +2,10 @@
 
 For every value column x that has x_null: exactly one of x and x_null is set; x_null is one of the six reasons;
 x_class is set exactly when x is; x_source and x_vintage are set whenever x is; modeled values carry a band that
-contains them. Also: bfe_call is never null without bfe_call_null; no owner / personal column is present.
+contains them. Also: bfe_call is never null without bfe_call_null; no owner / personal column is present; the parcel
+table has one row per (parcel_key, geom_group) (review docs/07 DA4 / I2).
 Prints one line per rule with the number of violating rows; exits 1 when any rule is violated.
-Usage: python pipeline/assemble/check.py 12103
+Usage: python pipeline/assemble/check.py 12103 [DIR]   (DIR defaults to data/flood_v1/assemble)
 """
 import sys
 from pathlib import Path
@@ -16,8 +17,8 @@ REASONS = {"not_applicable", "no_coverage", "not_determinable", "stale", "withhe
 FORBIDDEN = ("own", "owner", "taxpayer", "phone", "email")
 
 
-def main(fips: str) -> None:
-    b = pd.read_parquet(ROOT / "data" / "flood_v1" / "assemble" / f"buildings_{fips}.parquet")
+def main(fips: str, d: Path) -> None:
+    b = pd.read_parquet(d / f"buildings_{fips}.parquet")
     bad: dict[str, int] = {}
     stems = [c[:-5] for c in b.columns if c.endswith("_null")]
     values = [(s, s if s in b.columns else f"{s}_ft") for s in stems]
@@ -38,6 +39,10 @@ def main(fips: str) -> None:
             bad[f"{stem}: band only on modeled"] = int((~m & lo.notna()).sum())
     bad["bfe_call: null without reason"] = int((b.bfe_call.isna() & b.bfe_call_null.isna()).sum())
     bad["owner / personal columns"] = sum(any(f in c.lower().split("_") for f in FORBIDDEN) for c in b.columns)
+    p = pd.read_parquet(d / f"parcels_{fips}.parquet")
+    bad["parcel table: (parcel_key, geom_group) unique"] = int(p.duplicated(["parcel_key", "geom_group"]).sum())
+    bad["parcel table: owner / personal columns"] = sum(any(f in c.lower().split("_") for f in FORBIDDEN)
+                                                        for c in p.columns)
     print(f"{len(b)} rows, {len(b.columns)} columns; value columns checked: {', '.join(x for _, x in values)}")
     for k, n in bad.items():
         print(f"{'ok  ' if n == 0 else 'FAIL'} {k}: {n}")
@@ -45,4 +50,4 @@ def main(fips: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "data" / "flood_v1" / "assemble")
