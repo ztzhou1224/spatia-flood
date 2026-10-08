@@ -43,6 +43,12 @@ in `assemble.py`, checked on a dev build with the r0 model (`--model-dir data/fl
 data/flood_v1/assemble_dev`): every `check.py` rule passes, 0 `record_lidar_conflict` calls (307 nulled), 0
 `raised_flag` contradictions on record rows, records only from finished-construction certificates (571 fall back).
 r0's training artefacts are frozen in `data/flood_v1/train_r0/` (the gate baseline and the benchmark's source).
+Then: F1 (ruff clean), D1 (`split_12103.json`; r0's 102 test blocks reproduced byte-equal), D2 (gate v2; self-test:
+same model passes, halved q fails), B4 (combined labels finished-only: 8,231; county "ACTUAL" stage excluded, not shown
+to mean finished). A1's spatia-data note is written and reviewed (spatia-data branch `claude/zen-wright-m851wi`,
+`09f1d36`) but its `refresh-metadata` is refused: the live manifest is at contract 2.29, published 2026-10-08 20:09 UTC
+from another session's unmerged branch (`claude/issue-resolution-fewdn8`), and this checkout is 2.28. It runs once
+2.29 is on spatia-data `main`.
 
 Each item names the finding, the files, and what "done" is. Acceptance numbers are measured by the named command, never
 copied from this doc.
