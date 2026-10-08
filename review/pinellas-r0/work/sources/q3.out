@@ -1,0 +1,7 @@
+no_pair & no VERTICAL_DATUM (build.py drops): 9562
+  of which C2_BENCHMARK_VERT_DATUM: {'(blank)': 9358, 'NGVD1929': 70, 'NAVD1988': 52, 'UNK': 48, 'OTH': 34}
+  of which B11_ELEVATION_DATUM: {'NGVD1929': 4282, 'NAVD1988': 4051, '(blank)': 1128, 'OTH': 76, 'UNK': 17}
+  dropped-for-datum but benchmark NAVD1988, RES, valid diagram, C2A filled: 0  diagram 5-9: 0
+  their D_DATE years: {}
+pair filled & VERTICAL_DATUM blank: 8398  pair filled & benchmark datum: {'NAVD1988': 6850, 'NGVD1929': 1520, '(blank)': 28}
+records with any floor and D_DATE > 2019-03-08 and <2027: 1535

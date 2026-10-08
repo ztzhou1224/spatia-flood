@@ -1,0 +1,19 @@
+/home/user/spatia-flood/.venv/lib/python3.12/site-packages/pyproj/transformer.py:319: UserWarning: Best transformation is not available due to missing Grid(short_name=us_noaa_g2018u0.tif, full_name=, package_name=, url=https://cdn.proj.org/us_noaa_g2018u0.tif, direct_download=True, open_license=True, available=False)
+  super().__init__(
+pyproj 3.8.0 PROJ 9.8.1
+data dir /home/user/spatia-flood/.venv/lib/python3.12/site-packages/pyproj/proj_dir/share/proj
+network enabled False
+EPSG:6442 | NAD83(2011) / Florida West | [('Easting', 'metre', 'east'), ('Northing', 'metre', 'north')] | type Projected CRS
+EPSG:6443 | NAD83(2011) / Florida West (ftUS) | [('Easting', 'US survey foot', 'east'), ('Northing', 'US survey foot', 'north')] | type Projected CRS
+EPSG:3086 | NAD83 / Florida GDL Albers | [('Easting', 'metre', 'east'), ('Northing', 'metre', 'north')] | type Projected CRS
+EPSG:26917 | NAD83 / UTM zone 17N | [('Easting', 'metre', 'east'), ('Northing', 'metre', 'north')] | type Projected CRS
+EPSG:6360 | NAVD88 height (ftUS) | [('Gravity-related height', 'US survey foot', 'up')] | type Vertical CRS
+EPSG:5703 | NAVD88 height | [('Gravity-related height', 'metre', 'up')] | type Vertical CRS
+EPSG:3857 | WGS 84 / Pseudo-Mercator | [('Easting', 'metre', 'east'), ('Northing', 'metre', 'north')] | type Projected CRS
+EPSG:4326 | WGS 84 | [('Geodetic latitude', 'degree', 'north'), ('Geodetic longitude', 'degree', 'east')] | type Geographic 2D CRS
+OGC:CRS84 | WGS 84 (CRS84) | [('Geodetic longitude', 'degree', 'east'), ('Geodetic latitude', 'degree', 'north')] | type Geographic 2D CRS
+grid-like files: []
+n files 16
+NAD83(2011) 3D -> NAVD88 ftUS (6360 compound 6318+6360?) n transformers 1 best available False
+NAD83(2011) 3D -> NAVD88 ftUS (6360 compound 6318+6360?) ERR 'Transformer' object has no attribute 'unavailable_operations'
+usft m 0.3048006096012192 ratio intl/us 0.999998 diff at 10/30/60/100 ft (ft): [2e-05, 6e-05, 0.00012, 0.0002]

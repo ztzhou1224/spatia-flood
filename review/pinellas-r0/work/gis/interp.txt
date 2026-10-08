@@ -1,0 +1,21 @@
+interpolated rows 5250
+parsed 5250
+DFIRM of interpolated BFE: {'12103C': 5250}
+zone_main of interpolated: {'AE': 4102, 'X': 1141, 'A': 7}
+calls: {'too_close': 3848, 'above': 671, nan: 581, 'below': 150}
+distance to L1 (m) quantiles [11.0, 58.0, 166.0, 270.0] L2 [68.0, 189.0, 372.0, 614.0]
+|e1-e2| quantiles [0.4, 1.0, 3.0, 8.0] n |e1-e2|>3 ft 31
+same line both sides (d1==0): 0
+type pairs: {'BFE_LINE/BFE_LINE': 1845, 'XS/XS': 1399, 'XS/BFE_LINE': 1097, 'BFE_LINE/XS': 909}
+line ids unique: True
+pairs with lines from different DFIRMs: 0 ; different panel eff dates: 85
+line panel date vs the building's largest-share polygon panel date differ: 268
+firm_effective_date  2003-09-03  2009-08-18  2021-08-24
+eff1                                                   
+2003-09-03                 1287           2          67
+2009-08-18                    8         323         184
+2021-08-24                    7           0        3372
+segment L1->L2 covered by SFHA union: 1779 of 5250 (0.339); seg length median 252 m p90 481
+calls where segment leaves the SFHA: {'too_close': 2516, 'above': 545, nan: 347, 'below': 63}
+|e1-e2| where segment leaves SFHA, median: 0.3 vs inside: 0.5
+top 10 0.01-deg cells of interpolated buildings: {'27.8,-82.72': 654, '27.79,-82.72': 382, '27.8,-82.71': 238, '27.83,-82.71': 230, '27.85,-82.73': 200, '27.95,-82.78': 197, '27.81,-82.72': 158, '27.86,-82.71': 132, '27.86,-82.7': 125, '28.03,-82.75': 125}

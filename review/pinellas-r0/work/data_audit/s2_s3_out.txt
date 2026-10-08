@@ -1,0 +1,281 @@
+== STEP 2 ==
+== STEP 3 ==
+dup building_id: 0
+lon/lat null: 0
+centroid outside footprint bbox: 0
+lon/lat outside Pinellas bbox (-83.0..-82.4, 27.5..28.2): 0
+lon/lat range: [-82.85109190679194, -82.58782404211844, 27.612388199999998, 28.173222301837068]
+geometry invalid: 0
+geometry null: 0
+ffh: modeled band violates lo<=v<=hi: 0
+ffh: modeled without band: 0
+ffh: band on non-modeled: 0
+ffe: modeled band violates lo<=v<=hi: 0
+ffe: modeled without band: 0
+ffe: band on non-modeled: 0
+bfe: modeled band violates lo<=v<=hi: 0
+bfe: modeled without band: 0
+bfe: band on non-modeled: 0
+ffe != ground+ffh (modeled, >1e-6): 0
+ffe band != ground+ffh band (modeled): 0
+ffh modeled but ffe not modeled / vice versa: 0
+ffh record but ffe not record: 0
+labels dup building_id: 0
+fdem_lag dup objectid: 0
+record ffh != ffe - cert LAG (>1e-6): 0
+record ffe != certificate ffe: 0
+record ffh outside -1..30: 0
+record ffe - ground outside -1..30 (where ground): 0
+cert LAG datum values: [{'cert_datum': 'navd_1988', 'n': 7515}]
+record rows whose cert LAG datum is not navd_1988: 0
+floor_minus_bfe != ffe-bfe: 0
+floor_minus_bfe null although ffe & bfe present: 0
+floor_minus_bfe present but not touching SFHA: 0
+fmb band lo != flo - bhi: 0
+bfe_call != rule: 0
+record ffe == bfe exactly -> call: [{'bfe_call': 'above', 'n': 74}]
+bfe_precision_ft distinct (static): [{'bfe_precision_ft': 0.0, 'n': 83024}]
+bfe_datum distinct: [{'bfe_datum': 'NAVD88 ft; navd88_verbatim', 'n': 88274}]
+record too_close calls (sigma>0): 134
+bfe_call_basis != rule: 0
+parcel table vs centroid-parcel building sums (NOTE: parcel table uses >=10% overlap, not centroid): [{'parcels_compared': 285552, 'below_diff': 1188.0, 'above_diff': 427.0, 'tc_diff': 2526.0, 'n_diff': 10588.0}]
+parcel totals: below/above/too_close sums: [{'below': 884412.0, 'above': 64706.0, 'too_close': 744324.0, 'buildings': 7137267.0}]
+building totals below/above/too_close: [{'below': 33039.0, 'above': 7767.0, 'too_close': 35994.0}]
+parcel any_building_below_bfe != below>0: 0
+parcel dup parcel_key: 273
+parcel primary_building_id not in building table: 0
+building parcel_key not in parcel table: 0
+parcel: buildings count > 0 but all of below/above/too_close null: 0
+zones share sum < 0.99: 6
+zones share sum > 1.01: 0
+zones share sum distribution: {'count': 372752.0, 'mean': 1.0, 'std': 0.0002, 'min': 0.8923, '0.1%': 1.0, '1%': 1.0, '5%': 1.0, '50%': 1.0, 'max': 1.0001}
+zone_main != first element: 0
+first element not max share: 0
+zone_main_subtype != first element subtype: 0
+sfha_share != sum sfha shares (>1e-3): 0
+touches_sfha != sfha_share>0: 0
+touches_sfha with zones null: 0
+zones null but zone_main set: 0
+zone list: sfha flag by zone: {"('X', False)": 301412, "('AE', True)": 88516, "('A', True)": 3364, "('VE', True)": 1744, "('AO', True)": 127, "('AH', True)": 4}
+raised_flag != ffh modeled > 3 (model-eligible): 0
+raised_flag set but ffh not modeled (record or null): [{'ffh_class': 'record', 'n': 7264}, {'ffh_class': nan, 'n': 33}]
+distinct provider/release/model_version/footprint_release: [{'provider': 'public', 'release': 'pinellas-r0', 'model_version': 'E-lgbm-12103-62f502979c3b', 'footprint_release': '2026-09-23.1', 'n': 247653}, {'provider': 'public', 'release': 'pinellas-r0', 'model_version': nan, 'footprint_release': '2026-09-23.1', 'n': 125111}]
+input_licences distinct tags: [{'tag': 'overture_buildings:ODbL-1.0', 'n': 372764}, {'tag': 'fema_nfhl:public', 'n': 372764}, {'tag': 'fl_dor_nal:public_record', 'n': 368800}, {'tag': 'overture_addresses:FL_public_domain', 'n': 298440}, {'tag': 'usgs_3dep:public_domain', 'n': 290540}, {'tag': 'fdem_certificates:terms_unread', 'n': 7515}, {'tag': 'geocodio:stored_per_terms', 'n': 727}, {'tag': 'openstreetmap:ODbL-1.0', 'n': 6}]
+input_licences: fdem tag vs record_note/ffe record: [{'fdem': True, 'rec': True, 'note': False, 'n': 7427}, {'fdem': False, 'rec': False, 'note': False, 'n': 240305}, {'fdem': True, 'rec': True, 'note': True, 'n': 34}, {'fdem': False, 'rec': None, 'note': False, 'n': 124944}, {'fdem': True, 'rec': False, 'note': True, 'n': 51}, {'fdem': True, 'rec': None, 'note': True, 'n': 3}]
+input_licences: 3dep tag vs in_risk_area: 0
+*_null outside six reasons: {}
+ffe_vintage window (a/b) count: 260
+ffe_vintage = unknown: 0
+ffe_vintage > built date 2026-10-07: 0
+ffe_vintage window end > 2026-10-07 or start>end: 0
+ffe_record_lidar_conflict distinct: [{'v': None, 'ffe_class': 'modeled', 'n': 240305}, {'v': None, 'ffe_class': nan, 'n': 124944}, {'v': False, 'ffe_class': 'record', 'n': 7186}, {'v': True, 'ffe_class': 'record', 'n': 246}, {'v': True, 'ffe_class': 'modeled', 'n': 51}, {'v': None, 'ffe_class': 'record', 'n': 29}, {'v': True, 'ffe_class': nan, 'n': 3}]
+ground_geoid distinct: [{'ground_geoid': 'GEOID12B', 'ground_precision_ft': 0.32808334366795866, 'lidar_ql': 'QL 1', 'n': 290540}, {'ground_geoid': nan, 'ground_precision_ft': nan, 'lidar_ql': 'QL 1', 'n': 82224}]
+ffe_datum distinct: [{'ffe_datum': 'NAVD88 ft US survey, GEOID12B', 'n': 240356}, {'ffe_datum': 'NAVD88 ft (certificate, vertical datum filtered to NAVD 1988; geoid not stated)', 'n': 7461}, {'ffe_datum': nan, 'n': 124947}]
+county_fips distinct: [{'county_fips': '12103', 'n': 372764}]
+address_null distinct / address null count: [[{'address_null': nan, 'n': 372620}, {'address_null': 'not_evaluated', 'n': 144}], 144]
+address empty-ish ('' or ', ' only): 0
+address starts with ', ' (no number/street): 0
+address examples odd: []
+-- null distincts
+{"zones_null": [{"v": NaN, "n": 372752}, {"v": "no_coverage", "n": 12}], "bfe_null": [{"v": "not_applicable", "n": 280521}, {"v": NaN, "n": 88274}, {"v": "no_coverage", "n": 3402}, {"v": "not_determinable", "n": 567}], "ground_null": [{"v": NaN, "n": 290540}, {"v": "not_evaluated", "n": 82224}], "roof_null": [{"v": NaN, "n": 280361}, {"v": "not_evaluated", "n": 84598}, {"v": "not_determinable", "n": 7805}], "eave_null": [{"v": NaN, "n": 280025}, {"v": "not_evaluated", "n": 84598}, {"v": "not_determinable", "n": 8141}], "year_built_null": [{"v": NaN, "n": 362328}, {"v": "not_determinable", "n": 6472}, {"v": "no_coverage", "n": 3964}], "living_area_sqft_null": [{"v": NaN, "n": 362326}, {"v": "not_determinable", "n": 6474}, {"v": "no_coverage", "n": 3964}], "raised_flag_null": [{"v": NaN, "n": 247653}, {"v": "not_evaluated", "n": 122004}, {"v": "no_coverage", "n": 3105}, {"v": "not_determinable", "n": 2}], "ffh_null": [{"v": NaN, "n": 247783}, {"v": "not_evaluated", "n": 121907}, {"v": "no_coverage", "n": 3038}, {"v": "not_determinable", "n": 36}], "ffe_null": [{"v": NaN, "n": 247817}, {"v": "not_evaluated", "n": 121904}, {"v": "no_coverage", "n": 3038}, {"v": "not_determinable", "n": 5}], "lift_or_rebuild_null": [{"v": "not_evaluated", "n": 372764}], "bfe_call_null": [{"v": NaN, "n": 357321}, {"v": "not_evaluated", "n": 10512}, {"v": "no_coverage", "n": 4363}, {"v": "not_determinable", "n": 568}], "address_null": [{"v": NaN, "n": 372620}, {"v": "not_evaluated", "n": 144}]}
+-- vintages
+{
+"bfe_vintage": {
+"distinct": 3,
+"top": [
+{
+"v": "2021-08-24",
+"n": 85579
+},
+{
+"v": "2003-09-03",
+"n": 1447
+},
+{
+"v": "2009-08-18",
+"n": 1248
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2003-09-03",
+"max": "2021-08-24"
+},
+"ground_vintage": {
+"distinct": 1,
+"top": [
+{
+"v": "2018-12-07/2019-03-08",
+"n": 290540
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2018-12-07/2019-03-08",
+"max": "2018-12-07/2019-03-08"
+},
+"roof_vintage": {
+"distinct": 1,
+"top": [
+{
+"v": "2018-12-07/2019-03-08",
+"n": 280361
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2018-12-07/2019-03-08",
+"max": "2018-12-07/2019-03-08"
+},
+"eave_vintage": {
+"distinct": 1,
+"top": [
+{
+"v": "2018-12-07/2019-03-08",
+"n": 280025
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2018-12-07/2019-03-08",
+"max": "2018-12-07/2019-03-08"
+},
+"year_built_vintage": {
+"distinct": 1,
+"top": [
+{
+"v": "2025",
+"n": 362328
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2025",
+"max": "2025"
+},
+"living_area_sqft_vintage": {
+"distinct": 1,
+"top": [
+{
+"v": "2025",
+"n": 362326
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2025",
+"max": "2025"
+},
+"ffh_vintage": {
+"distinct": 2304,
+"top": [
+{
+"v": "2018-12-07/2019-03-08",
+"n": 240356
+},
+{
+"v": "2022-01-01/2025-12-31",
+"n": 44
+},
+{
+"v": "2018-01-01/2021-12-31",
+"n": 42
+},
+{
+"v": "2015-07-01/2019-11-30",
+"n": 40
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2009-11-16",
+"max": "2026-09-28"
+},
+"ffe_vintage": {
+"distinct": 2311,
+"top": [
+{
+"v": "2018-12-07/2019-03-08",
+"n": 240356
+},
+{
+"v": "2022-01-01/2025-12-31",
+"n": 45
+},
+{
+"v": "2018-01-01/2021-12-31",
+"n": 42
+},
+{
+"v": "2015-07-01/2019-11-30",
+"n": 40
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2009-11-16",
+"max": "2026-09-28"
+},
+"firm_effective_date": {
+"distinct": 3,
+"top": [
+{
+"v": "2021-08-24",
+"n": 365809
+},
+{
+"v": "2003-09-03",
+"n": 5126
+},
+{
+"v": "2009-08-18",
+"n": 1817
+}
+],
+"nonparsing_distinct": 0,
+"nonparsing_rows": 0,
+"examples": [],
+"min": "2003-09-03",
+"max": "2021-08-24"
+}
+}
+-- step3
+ffh_ft record: [{'n': 7427, 'mn': -0.9, 'p1': 0.15, 'p5': 0.4, 'p50': 1.1, 'p95': 11.7, 'p99': 13.9, 'mx': 23.06, 'neg': 6.0, 'lt_m1': 0.0, 'gt20': 6.0, 'gt12': 306.0}]
+ffe_ft record: [{'n': 7461, 'mn': 2.28, 'p1': 3.7, 'p50': 8.5, 'p99': 44.648, 'mx': 89.9}]
+ffh_ft modeled: [{'n': 240356, 'mn': 0.334, 'p1': 0.838, 'p5': 0.979, 'p50': 1.638, 'p95': 6.322, 'p99': 10.336, 'mx': 15.069, 'neg': 0.0, 'lt_m1': 0.0, 'gt20': 0.0, 'gt12': 600.0}]
+ffe_ft modeled: [{'n': 240356, 'mn': 0.325, 'p1': 4.529, 'p50': 17.148, 'p99': 76.32, 'mx': 105.73}]
+ffe-ground (record, where ground): [{'n': 7461, 'mn': -0.932, 'p1': 0.16, 'p50': 1.751, 'p99': 15.138, 'mx': 24.522}]
+record ffh vs ffe-ground diff (cert LAG - lidar ground): [{'n': 7427, 'mn': -5.762, 'p5': -0.268, 'p50': 0.444, 'p95': 2.335, 'mx': 13.53, 'gt3': 249.0}]
+ground_ft: [{'n': 290540, 'mn': -4.825, 'p01': -1.991, 'p50': 14.865, 'p999': 94.688, 'mx': 98.239, 'lt_m2': 4.0, 'lt0': 770.0, 'gt60': 14577.0}]
+year_built: [{'n': 362328, 'mn': 1885, 'p01': 1910.0, 'p50': 1971.0, 'mx': 2024, 'future': 0.0, 'lt1850': 0.0, 'lt1900': 11.0}]
+year_built lowest 10 distinct: [{'year_built': 1885, 'n': 2}, {'year_built': 1888, 'n': 2}, {'year_built': 1892, 'n': 1}, {'year_built': 1894, 'n': 2}, {'year_built': 1896, 'n': 1}, {'year_built': 1897, 'n': 1}, {'year_built': 1899, 'n': 2}, {'year_built': 1900, 'n': 95}, {'year_built': 1901, 'n': 31}, {'year_built': 1902, 'n': 3}]
+living_area: [{'n': 362326, 'mn': 11.0, 'p01': 100.0, 'p50': 1722.0, 'p999': 534331.0, 'mx': 1953557.0, 'le0': 0.0, 'lt100': 81.0, 'gt50k': 10619.0}]
+footprint_area_m2: [{'mn': 1.5, 'p01': 13.11, 'p50': 202.25, 'p999': 6973.01, 'mx': 152895.13, 'lt5': 9.0, 'lt1': 0.0, 'gt2000': 2891.0, 'gt2000_modeled': 0.0}]
+modeled ffh band width: [{'n': 240356, 'mn': 0.233, 'p5': 1.359, 'p50': 2.146, 'p95': 18.009, 'mx': 124.344, 'gt10': 26638.0, 'gt10_flagged': 20379.0, 'gt5': 47784.0}]
+band width by raised_flag (modeled): [{'raised_flag': True, 'n': 40061, 'med_w': 10.33, 'med_ffh': 4.705, 'p90_w': 23.948}, {'raised_flag': False, 'n': 200295, 'med_w': 1.92, 'med_ffh': 1.476, 'p90_w': 5.154}]
+band width > 10 ft, by flag share: [{'raised_flag': False, 'n': 6259}, {'raised_flag': True, 'n': 20379}]
+bfe_ft static: [{'n': 83024, 'mn': 6.0, 'p1': 6.0, 'p50': 9.0, 'p99': 17.0, 'mx': 69.0, 'le0': 0.0, 'gt30': 255.0, 'lt5': 0.0}]
+bfe_ft static distinct values: [{'bfe_ft': 6.0, 'n': 883}, {'bfe_ft': 7.0, 'n': 13}, {'bfe_ft': 8.0, 'n': 10384}, {'bfe_ft': 9.0, 'n': 30871}, {'bfe_ft': 10.0, 'n': 25185}, {'bfe_ft': 11.0, 'n': 9924}, {'bfe_ft': 12.0, 'n': 3071}, {'bfe_ft': 13.0, 'n': 580}, {'bfe_ft': 14.0, 'n': 316}, {'bfe_ft': 15.0, 'n': 321}, {'bfe_ft': 16.0, 'n': 639}, {'bfe_ft': 17.0, 'n': 162}, {'bfe_ft': 18.0, 'n': 19}, {'bfe_ft': 19.0, 'n': 164}, {'bfe_ft': 20.0, 'n': 38}, {'bfe_ft': 21.0, 'n': 132}, {'bfe_ft': 22.0, 'n': 3}, {'bfe_ft': 23.0, 'n': 7}, {'bfe_ft': 24.0, 'n': 49}, {'bfe_ft': 25.0, 'n': 3}, {'bfe_ft': 26.0, 'n': 3}, {'bfe_ft': 27.0, 'n': 2}, {'bfe_ft': 35.0, 'n': 40}, {'bfe_ft': 36.0, 'n': 9}, {'bfe_ft': 39.0, 'n': 7}, {'bfe_ft': 40.0, 'n': 12}, {'bfe_ft': 41.0, 'n': 2}, {'bfe_ft': 42.0, 'n': 14}, {'bfe_ft': 43.0, 'n': 14}, {'bfe_ft': 45.0, 'n': 22}, {'bfe_ft': 46.0, 'n': 3}, {'bfe_ft': 47.0, 'n': 47}, {'bfe_ft': 49.0, 'n': 17}, {'bfe_ft': 50.0, 'n': 1}, {'bfe_ft': 53.0, 'n': 2}, {'bfe_ft': 54.0, 'n': 1}, {'bfe_ft': 55.0, 'n': 17}, {'bfe_ft': 57.0, 'n': 2}, {'bfe_ft': 60.0, 'n': 3}, {'bfe_ft': 61.0, 'n': 16}, {'bfe_ft': 62.0, 'n': 5}, {'bfe_ft': 64.0, 'n': 1}, {'bfe_ft': 67.0, 'n': 12}, {'bfe_ft': 68.0, 'n': 6}, {'bfe_ft': 69.0, 'n': 2}]
+bfe_ft interpolated: [{'n': 5250, 'mn': 6.428, 'p50': 17.987, 'mx': 87.928, 'le0': 0.0, 'gt30': 843.0, 'max_w': 9.0, 'w_gt5': 9.0}]
+bfe by zone_main (static): [{'zone_main': 'AE', 'n': 76429, 'mn': 6.0, 'med': 9.0, 'mx': 69.0}, {'zone_main': 'X', 'n': 5461, 'mn': 6.0, 'med': 9.0, 'mx': 68.0}, {'zone_main': 'VE', 'n': 1076, 'mn': 10.0, 'med': 12.0, 'mx': 16.0}, {'zone_main': 'AO', 'n': 54, 'mn': 8.0, 'med': 10.0, 'mx': 13.0}, {'zone_main': 'A', 'n': 4, 'mn': 6.0, 'med': 6.0, 'mx': 6.0}]
+static BFE non-integer: 0
+firm_effective_date distinct: [{'firm_effective_date': '2021-08-24', 'n': 365809}, {'firm_effective_date': '2003-09-03', 'n': 5126}, {'firm_effective_date': '2009-08-18', 'n': 1817}, {'firm_effective_date': nan, 'n': 12}]
+bfe_vintage distinct: [{'bfe_vintage': '2021-08-24', 'bfe_method': 'static', 'n': 82191}, {'bfe_vintage': '2021-08-24', 'bfe_method': 'interpolated', 'n': 3388}, {'bfe_vintage': '2003-09-03', 'bfe_method': 'interpolated', 'n': 1320}, {'bfe_vintage': '2009-08-18', 'bfe_method': 'static', 'n': 706}, {'bfe_vintage': '2009-08-18', 'bfe_method': 'interpolated', 'n': 542}, {'bfe_vintage': '2003-09-03', 'bfe_method': 'static', 'n': 127}]
+floor_minus_bfe: [{'ffe_class': 'record', 'n': 6710, 'mn': -8.8, 'p1': -6.9, 'p50': -1.2, 'p99': 9.9, 'mx': 17.8, 'gt15': 6.0, 'lt_m10': 0.0}, {'ffe_class': 'modeled', 'n': 70090, 'mn': -12.675, 'p1': -6.494, 'p50': -0.856, 'p99': 7.644, 'mx': 15.295, 'gt15': 1.0, 'lt_m10': 4.0}]
+floor_minus_bfe > 15 sample: [{'building_id': 'e0a516b6-8884-43f4-8d67-2133f5a58ce0', 'ffe_class': 'record', 'ffe_ft': 27.8, 'ground_ft': 7.179947852094968, 'ffh_ft': 18.9, 'bfe_ft': 10.0, 'bfe_method': 'static', 'zone_main': 'AE', 'bfe_call': 'above', 'roof_ft': nan, 'lon': -82.83563, 'lat': 27.83449, 'note': None}, {'building_id': '53a7c5f3-fa49-4a29-8093-3cf469304bb4', 'ffe_class': 'record', 'ffe_ft': 26.65, 'ground_ft': 6.844899237155914, 'ffh_ft': 20.049999999999997, 'bfe_ft': 9.0, 'bfe_method': 'static', 'zone_main': 'AE', 'bfe_call': 'above', 'roof_ft': 43.06773059617739, 'lon': -82.81708, 'lat': 27.94386, 'note': None}, {'building_id': '6b675751-6828-49a4-afc2-884f4b5accb7', 'ffe_class': 'record', 'ffe_ft': 27.76, 'ground_ft': 6.221704980532329, 'ffh_ft': 10.84, 'bfe_ft': 11.0, 'bfe_method': 'static', 'zone_main': 'AE', 'bfe_call': 'above', 'roof_ft': 30.409127269467685, 'lon': -82.72158, 'lat': 27.74235, 'note': None}, {'building_id': 'eecc33fa-3e66-48d5-a2af-93b6d0ab7db2', 'ffe_class': 'record', 'ffe_ft': 26.66, 'ground_ft': 2.137544418424368, 'ffh_ft': 23.06, 'bfe_ft': 10.0, 'bfe_method': 'static', 'zone_main': 'AE', 'bfe_call': 'above', 'roof_ft': nan, 'lon': -82.82401, 'lat': 28.00238, 'note': None}, {'building_id': 'b7f3293b-6d95-4753-895d-7756861a71b5', 'ffe_class': 'record', 'ffe_ft': 24.53, 'ground_ft': 5.020344479282698, 'ffh_ft': 18.01, 'bfe_ft': 8.0, 'bfe_method': 'static', 'zone_main': 'AE', 'bfe_call': 'above', 'roof_ft': 61.1212555207173, 'lon': -82.8471, 'lat': 27.90848, 'note': None}, {'building_id': '497c3f10-233f-45a8-af65-73725760bfd2', 'ffe_class': 'record', 'ffe_ft': 26.4, 'ground_ft': 4.703530390560627, 'ffh_ft': 21.2, 'bfe_ft': 10.0, 'bfe_method': 'static', 'zone_main': 'AE', 'bfe_call': 'above', 'roof_ft': 44.508969609439376, 'lon': -82.75746, 'lat': 27.7549, 'note': None}]
+floor_minus_bfe < -10 sample: [{'building_id': '75c46870-7c8b-4ef4-bf38-cf845f339528', 'ffe_class': 'modeled', 'ffe_ft': 0.32529718201463176, 'ground_ft': -1.9998651998241743, 'ffh_ft': 2.325162381838806, 'bfe_ft': 13.0, 'bfe_method': 'static', 'zone_main': 'VE', 'bfe_call': 'below', 'roof_ft': 36.66285361649082, 'lon': -82.79382, 'lat': 28.01032, 'ffe_record_lidar_conflict': None}, {'building_id': 'd318e4f7-445a-4419-814d-f4cd26efdc68', 'ffe_class': 'modeled', 'ffe_ft': 1.5988706222991023, 'ground_ft': -1.9998651998241743, 'ffh_ft': 3.5987358221232766, 'bfe_ft': 13.0, 'bfe_method': 'static', 'zone_main': 'VE', 'bfe_call': 'below', 'roof_ft': nan, 'lon': -82.78753, 'lat': 28.03726, 'ffe_record_lidar_conflict': None}, {'building_id': '5803189c-14c3-42b9-88b8-76cb62a2554d', 'ffe_class': 'modeled', 'ffe_ft': 2.3706014142052934, 'ground_ft': -1.9998651998241743, 'ffh_ft': 4.370466614029468, 'bfe_ft': 13.0, 'bfe_method': 'static', 'zone_main': 'VE', 'bfe_call': 'below', 'roof_ft': 17.600227699824178, 'lon': -82.73214, 'lat': 27.75243, 'ffe_record_lidar_conflict': None}, {'building_id': 'a003a4a4-5d6d-4bdb-aba7-0fc45361716f', 'ffe_class': 'modeled', 'ffe_ft': 3.995818768884878, 'ground_ft': -1.9998648087183635, 'ffh_ft': 5.995683577603241, 'bfe_ft': 14.0, 'bfe_method': 'static', 'zone_main': 'VE', 'bfe_call': 'below', 'roof_ft': 17.528048975385012, 'lon': -82.76065, 'lat': 27.81075, 'ffe_record_lidar_conflict': None}]
+modeled ffe below ground (ffh<0): [{'n': 0, 'lt_m05': nan, 'lt_m1': nan}]
+roof/eave: [{'rmin': 6.37, 'rmed': 14.5, 'rmax': 334.86, 'roof_lt5': 0.0, 'emin': 6.24, 'emed': 11.22, 'emax': 307.96, 'eave_le0': 0.0, 'eave_gt_roof': 73.0}]
+modeled ffh > roof_ft: 0
+modeled ffh > eave_ft: 0
+modeled ffh by dor_use_code top: [{'dor_use_code': '001', 'n': 192791, 'med': 1.6}, {'dor_use_code': '002', 'n': 13916, 'med': 1.6}, {'dor_use_code': '008', 'n': 11944, 'med': 1.76}, {'dor_use_code': '004', 'n': 10938, 'med': 1.91}, {'dor_use_code': '003', 'n': 4825, 'med': 2.87}, {'dor_use_code': '009', 'n': 3455, 'med': 2.07}, {'dor_use_code': '000', 'n': 2372, 'med': 2.08}, {'dor_use_code': '007', 'n': 78, 'med': 1.67}]
+modeled rows with footprint>2000 or dor non-res: 0
+ffh modeled by footprint area band: [{'band': '30-60', 'n': 4367, 'med': 1.6, 'flagged': 0.185}, {'band': '60-120', 'n': 24994, 'med': 1.78, 'flagged': 0.193}, {'band': '<30', 'n': 1238, 'med': 2.4, 'flagged': 0.362}, {'band': '>=120', 'n': 209757, 'med': 1.62, 'flagged': 0.162}]

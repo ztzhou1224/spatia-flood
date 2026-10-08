@@ -1,0 +1,188 @@
+--- NFHL polygons: zone / subtype
+┌────────────┬──────────────────────────────────────────────────────────────────────────┬─────────┬───────┬───────┐
+│  fld_zone  │                                zone_subty                                │ sfha_tf │   n   │ n_bfe │
+│  varchar   │                                 varchar                                  │ varchar │ int64 │ int64 │
+├────────────┼──────────────────────────────────────────────────────────────────────────┼─────────┼───────┼───────┤
+│ A          │ NULL                                                                     │ T       │   712 │     0 │
+│ AE         │ NULL                                                                     │ T       │   707 │   457 │
+│ AE         │ COASTAL FLOODPLAIN                                                       │ T       │   576 │   576 │
+│ AE         │ FLOODWAY                                                                 │ T       │    75 │    22 │
+│ AE         │ COMBINED RIVERINE AND COASTAL FLOODPLAIN                                 │ T       │    67 │     2 │
+│ AE         │ RIVERINE FLOODWAY IN COMBINED RIVERINE AND COASTAL ZONE                  │ T       │     9 │     0 │
+│ AH         │ NULL                                                                     │ T       │     6 │     6 │
+│ AO         │ NULL                                                                     │ T       │     6 │     0 │
+│ OPEN WATER │ NULL                                                                     │ F       │    11 │     0 │
+│ VE         │ COASTAL FLOODPLAIN                                                       │ T       │   305 │   305 │
+│ X          │ AREA OF MINIMAL FLOOD HAZARD                                             │ F       │  2015 │     0 │
+│ X          │ 0.2 PCT ANNUAL CHANCE FLOOD HAZARD IN COASTAL ZONE                       │ F       │  1731 │     0 │
+│ X          │ 0.2 PCT ANNUAL CHANCE FLOOD HAZARD                                       │ F       │   881 │     0 │
+│ X          │ 0.2 PCT ANNUAL CHANCE FLOOD HAZARD IN COMBINED RIVERINE AND COASTAL ZONE │ F       │   160 │     0 │
+└────────────┴──────────────────────────────────────────────────────────────────────────┴─────────┴───────┴───────┘
+  14 rows                                                                                               5 columns
+
+--- buildings: zone_main / subtype
+┌───────────┬───────────────────────────────────────────────────────────────┬────────┬───────┬───────┬─────────┬───────┐
+│ zone_main │                       zone_main_subtype                       │   n    │ touch │ n_bfe │ decided │ below │
+│  varchar  │                            varchar                            │ int64  │ int64 │ int64 │  int64  │ int64 │
+├───────────┼───────────────────────────────────────────────────────────────┼────────┼───────┼───────┼─────────┼───────┤
+│ X         │ AREA OF MINIMAL FLOOD HAZARD                                  │ 255129 │  1502 │  1048 │     556 │     4 │
+│ AE        │ COASTAL FLOODPLAIN                                            │  74027 │ 74027 │ 74027 │   36033 │ 32334 │
+│ X         │ 0.2 PCT ANNUAL CHANCE FLOOD HAZARD IN COASTAL ZONE            │  24417 │  4149 │  4087 │    1507 │    11 │
+│ AE        │ NULL                                                          │   6266 │  6266 │  5935 │    1478 │   147 │
+│ X         │ 0.2 PCT ANNUAL CHANCE FLOOD HAZARD                            │   5150 │  1203 │  1124 │     450 │     1 │
+│ X         │ 0.2 PCT ANNUAL CHANCE FLOOD HAZARD IN COMBINED RIVERINE AND … │   3045 │   378 │   343 │     176 │     0 │
+│ A         │ NULL                                                          │   2914 │  2914 │    11 │       8 │     0 │
+│ VE        │ COASTAL FLOODPLAIN                                            │   1076 │  1076 │  1076 │     529 │   494 │
+│ AE        │ COMBINED RIVERINE AND COASTAL FLOODPLAIN                      │    543 │   543 │   478 │      38 │    31 │
+│ AO        │ NULL                                                          │     92 │    92 │    54 │      11 │     7 │
+│ AE        │ FLOODWAY                                                      │     87 │    87 │    85 │      20 │    10 │
+│ NULL      │ NULL                                                          │     12 │     0 │     0 │       0 │     0 │
+│ AE        │ RIVERINE FLOODWAY IN COMBINED RIVERINE AND COASTAL ZONE       │      6 │     6 │     6 │       0 │     0 │
+└───────────┴───────────────────────────────────────────────────────────────┴────────┴───────┴───────┴─────────┴───────┘
+  13 rows                                                                                                    7 columns
+
+--- SFHA buildings without BFE by zone_main
+┌───────────┬──────────────────┬───────┐
+│ zone_main │     bfe_null     │   n   │
+│  varchar  │     varchar      │ int64 │
+├───────────┼──────────────────┼───────┤
+│ A         │ no_coverage      │  2901 │
+│ X         │ no_coverage      │   463 │
+│ AE        │ not_determinable │   398 │
+│ X         │ not_determinable │   167 │
+│ AO        │ no_coverage      │    38 │
+│ A         │ not_determinable │     2 │
+└───────────┴──────────────────┴───────┘
+
+--- VE zone_main calls
+┌───────────┬───────────────────────┬───────┐
+│ bfe_call  │    bfe_call_basis     │   n   │
+│  varchar  │        varchar        │ int64 │
+├───────────┼───────────────────────┼───────┤
+│ below     │ modeled_band          │   438 │
+│ NULL      │ NULL                  │   332 │
+│ too_close │ modeled_band          │   215 │
+│ below     │ record                │    56 │
+│ above     │ record                │    21 │
+│ above     │ record_lidar_conflict │     9 │
+│ above     │ modeled_band          │     5 │
+└───────────┴───────────────────────┴───────┘
+
+--- buildings with any VE element
+┌──────────┬─────────┬───────┐
+│ n_any_ve │ decided │ above │
+│  int64   │  int64  │ int64 │
+├──────────┼─────────┼───────┤
+│     1744 │     876 │    66 │
+└──────────┴─────────┴───────┘
+
+--- firm_effective_date
+┌─────────────────────┬────────┐
+│ firm_effective_date │   n    │
+│       varchar       │ int64  │
+├─────────────────────┼────────┤
+│ 2021-08-24          │ 365809 │
+│ 2003-09-03          │   5126 │
+│ 2009-08-18          │   1817 │
+│ NULL                │     12 │
+└─────────────────────┴────────┘
+
+--- zones_raw panel dates
+┌──────────┬─────────────────────────┬─────────────────────────┬───────┐
+│ dfirm_id │ firm_panel_eff_date_min │ firm_panel_eff_date_max │   n   │
+│ varchar  │          date           │          date           │ int64 │
+├──────────┼─────────────────────────┼─────────────────────────┼───────┤
+│ 12103C   │ 2021-08-24              │ 2021-08-24              │  4439 │
+│ 12057C   │ 2021-10-07              │ 2021-10-07              │  1254 │
+│ 12057C   │ 2008-08-28              │ 2008-08-28              │   557 │
+│ 12103C   │ 2003-09-03              │ 2003-09-03              │   363 │
+│ 12103C   │ 2009-08-18              │ 2009-08-18              │   290 │
+│ 12081C   │ 2021-08-10              │ 2021-08-10              │    94 │
+│ 12103C   │ 2003-09-03              │ 2021-08-24              │    93 │
+│ 12103C   │ 2009-08-18              │ 2021-08-24              │    62 │
+│ 12057C   │ 2008-08-28              │ 2021-10-07              │    37 │
+│ 12101C   │ 2020-06-05              │ 2020-06-05              │    35 │
+│ 12101C   │ 2014-09-26              │ 2014-09-26              │    31 │
+│ 12103C   │ 2003-09-03              │ 2009-08-18              │     5 │
+│ 12081C   │ 2014-03-17              │ 2021-08-10              │     1 │
+└──────────┴─────────────────────────┴─────────────────────────┴───────┘
+  13 rows                                                    4 columns
+
+--- bfe_vintage
+┌─────────────┬──────────────┬───────┐
+│ bfe_vintage │  bfe_method  │   n   │
+│   varchar   │   varchar    │ int64 │
+├─────────────┼──────────────┼───────┤
+│ 2021-08-24  │ static       │ 82191 │
+│ 2021-08-24  │ interpolated │  3388 │
+│ 2003-09-03  │ interpolated │  1320 │
+│ 2009-08-18  │ static       │   706 │
+│ 2009-08-18  │ interpolated │   542 │
+│ 2003-09-03  │ static       │   127 │
+└─────────────┴──────────────┴───────┘
+
+--- touches_sfha slivers
+┌───────┬────────┬──────────────┬────────┐
+│   n   │ sliver │ sliver_below │ under5 │
+│ int64 │ int64  │    int64     │ int64  │
+├───────┼────────┼──────────────┼────────┤
+│ 92243 │   1240 │            2 │   2605 │
+└───────┴────────┴──────────────┴────────┘
+
+--- number of distinct SFHA zone/subtype elements per building
+┌───────────┬──────────────┐
+│ n_sfha_el │ count_star() │
+│   int64   │    int64     │
+├───────────┼──────────────┤
+│         1 │        90735 │
+│         2 │         1504 │
+│         3 │            4 │
+└───────────┴──────────────┘
+
+--- AO/AH/A handling
+┌───────────┬───────┬───────┬──────────────────┬──────────────┐
+│ zone_main │   n   │ n_bfe │     bfe_null     │  bfe_method  │
+│  varchar  │ int64 │ int64 │     varchar      │   varchar    │
+├───────────┼───────┼───────┼──────────────────┼──────────────┤
+│ A         │  2901 │     0 │ no_coverage      │ NULL         │
+│ AO        │    54 │    54 │ NULL             │ static       │
+│ AO        │    38 │     0 │ no_coverage      │ NULL         │
+│ A         │     7 │     7 │ NULL             │ interpolated │
+│ A         │     4 │     4 │ NULL             │ static       │
+│ A         │     2 │     0 │ not_determinable │ NULL         │
+└───────────┴───────┴───────┴──────────────────┴──────────────┘
+
+--- AO/AH/A polygons raw
+┌─────────┬──────────┬────────────┬──────────────┐
+│ sfha_tf │ fld_zone │ zone_subty │ count_star() │
+│ varchar │ varchar  │  varchar   │    int64     │
+├─────────┼──────────┼────────────┼──────────────┤
+│ T       │ A        │ NULL       │          712 │
+│ T       │ AO       │ NULL       │            6 │
+│ T       │ AH       │ NULL       │            6 │
+└─────────┴──────────┴────────────┴──────────────┘
+
+--- AO static_bfe status
+┌──────────────────────────┬──────────────┐
+│ static_bfe_navd88_status │ count_star() │
+│         varchar          │    int64     │
+├──────────────────────────┼──────────────┤
+│ withheld_no_elevation    │            6 │
+└──────────────────────────┴──────────────┘
+
+--- AO sample
+┌───────────┬───────────────────┬────────────────────┬────────┬───┬───────────┬───────────────────────┬───────────┐
+│ zone_main │ zone_main_subtype │     sfha_share     │ bfe_ft │ … │ bfe_call  │    bfe_call_basis     │ ffe_class │
+│  varchar  │      varchar      │       double       │ double │ … │  varchar  │        varchar        │  varchar  │
+├───────────┼───────────────────┼────────────────────┼────────┼───┼───────────┼───────────────────────┼───────────┤
+│ AO        │ NULL              │                1.0 │   NULL │ … │ NULL      │ NULL                  │ modeled   │
+│ AO        │ NULL              │  0.999999999999198 │    8.0 │ … │ too_close │ modeled_band          │ modeled   │
+│ AO        │ NULL              │                1.0 │   NULL │ … │ NULL      │ NULL                  │ modeled   │
+│ AO        │ NULL              │                1.0 │    8.0 │ … │ too_close │ modeled_band          │ modeled   │
+│ AO        │ NULL              │                1.0 │    8.0 │ … │ NULL      │ NULL                  │ NULL      │
+│ AO        │ NULL              │ 0.9999999999991656 │    8.0 │ … │ above     │ record_lidar_conflict │ record    │
+│ AO        │ NULL              │ 0.9999999999976079 │    8.0 │ … │ too_close │ modeled_band          │ modeled   │
+│ AO        │ NULL              │ 0.9999999999998356 │    8.0 │ … │ too_close │ modeled_band          │ modeled   │
+└───────────┴───────────────────┴────────────────────┴────────┴───┴───────────┴───────────────────────┴───────────┘
+  8 rows                                                                                      8 columns (7 shown)
+

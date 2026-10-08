@@ -1,0 +1,30 @@
+--- record rows on lots with ring spread > 3 ft: certificate floor height vs floor minus ring min
+┌───────┬───────────────────────────┬────────────────────────────┬────────────────┬───────────────────┬────────────────┐
+│   n   │ med_record_ffh_cert_minus │ med_cert_floor_minus_ringm │ n_cert_ffh_gt3 │ n_ringmin_ffh_gt3 │ n_model_raised │
+│       │         _certLAG          │             in             │                │                   │                │
+│ int64 │          double           │           double           │     int64      │       int64       │     int64      │
+├───────┼───────────────────────────┼────────────────────────────┼────────────────┼───────────────────┼────────────────┤
+│   510 │                       3.0 │                       5.23 │            253 │               468 │            468 │
+└───────┴───────────────────────────┴────────────────────────────┴────────────────┴───────────────────┴────────────────┘
+
+--- same for ring spread <= 3 ft
+┌───────┬────────────────┬─────────────────────────┬────────────────┬───────────────┬────────────────┐
+│   n   │ med_record_ffh │ med_floor_minus_ringmin │ n_cert_ffh_gt3 │ n_ringmin_gt3 │ n_model_raised │
+│ int64 │     double     │         double          │     int64      │     int64     │     int64      │
+├───────┼────────────────┼─────────────────────────┼────────────────┼───────────────┼────────────────┤
+│  6917 │            1.1 │                    1.63 │           1293 │          1639 │           1366 │
+└───────┴────────────────┴─────────────────────────┴────────────────┴───────────────┴────────────────┘
+
+--- risk polygon coverage of SFHA / 0.2% buildings
+┌───────────────────┬────────────────────┬───────────────┐
+│ sfha_outside_risk │ pct02_outside_risk │ any02_outside │
+│       int64       │       int64        │     int64     │
+├───────────────────┼────────────────────┼───────────────┤
+│                 0 │                  1 │             0 │
+└───────────────────┴────────────────────┴───────────────┘
+
+VE 'above' buildings with a county certificate: 30 ; navd88_native: 28 ; with C2c filled: 12
+county B8 zone of those: {'VE': 10, 'AE & VE': 1}
+C2c (bottom of lowest horizontal member) below our BFE: 0 of 11 ; C2c - BFE median 3.5 ; our floor_minus_bfe median 5.5
+C2c vs our ffe: median (ffe - c2c) ft 1.7
+VE with native county cert + C2c: 35 ; floor >= BFE but C2c < BFE: 0 ; our call distribution there: {}

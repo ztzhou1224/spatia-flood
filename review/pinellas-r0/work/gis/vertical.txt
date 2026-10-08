@@ -1,0 +1,78 @@
+--- zones_raw: source datum / unit / status
+┌─────────┬──────────┬──────────────────────────┬───────┬───────┬────────┬────────┬────────┬────────┐
+│ v_datum │ len_unit │ static_bfe_navd88_status │   n   │ n_bfe │  smin  │  smax  │ spmin  │ spmax  │
+│ varchar │ varchar  │         varchar          │ int64 │ int64 │ double │ double │ double │ double │
+├─────────┼──────────┼──────────────────────────┼───────┼───────┼────────┼────────┼────────┼────────┤
+│ NULL    │ NULL     │ withheld_no_elevation    │  5887 │  5887 │   NULL │   NULL │   NULL │   NULL │
+│ NAVD88  │ Feet     │ navd88_verbatim          │  1368 │  1368 │    0.0 │    0.0 │    0.0 │    0.0 │
+│ NULL    │ Feet     │ withheld_no_elevation    │     6 │     6 │   NULL │   NULL │   NULL │   NULL │
+└─────────┴──────────┴──────────────────────────┴───────┴───────┴────────┴────────┴────────┴────────┘
+
+--- bfe_lines: datum / status / type
+┌─────────┬───────────────────────┬─────────────┬───┬──────────────────────────────┬──────────────┬──────────────┐
+│ v_datum │ elev_ft_navd88_status │ source_type │ … │ max(elev_ft_navd88_sigma_ft) │ min(elev_ft) │ max(elev_ft) │
+│ varchar │        varchar        │   varchar   │ … │            double            │    double    │    double    │
+├─────────┼───────────────────────┼─────────────┼───┼──────────────────────────────┼──────────────┼──────────────┤
+│ NAVD88  │ navd88_verbatim       │ BFE_LINE    │ … │                          0.0 │          6.0 │        199.0 │
+│ NAVD88  │ navd88_verbatim       │ XS          │ … │                          0.0 │          7.3 │       199.84 │
+│ NAVD88  │ withheld_no_elevation │ XS          │ … │                         NULL │         NULL │         NULL │
+└─────────┴───────────────────────┴─────────────┴───┴──────────────────────────────┴──────────────┴──────────────┘
+  3 rows                                                                                     9 columns (6 shown)
+
+--- buildings: bfe_datum / precision
+┌──────────────┬────────────────────────────┬──────────────────┬───────┐
+│  bfe_method  │         bfe_datum          │ bfe_precision_ft │   n   │
+│   varchar    │          varchar           │      double      │ int64 │
+├──────────────┼────────────────────────────┼──────────────────┼───────┤
+│ static       │ NAVD88 ft; navd88_verbatim │              0.0 │ 83024 │
+│ interpolated │ NAVD88 ft; navd88_verbatim │             NULL │  5250 │
+└──────────────┴────────────────────────────┴──────────────────┴───────┘
+
+--- fdem_lag: cert_datum
+┌────────────┬───────┬───────┬──────────────────┬──────────────────┐
+│ cert_datum │   n   │ n_lag │ min(cert_lag_ft) │ max(cert_lag_ft) │
+│  varchar   │ int64 │ int64 │      double      │      double      │
+├────────────┼───────┼───────┼──────────────────┼──────────────────┤
+│ navd_1988  │  7515 │  7482 │           -18.68 │             87.9 │
+└────────────┴───────┴───────┴──────────────────┴──────────────────┘
+
+--- buildings: ffe_datum
+┌───────────┬─────────────────────────────────────────────────────────────────────────────────┬────────┐
+│ ffe_class │                                    ffe_datum                                    │   n    │
+│  varchar  │                                     varchar                                     │ int64  │
+├───────────┼─────────────────────────────────────────────────────────────────────────────────┼────────┤
+│ modeled   │ NAVD88 ft US survey, GEOID12B                                                   │ 240356 │
+│ NULL      │ NULL                                                                            │ 124947 │
+│ record    │ NAVD88 ft (certificate, vertical datum filtered to NAVD 1988; geoid not stated) │   7461 │
+└───────────┴─────────────────────────────────────────────────────────────────────────────────┴────────┘
+
+--- buildings: ground_geoid / precision
+┌──────────────┬─────────────────────┬──────────┬──────────────┬────────┐
+│ ground_geoid │ ground_precision_ft │ lidar_ql │ ground_class │   n    │
+│   varchar    │       double        │ varchar  │   varchar    │ int64  │
+├──────────────┼─────────────────────┼──────────┼──────────────┼────────┤
+│ GEOID12B     │ 0.32808334366795866 │ QL 1     │ observed     │ 290540 │
+│ NULL         │                NULL │ QL 1     │ NULL         │  82224 │
+└──────────────┴─────────────────────┴──────────┴──────────────┴────────┘
+
+--- decided calls by basis
+┌────────────────────────────────────────┬───────┐
+│             bfe_call_basis             │   n   │
+│                varchar                 │ int64 │
+├────────────────────────────────────────┼───────┤
+│ modeled_band                           │ 33579 │
+│ record                                 │  6161 │
+│ modeled_band+interpolated_bfe          │   651 │
+│ record_lidar_conflict                  │   245 │
+│ record+interpolated_bfe                │   169 │
+│ record_lidar_conflict+interpolated_bfe │     1 │
+└────────────────────────────────────────┴───────┘
+
+--- sigma>0 rows
+┌─────────────┬───────────────────────┐
+│ n_sigma_gt0 │ n_rec_too_close_sigma │
+│    int64    │         int64         │
+├─────────────┼───────────────────────┤
+│           0 │                     0 │
+└─────────────┴───────────────────────┘
+

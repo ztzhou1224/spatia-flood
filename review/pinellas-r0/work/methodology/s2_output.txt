@@ -1,0 +1,76 @@
+rows 372764
+record 7461 modeled 240356
+
+zone_main distribution (share): record vs modeled
+            record  modeled
+z4                         
+A/AE/AH/AO   0.859    0.278
+X 0.2%       0.099    0.112
+X            0.031    0.607
+VE/V         0.012    0.003
+touches_sfha share: record 0.916 modeled 0.304
+raised_flag share (where not null): record 0.254 modeled 0.167
+dor_use_code top: record {'001': 0.895, '008': 0.042, '000': 0.02, '004': 0.018, '002': 0.006}
+dor_use_code top: modeled {'001': 0.802, '002': 0.058, '008': 0.05, '004': 0.046, '003': 0.02}
+             feature    rec_q1   rec_q50   rec_q99    mod_q1   mod_q50     mod_q99  rec_null  mod_null  mod_outside_rec_1_99
+0         year_built  1925.000  1970.000  2023.000  1925.000  1971.000    2021.000     0.033     0.017                 0.012
+1   living_area_sqft   791.000  1910.000  8022.370   646.000  1620.000  221388.000     0.033     0.017                 0.052
+2  footprint_area_m2    78.568   242.604  1136.920    43.766   208.543     953.329     0.000     0.000                 0.051
+3          ground_ft     1.869     5.465    42.253     2.802    15.262      74.202     0.000     0.000                 0.166
+4            roof_ft    10.382    15.156    44.622     9.530    14.605      41.181     0.038     0.019                 0.032
+5            eave_ft     8.719    11.356    39.419     8.495    11.191      35.831     0.038     0.020                 0.022
+6         sfha_share     0.000     1.000     1.000     0.000     0.000       1.000     0.000     0.000                 0.000
+share of modeled rows with ANY of ['year_built', 'living_area_sqft', 'footprint_area_m2', 'ground_ft', 'roof_ft', 'eave_ft', 'sfha_share'] outside labelled 1-99 pct: 0.2777 n 66751
+year_built decade shares record vs modeled:
+            record  modeled
+year_built                 
+1880.0         NaN    0.000
+1900.0       0.000    0.001
+1910.0       0.002    0.002
+1920.0       0.017    0.025
+1930.0       0.010    0.010
+1940.0       0.039    0.036
+1950.0       0.255    0.229
+1960.0       0.175    0.160
+1970.0       0.160    0.190
+1980.0       0.110    0.164
+1990.0       0.070    0.091
+2000.0       0.059    0.057
+2010.0       0.056    0.023
+2020.0       0.046    0.012
+modeled rows by z4 with raised_flag share: {'A/AE/AH/AO': 0.249, 'VE/V': 0.421, 'X': 0.128, 'X 0.2%': 0.164}
+
+=== BFE CALL ===
+bfe_precision_ft distribution (SFHA, static): {0.0: 83024}
+calls by class: bfe_call   above  below   null  too_close
+ffe_class                                
+modeled     5275  28955   3009      35860
+null           0      0  12312          0
+record      2492   4084    122        134
+record above calls: 2492 | within 0.5 ft of BFE: 403 | exactly at BFE (==0): 74 | within 0.1: 141 | within 1.0: 684
+record below calls: 4084 | within 0.5 ft: 314
+record calls with lidar conflict: 246 {'n': {'above': 244, 'below': 2}}
+modeled calls: above 5275 below 28955 too_close 35860
+modeled above: floor_minus_bfe quantiles {0.05: 0.87, 0.25: 1.26, 0.5: 1.88, 0.75: 3.6, 0.95: 8.25} margin band_lo-bfe quantiles {0.05: 0.05, 0.5: 0.58, 0.95: 3.44}
+modeled above by raised_flag: {np.False_: 3468, np.True_: 1807}
+modeled below by raised_flag: {np.False_: 27648, np.True_: 1307}
+modeled too_close by raised_flag: {np.False_: 21017, np.True_: 14843}
+modeled band width quantiles (ffh): {0.05: 1.36, 0.25: 1.57, 0.5: 2.15, 0.75: 3.92, 0.9: 11.14, 0.95: 18.01}
+modeled band width by raised_flag median: {'False': 1.92, 'True': 10.33}
+modeled SFHA with BFE: 70090 | ground_ft + band_hi < bfe (below decided): 28955 | ground_ft itself below BFE by >= 5 ft: 19971 | ground below BFE by >= 8 ft: 1774
+record SFHA: n 6710 share ffe>=bfe 0.383 | modeled SFHA decided: share above among decided 0.154
+
+=== INTERPOLATED BFE === n 5250 band width quantiles {0.05: 1.0, 0.25: 1.0, 0.5: 1.4, 0.75: 1.8, 0.9: 2.0, 0.95: 3.0, 0.99: 4.0, 1.0: 9.0} | width > 2 ft: 451 | width > 5 ft: 9
+pair source types: {'BFE_LINE/BFE_LINE': 1845, 'XS/XS': 1399, 'XS/BFE_LINE': 1097, 'BFE_LINE/XS': 909}
+d1 (nearest) quantiles m {0.5: 58.0, 0.9: 166.0, 0.99: 270.0} d2 quantiles {0.5: 189.0, 0.9: 372.0, 0.99: 613.5100000000002} | pairs with d1+d2 > 1000 m: 1
+|e1-e2| quantiles {0.5: 0.4, 0.9: 1.0, 0.95: 2.0, 0.99: 3.0, 1.0: 8.0}
+calls with interpolated BFE: {'too_close': 3848, 'above': 671, nan: 581, 'below': 150}
+
+=== TARGET SEMANTICS ===
+record rows by diagram: {'1A': 4760, '1B': 1027, '7': 582, '8': 466, '6': 347, '5': 196, '3': 46, '9': 24, '2A': 6, '2B': 4, '4': 3}
+record rows using NEXT HIGHER floor (C2b): 1478 | of which bfe_call above: 1090 below: 333 too_close: 1
+county certificates: 19382
+county certs diagrams 2-4/6-9 with both C2A and C2B: 3456 | next - bottom quantiles ft {0.05: 1.78, 0.25: 6.3, 0.5: 9.78, 0.75: 10.8, 0.95: 12.2}
+r0 record rows (diagram 2-4/6-9) with a county certificate on the same building carrying C2A: 693 | county next vs r0 ffe agree within 0.5 ft: 621
+of these, bfe_call above: 472 | would be BELOW on lowest floor (C2A < BFE): 443 | C2A - BFE quantiles for the above calls: {0.05: -6.7, 0.25: -4.84, 0.5: -3.4, 0.75: -2.0, 0.95: 0.24}
+county certs overall: diagram share {'1': 0.369, '1A': 0.215, '7': 0.11, '': 0.079, '1B': 0.067, '8': 0.062, '6': 0.054, '5': 0.033, '3': 0.004, '1-A': 0.001}

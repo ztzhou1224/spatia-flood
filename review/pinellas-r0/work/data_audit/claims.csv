@@ -1,0 +1,90 @@
+source,claim,claimed,measured,result
+§10,sha256 prefix/suffix ecea7173…a6d93b7,True,False,FAIL
+§10,sha256 full,ecea7173…a6d93b7,ecea71739977fbecb79b6de8b28aa5a97e95f032800659c0f2ed0edd5d6a93b7,info
+§8/§9/json,rows (county buildings),372764,372764,PASS
+check.txt,columns incl geometry (check says 96),96,96,PASS
+§8/json,in_risk_area,290540,290540,PASS
+§8/json,touches_sfha,92243,92243,PASS
+§8,"static BFE (bfe_method='static') 83,024",83024,83024,PASS
+json,"bfe_ft not null (json 'bfe_static' 88,274)",88274,88274,PASS
+§8,"interpolated BFE 5,250",5250,5250,PASS
+§8,bfe_null not_determinable 567,567,567,PASS
+§8,bfe interpolation no_coverage 59 (bfe_null no_coverage among SFHA non-A-only),59,501,FAIL
+json,"bfe_null no_coverage 3,402",3402,3402,PASS
+json,"bfe_null not_applicable 280,521",280521,280521,PASS
+§8,median interpolated band 1.4,1.4,1.4,PASS
+§8 (handoff),"ffh record 7,482",7482,7427,FAIL
+json run13,"ffh record 7,427",7427,7427,PASS
+§8 (handoff),"ffh modeled 240,305",240305,240356,FAIL
+json run13,"ffh modeled 240,356",240356,240356,PASS
+§8 (handoff),"ffh null 124,949",124949,124981,FAIL
+json run13,"ffh null 124,981",124981,124981,PASS
+json,"ffe record (floor.record 7,461)",7461,7461,PASS
+json,ffh_null not_determinable 36,36,36,PASS
+json,"ffh_null not_evaluated 121,907",121907,121907,PASS
+json,"ffh_null no_coverage 3,038",3038,3038,PASS
+§8,median modeled ffh band 2.15,2.15,2.15,PASS
+§8 (handoff),ffe_record_lidar_conflict 298,298,300,FAIL
+json run13,record_lidar_conflict 300,300,300,PASS
+§9/json,certificates rejected vs lidar 54 (record_note like 'not used'),54,54,PASS
+json,record_ffh_not_usable 34,34,34,PASS
+json,record_without_cert_lag 32,32,32,PASS
+json,"model_eligible 247,653 (model_version not null)",247653,247653,PASS
+json,"raised_flag True 41,918",41918,41918,PASS
+json,"raised_flag False 205,735",205735,205735,PASS
+json,"raised_flag null 125,111",125111,125111,PASS
+§8,record_vintage_note set (261 LLM estimates; §8 says 264 none + 1 bad),261,261,PASS
+§8 (handoff),bfe_call above 7796,7796,7767,FAIL
+§8 (handoff),bfe_call below 33032,33032,33039,FAIL
+§8 (handoff),bfe_call too_close 35973,35973,35994,FAIL
+§8 (handoff),"bfe_call null 15,442",15442,15443,FAIL
+json run13,bfe_call above 7767,7767,7767,PASS
+json run13,bfe_call below 33039,33039,33039,PASS
+json run13,bfe_call too_close 35994,35994,35994,PASS
+json run13,bfe_call not_applicable 280521,280521,280521,PASS
+json run13,"bfe_call null 15,443",15443,15443,PASS
+json,bfe_call_basis modeled_band 65725,65725,65725,PASS
+json,bfe_call_basis record 6161,6161,6161,PASS
+json,bfe_call_basis modeled_band+interpolated_bfe 4365,4365,4365,PASS
+json,bfe_call_basis record+interpolated_bfe 303,303,303,PASS
+json,bfe_call_basis record_lidar_conflict 245,245,245,PASS
+json,bfe_call_basis record_lidar_conflict+interpolated_bfe 1,1,1,PASS
+json,bfe_call_null not_evaluated 10512,10512,10512,PASS
+json,bfe_call_null no_coverage 4363,4363,4363,PASS
+json,bfe_call_null not_determinable 568,568,568,PASS
+§8,SFHA decided share 44.3% (json 0.442),0.442,0.442,PASS
+json,"sfha_buildings (touches & risk) 92,243",92243,92243,PASS
+§8/06,"touches_sfha with share < 1%: 1,240",1240,1240,PASS
+json,no_zone_polygon 12 (zones_null),12,12,PASS
+json,share_sum_over_1.01: 0,0,0,PASS
+json,"ground_ft not null (lag 290,540)",290540,290540,PASS
+json,"roof_ft not null 280,361",280361,280361,PASS
+json,"eave_ft not null 280,025",280025,280025,PASS
+json,"roof_null not_evaluated 84,598",84598,84598,PASS
+json,"roof_null not_determinable 7,805",7805,7805,PASS
+json,"eave_null not_determinable 8,141",8141,8141,PASS
+json,"buildings_per_workunit 372,764",372764,372764,PASS
+json,"buildings_with_parcel 368,800",368800,368800,PASS
+json,"buildings_on_residential_parcel 315,459",315459,315459,PASS
+json,"risk_buildings_on_residential_parcel 248,073",248073,248073,PASS
+json,"parcel rows 432,360",432360,432360,PASS
+json,"parcel distinct geom_group 315,982",315982,315982,PASS
+json,"parcels with_building 414,888",414888,414888,PASS
+json,"parcels any_building_below_bfe 56,619",56619,56619,PASS
+json,"buildings_spanning_parcels 29,992",29992,29992,PASS
+json,address_source overture_addresses (point in footprint) 298440,298440,298440,PASS
+json,address_source fl_parcels situs address (DOR NAL) 73453,73453,73453,PASS
+json,"address_source geocodio reverse (Pinellas (Pinellas County), rooftop) 692",692,692,PASS
+json,address_source none 144,144,144,PASS
+json,"address_source geocodio reverse (OpenStreetMap Contributors, nearest_street) 6",6,6,PASS
+§8,Geocodio 727 lookups (rows with geocodio address_source),727,727,PASS
+§8,Geocodio 717 rooftop,717,717,PASS
+§8,geocodio cache rows,727,727,PASS
+json,addresses_missing_in_risk_area 0,0,0,PASS
+06,"centroids outside own footprint 1,193",1193,1193,PASS
+json/metadata,metadata gate MAE 1.039,1.039,1.039,PASS
+json/metadata,metadata gate coverage 0.918,0.918,0.918,PASS
+06,model_version E-lgbm-12103-<12 hex>,E-lgbm-12103-62f502979c3b,E-lgbm-12103-62f502979c3b,PASS
+info,distinct release,,"[('pinellas-r0',)]",info
+info,distinct provider,,"[('public',)]",info
+info,distinct footprint_release,,"[('2026-09-23.1',)]",info

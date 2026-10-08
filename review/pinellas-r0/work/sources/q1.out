@@ -1,0 +1,230 @@
+metadata keys: [b'ARROW:schema', b'spatia_flood', b'geo', b'pandas']
+{
+ "producer": "spatia-flood pipeline/assemble/assemble.py",
+ "fips": "12103",
+ "run": "pinellas_2018",
+ "release": "pinellas-r0",
+ "built": "2026-10-07",
+ "model_version": "E-lgbm-12103-62f502979c3b",
+ "inputs": {
+  "us_counties": {
+   "version": "2025",
+   "file_hash": "7754492e3ca5406f7d807be22eab54a91016128d2cd18712aff530275c5d8e88",
+   "storage_path": "layers/national/us_counties.parquet"
+  },
+  "overture_addresses": {
+   "version": "2026-09-23.1",
+   "file_hash": "58bc7dc66e3e67e1c5c6727de7ccdc3dc987f998e2780de08e5d62615c3927f2",
+   "storage_path": "layers/national/overture_addresses.parquet"
+  },
+  "overture_buildings": {
+   "version": "2026-09-23.1",
+   "file_hash": "96191e4f601f8a2aee9f26db22e273aa4528e2f56591b87a7b367536350703d4",
+   "storage_path": "layers/national/overture_buildings.parquet"
+  },
+  "fema_flood_zones": {
+   "version": "2026.04",
+   "file_hash": "1d4ecb38549e05b0974271c863a3288543d9d01be682fd2979890f368927c64d",
+   "storage_path": "layers/national/fema_flood_zones@20260930T082454Z-9c7789f1/current/**/*.parquet"
+  },
+  "fema_bfe_context": {
+   "version": "2026.04",
+   "file_hash": "80c177be8c76c335fd6703b57d9a5ffb05c326510e22ffff02c0aa5dd2d80f52",
+   "storage_path": "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
+  },
+  "fl_parcels": {
+   "version": "2025",
+   "file_hash": "3b2b64f96112083cdabed16862d9ef84d19629773b435677bbb93b1f984f17c6",
+   "storage_path": "layers/state/FL/fl_parcels.parquet"
+  },
+  "fema_flood_zones_release": "20260930T082454Z-9c7789f1",
+  "fema_bfe_context_release": "20260930T082454Z-9c7789f1"
+ },
+ "lidar_workunits": [
+  {
+   "workunit": "FL_Peninsular_Pinellas_2018",
+   "project": "FL_Peninsular_2018_D18",
+   "collect_start": "2018-12-07",
+   "collect_end": "2019-03-08",
+   "ql": "QL 1",
+   "spec": "USGS Lidar Base Specification 1.3",
+   "vert_crs": "6360",
+   "geoid": "GEOID12B",
+   "lpc_pub_date": "2021-05-13"
+  }
+ ],
+ "gate": {
+  "n": 1315,
+  "MAE": 1.039,
+  "coverage": 0.918,
+  "q": 2.326714506848828
+ }
+}
+ncols 96
+['building_id', 'in_risk_area', 'footprint_area_m2', 'lon', 'lat', 'footprint_source', 'footprint_release', 'zones', 'zones_null', 'zone_main', 'zone_main_subtype', 'sfha_share', 'touches_sfha', 'firm_effective_date', 'bfe_ft', 'bfe_class', 'bfe_method', 'bfe_source', 'bfe_vintage', 'bfe_precision_ft', 'bfe_datum', 'bfe_null', 'bfe_band_lo', 'bfe_band_hi', 'ground_ft', 'ground_class', 'ground_source', 'ground_vintage', 'ground_precision_ft', 'ground_geoid', 'ground_null', 'roof_ft', 'roof_class', 'roof_source', 'roof_vintage', 'roof_null', 'eave_ft', 'eave_class', 'eave_source', 'eave_vintage', 'eave_null', 'lidar_workunit', 'lidar_ql', 'parcel_key', 'parcel_id_native', 'county_fips', 'parcels_at_centroid', 'dor_use_code', 'year_built', 'year_built_class', 'year_built_source', 'year_built_vintage', 'year_built_null', 'living_area_sqft', 'living_area_sqft_class', 'living_area_sqft_source', 'living_area_sqft_vintage', 'living_area_sqft_null', 'raised_flag', 'raised_flag_null', 'ffh_ft', 'ffh_class', 'ffh_source', 'ffh_vintage', 'ffh_band_lo', 'ffh_band_hi', 'ffh_null', 'record_note', 'ffe_ft', 'ffe_class', 'ffe_source', 'ffe_vintage', 'ffe_band_lo', 'ffe_band_hi', 'record_vintage_note', 'ffe_datum', 'ffe_null', 'ffe_record_lidar_conflict', 'lift_or_rebuild', 'lift_or_rebuild_null', 'floor_minus_bfe_ft', 'floor_minus_bfe_band_lo', 'floor_minus_bfe_band_hi', 'bfe_call', 'bfe_call_basis', 'bfe_call_null', 'address', 'address_source', 'address_points_in_footprint', 'address_null', 'input_licences', 'provider', 'model_version', 'release', 'spans_parcels', 'geometry']
+sha256 ecea71739977fbecb79b6de8b28aa5a97e95f032800659c0f2ed0edd5d6a93b7
+rows 372764
+
+provider:
+ provider
+public    372764
+Name: count, dtype: int64
+
+input_licences combos:
+ input_licences
+fema_nfhl:public|fl_dor_nal:public_record|overture_addresses:FL_public_domain|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                   224918
+fema_nfhl:public|fl_dor_nal:public_record|overture_addresses:FL_public_domain|overture_buildings:ODbL-1.0                                                            63844
+fema_nfhl:public|fl_dor_nal:public_record|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                                                        55069
+fema_nfhl:public|fl_dor_nal:public_record|overture_buildings:ODbL-1.0                                                                                                17521
+fdem_certificates:terms_unread|fema_nfhl:public|fl_dor_nal:public_record|overture_addresses:FL_public_domain|overture_buildings:ODbL-1.0|usgs_3dep:public_domain      6585
+fema_nfhl:public|overture_addresses:FL_public_domain|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                                              2318
+fdem_certificates:terms_unread|fema_nfhl:public|fl_dor_nal:public_record|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                           863
+fema_nfhl:public|overture_addresses:FL_public_domain|overture_buildings:ODbL-1.0                                                                                       715
+fema_nfhl:public|geocodio:stored_per_terms|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                                                         714
+fema_nfhl:public|overture_buildings:ODbL-1.0                                                                                                                           144
+fdem_certificates:terms_unread|fema_nfhl:public|overture_addresses:FL_public_domain|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                 60
+fdem_certificates:terms_unread|fema_nfhl:public|geocodio:stored_per_terms|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                            7
+fema_nfhl:public|geocodio:stored_per_terms|openstreetmap:ODbL-1.0|overture_buildings:ODbL-1.0|usgs_3dep:public_domain                                                    6
+
+tags:
+ fema_nfhl:public                       372764
+overture_buildings:ODbL-1.0            372764
+fl_dor_nal:public_record               368800
+overture_addresses:FL_public_domain    298440
+usgs_3dep:public_domain                290540
+fdem_certificates:terms_unread           7515
+geocodio:stored_per_terms                 727
+openstreetmap:ODbL-1.0                      6
+
+footprint_release: footprint_release
+2026-09-23.1    372764
+
+footprint_source: footprint_source
+Overture buildings release 2026-09-23.1 (spatia-data overture_buildings, file_hash 96191e4f601f); county membership: footprint centroid in us_counties 2025 GEOID 12103    372764
+
+ground_geoid: ground_geoid
+GEOID12B    290540
+NaN          82224
+
+ground_vintage: ground_vintage
+2018-12-07/2019-03-08    290540
+NaN                       82224
+
+ground_precision_ft: ground_precision_ft
+0.328083    290540
+NaN          82224
+
+lidar_workunit/ql: lidar_workunit               lidar_ql
+FL_Peninsular_Pinellas_2018  QL 1        372764
+
+ffe_datum: ffe_datum
+NAVD88 ft US survey, GEOID12B                                                      240356
+NaN                                                                                124947
+NAVD88 ft (certificate, vertical datum filtered to NAVD 1988; geoid not stated)      7461
+
+bfe_datum: bfe_datum
+NaN                           284490
+NAVD88 ft; navd88_verbatim     88274
+
+bfe_precision_ft x bfe_method: bfe_method    bfe_precision_ft
+interpolated  NaN                   5250
+static        0.0                  83024
+NaN           NaN                 284490
+
+bfe_vintage: bfe_vintage
+NaN           284490
+2021-08-24     85579
+2003-09-03      1447
+2009-08-18      1248
+
+bfe_source sample: bfe_source
+FEMA NFHL S_FLD_HAZ_AR static BFE, DFIRM 12103C (spatia-data fema_flood_zones@20260930T082454Z-9c7789f1)                                                            83024
+FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE 984dfd9252fc426d371d12ce80b5e658-1 17 ft a      200
+FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE d61c2b498c3d7bf6dc9e9e347641fc4f-1 18 ft a      146
+FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE ae436e39e6f13b5f53fab19a0e94713f-1 19 ft a      104
+FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE 962685c9fec21abc12003b934800dfd7-1 19 ft a       76
+FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE 764a1525aff8e84d95d57d80089069e1-1 16 ft a       68
+
+firm_effective_date: firm_effective_date
+2003-09-03      5126
+2009-08-18      1817
+2021-08-24    365809
+NaN               12
+
+record rows 7461
+ffe_vintage == ffh_vintage for record rows with ffh: True
+window vintages 260 unknown 0 null 0
+point-dated 7201
+year dist:
+ ffe_vintage
+2009.0       1
+2010.0       2
+2011.0       3
+2012.0       5
+2013.0       3
+2014.0       3
+2015.0       5
+2016.0      10
+2017.0    1141
+2018.0    1103
+2019.0    1102
+2020.0     685
+2021.0     793
+2022.0     563
+2023.0     389
+2024.0     330
+2025.0     815
+2026.0     248
+predate lidar start 2018-12-07: 2215  within flight: 231  after 2019-03-08: 4755  >=2020: 3823  >=2024-09-26 (Helene): 1193
+window rows: start<lidar 130 end<lidar 33 start>flightend 130
+window examples: ffe_vintage
+2022-01-01/2025-12-31    45
+2018-01-01/2021-12-31    42
+2015-07-01/2019-11-30    40
+2015-12-01/2018-11-30    33
+2023-07-01/2026-10-07    20
+2019-12-01/2023-10-31    18
+2021-08-24/2023-10-31    18
+2018-12-01/2022-11-30    15
+record_vintage_note non-null 261
+ffe_record_lidar_conflict: ffe_record_lidar_conflict
+<NA>     365278
+False      7186
+True        300
+
+year_built non-null 362328  >=2019: 7499  >=2020: 5856  >=2025: 0  in risk & >=2019: 5277
+year_built>=2019 by ffh_class:
+ ffh_class
+modeled    3772
+NaN        3317
+record      410
+year_built>=2019 by ffe_class & touches_sfha:
+ ffe_class  touches_sfha
+modeled    False           2701
+           True            1071
+record     False             40
+           True             389
+NaN        False           2980
+           True             318
+year_built dist tail:
+ year_built
+2017    1054
+2018    1218
+2019    1643
+2020     941
+2021    1092
+2022    1315
+2023    1347
+2024    1161
+year_built_vintage: year_built_vintage
+2025    362328
+NaN      10436
+year_built_source: year_built_source
+Florida DOR NAL 2025 (spatia-data fl_parcels)    362328
+NaN                                               10436
+lift_or_rebuild: lift_or_rebuild
+<NA>    372764 lift_or_rebuild_null
+not_evaluated    372764
+record rows with year_built>=2019 and ffe_vintage< year_built:
+ n 429  vintage year < year_built: 139
+modeled & year_built>=2019: 3772  of which year_built>=2020: 2938

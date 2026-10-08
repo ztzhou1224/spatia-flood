@@ -1,0 +1,4 @@
+default WGS84->NAD83(2011)/FL West: Inverse of NAD83(2011) to WGS 84 (1) + SPCS83 Florida West zone (meter) (with axis order normalized for visualization) | accuracy 2.0
+ITRF2014->NAD83(2011): Conversion from ITRF2014 (geog2D) to ITRF2014 (geocentric) + ITRF2014 to NAD83(2011) (1) + Conversion from NAD83(2011) (geocentric) to NAD83(2011) (geog2D) (with axis order normalized for visualization) | accuracy 0.0
+offset if the footprint coordinate is really ITRF2014@2020: dx=0.640 m dy=-0.635 m |d|=0.902 m
+available ops: ['Inverse of NAD83(2011) to WGS 84 (1) + SPCS83 Florida West zone (meter) (with axis order normalized for visualization)'] | unavailable: []

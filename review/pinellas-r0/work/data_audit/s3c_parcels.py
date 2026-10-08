@@ -1,0 +1,18 @@
+import sys, duckdb, pandas as pd
+A = sys.argv[1]
+con = duckdb.connect()
+con.execute(f"CREATE VIEW b AS SELECT * EXCLUDE (geometry) FROM read_parquet('{A}/buildings_12103.parquet')")
+con.execute(f"CREATE VIEW p AS SELECT * FROM read_parquet('{A}/parcels_12103.parquet')")
+def q(s): return con.execute(s).df()
+pd.set_option("display.width", 250); pd.set_option("display.max_columns", 40)
+print(q("SELECT count(DISTINCT parcel_key) dup_keys, sum(n) dup_rows FROM (SELECT parcel_key, count(*) n FROM p GROUP BY 1 HAVING count(*)>1)"))
+print("buildings whose parcel_key is a duplicated key:", q("SELECT count(*) FROM b WHERE parcel_key IN (SELECT parcel_key FROM p GROUP BY 1 HAVING count(*)>1)"))
+print(q("SELECT a.parcel_key, a.geom_group, a.dor_uc, a.buildings, a.below, a.any_building_below_bfe FROM p a WHERE parcel_key IN (SELECT parcel_key FROM p GROUP BY 1 HAVING count(*)>1) ORDER BY 1 LIMIT 8"))
+print("dup keys with conflicting any_building_below_bfe:", q("SELECT count(*) FROM (SELECT parcel_key FROM p GROUP BY 1 HAVING count(DISTINCT any_building_below_bfe)>1)"))
+print("geom_group sizes:")
+print(q("SELECT geom_group, count(*) parcels, max(buildings) buildings, max(below) below, string_agg(DISTINCT dor_uc, ',') ucs FROM p GROUP BY 1 ORDER BY 2 DESC LIMIT 6"))
+print(q("SELECT quantile_cont(n, [0.5,0.9,0.99,0.999]) parcels_per_group, max(n) mx FROM (SELECT geom_group, count(*) n FROM p GROUP BY 1)"))
+print(q("SELECT max(buildings) max_buildings_on_parcel, quantile_cont(buildings,[0.5,0.99]) q, sum(CASE WHEN buildings>50 THEN 1 ELSE 0 END) gt50 FROM p"))
+print("parcel-building links: sum(buildings) over distinct geom_group:", q("SELECT sum(buildings) FROM (SELECT geom_group, max(buildings) buildings FROM p GROUP BY 1)"))
+print("parcel keys for 1 geom_group vs building parcel_key: building parcel_key in parcel table with buildings=0:", q("SELECT count(*) FROM b JOIN p USING (parcel_key) WHERE p.buildings = 0"))
+print("building's own id listed? (building centroid parcel has buildings>0 but building not >=10% in it): sample count of buildings with spans_parcels false & parcel buildings=0", q("SELECT count(*) FROM b JOIN p USING (parcel_key) WHERE p.buildings=0 AND NOT b.spans_parcels"))

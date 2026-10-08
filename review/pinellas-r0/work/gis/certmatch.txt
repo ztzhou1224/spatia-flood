@@ -1,0 +1,7 @@
+pages 20 records 19382 spatialReference {'wkid': 4326, 'latestWkid': 4326} with xy 19382
+POINT_TYPE counts {' ': 10329, 'Completed': 8962, nan: 91}
+A5_HORIZ_DATUM counts {' ': 19018, 'NAD83': 261, nan: 91, 'NAD27': 12}
+county EC points: within a footprint 16817 (0.868); not within: 2565
+distance of NOT-within points to the nearest Overture footprint (m): {Interval(0.0, 5.0, closed='right'): 1636, Interval(5.0, 10.0, closed='right'): 424, Interval(10.0, 25.0, closed='right'): 344, Interval(25.0, 50.0, closed='right'): 106, Interval(50.0, 100.0, closed='right'): 42, Interval(100.0, 1000000000.0, closed='right'): 13}
+share of not-within with a footprint within 25 m: 0.937 ; beyond 25 m: 161
+sample distances (m) of 20 not-within beyond 10 m: [15.1, 22.0, 42.5, 23.3, 10.2, 38.0, 10.6, 12.4, 18.1, 70.8, 13.6, 14.0, 10.5, 10.2, 36.2, 14.5, 11.7, 11.3, 20.5, 21.4]

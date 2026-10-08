@@ -1,0 +1,4 @@
+/home/user/spatia-flood/docs/00-summary.md:35:and both are in the same datum — then the structure is above the BFE (that is FEMA's structure LOMA
+/home/user/spatia-flood/docs/01-plan-harris-pilot.md:185:  guidance. Record the method per house. Note pending MAAPnext preliminary maps.
+/home/user/spatia-flood/research/harris_mini/fetch_nfhl.py:3:28 Flood Hazard Zones, 16 Base Flood Elevation lines, 3 FIRM panels, 1 LOMRs.
+/home/user/spatia-flood/research/harris_mini/HARVEY.md:16:  during Harvey everywhere**: B's panels are effective 2013-10-16 (LOMRs 2014, 2018 ×2, 2021); C's

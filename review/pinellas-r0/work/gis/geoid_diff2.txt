@@ -1,0 +1,5 @@
+Clearwater       lon=-82.7873 lat=27.9659 N12B=-24.6583 m N18=-24.6654 m  N18-N12B=-0.0071 m = -0.023 ftUS -> NAVD88 height(GEOID18) - height(GEOID12B) for the same ellipsoidal height = +0.023 ft
+St Pete          lon=-82.6403 lat=27.7731 N12B=-24.5299 m N18=-24.5332 m  N18-N12B=-0.0034 m = -0.011 ftUS -> NAVD88 height(GEOID18) - height(GEOID12B) for the same ellipsoidal height = +0.011 ft
+St Pete Beach    lon=-82.7457 lat=27.7206 N12B=-24.3393 m N18=-24.3405 m  N18-N12B=-0.0012 m = -0.004 ftUS -> NAVD88 height(GEOID18) - height(GEOID12B) for the same ellipsoidal height = +0.004 ft
+Tarpon Springs   lon=-82.7826 lat=28.1416 N12B=-25.0537 m N18=-25.0533 m  N18-N12B=+0.0004 m = +0.001 ftUS -> NAVD88 height(GEOID18) - height(GEOID12B) for the same ellipsoidal height = -0.001 ft
+Pinellas Park    lon=-82.6995 lat=27.869 N12B=-24.5869 m N18=-24.5956 m  N18-N12B=-0.0087 m = -0.029 ftUS -> NAVD88 height(GEOID18) - height(GEOID12B) for the same ellipsoidal height = +0.029 ft

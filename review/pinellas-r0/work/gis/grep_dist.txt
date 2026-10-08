@@ -1,0 +1,8 @@
+/home/user/spatia-flood/pipeline/phase0/risk_area.py:94:    c.execute("""CREATE TABLE risk AS SELECT ST_Intersection(ST_Buffer(ST_Union(coalesce(s.g, ST_GeomFromText('POLYGON EMPTY')),
+/home/user/spatia-flood/pipeline/labels_pinellas/build.py:178:        ri, rf = tree.query_nearest(pts[rest], max_distance=10, return_distance=False, all_matches=False)
+/home/user/spatia-flood/pipeline/lidar/features.py:32:    v, vi, vf = stat(g.buffer(2.5).difference(g.buffer(0.5))), stat(g), stat(g.buffer(30).difference(g.buffer(10)))
+/home/user/spatia-flood/pipeline/lidar/features.py:61:    return float(shapely.hausdorff_distance(fp.centroid, fp.convex_hull.boundary)) + 3.5
+/home/user/spatia-flood/pipeline/lidar/features.py:66:    inner03, inner1 = fp.buffer(-0.3), fp.buffer(-1.0)
+/home/user/spatia-flood/pipeline/lidar/features.py:67:    ring3 = fp.buffer(3.0).difference(fp)
+/home/user/spatia-flood/pipeline/train/labels.py:61:        ri, rf = tree.query_nearest(pts[rest], max_distance=10, return_distance=False, all_matches=False)
+/home/user/spatia-flood/pipeline/assemble/assemble.py:179:            d = shapely.distance(c, lg[cand])

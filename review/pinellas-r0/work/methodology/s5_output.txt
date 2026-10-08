@@ -1,0 +1,19 @@
+shipped: {'MAE': 1.0394, 'coverage': 0.9179, 'BFE side': 0.8975, 'decided correct': 0.9827}
+FIT-only: {'MAE': 1.0637, 'coverage': 0.9125, 'BFE side': 0.8975, 'decided correct': 0.9827}
+paired bootstrap, shipped minus FIT-only, MAE: mean -0.0241, sd 0.0132, 95% CI [-0.0486, +0.0029]
+paired bootstrap, shipped minus FIT-only, coverage: mean +0.0055, sd 0.0033, 95% CI [-0.0008, +0.0122]
+paired bootstrap, shipped minus FIT-only, BFE side: mean -0.0002, sd 0.0040, 95% CI [-0.0083, +0.0075]
+paired bootstrap, shipped minus FIT-only, decided correct: mean +0.0001, sd 0.0019, 95% CI [-0.0040, +0.0041]
+above: 109/111 right, wrong rate 0.018, 95% CI of wrong rate [0.002, 0.064]
+below: 574/584 right, wrong rate 0.017, 95% CI of wrong rate [0.008, 0.031]
+SFHA test truths |ffe-bfe|<=0.5: 168 of 1200
+modeled rows with a call: 70090
+  year_built: modeled-with-call median 1971.0 vs record median 1970.0; outside record 1-99 pct: 0.009
+  living_area_sqft: modeled-with-call median 1773.0 vs record median 1910.0; outside record 1-99 pct: 0.053
+  footprint_area_m2: modeled-with-call median 220.5 vs record median 242.6; outside record 1-99 pct: 0.051
+  ground_ft: modeled-with-call median 5.8 vs record median 5.5; outside record 1-99 pct: 0.018
+  roof_ft: modeled-with-call median 15.0 vs record median 15.2; outside record 1-99 pct: 0.040
+  eave_ft: modeled-with-call median 11.5 vs record median 11.4; outside record 1-99 pct: 0.031
+modeled-with-call rows with ANY feature outside record 1-99 pct: 0.151
+modeled ABOVE rows: ground_ft median 8.57 | outside record ground 1-99: 0.023
+record ffh_ft (cert FFE - cert LAG) quantiles {0.05: 0.4, 0.25: 0.8, 0.5: 1.1, 0.75: 2.4, 0.9: 9.71, 0.95: 11.7} | share > 3 ft 0.208 | share within 2..4 ft 0.12 | share within 2.5..3.5 0.051

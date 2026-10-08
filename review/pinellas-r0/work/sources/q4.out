@@ -1,0 +1,11 @@
+matched certs 7515
+fetched 7515
+buildingElevationSource: {'finished_construction': 6939, 'building_under_construction': 291, 'construction_drawings': 238, '(null)': 47}
+verticalDatum: {'navd_1988': 7515}
+elevationDatum (BFE datum, B11): {'navd_1988': 7441, 'ngvd_1929': 63, 'other': 8, '(null)': 3}
+baseFloodElevationDatum: {'navd_1988': 7400, 'ngvd_1929': 55, '(null)': 42, 'other': 18}
+benchmarkUtilized non-empty: 7512
+elevationDatumComments non-empty: 8  mentioning geoid: 0  examples: []
+formYear: {2018: 3602, 2022: 2360, 2026: 1537, 2012: 9, 2015: 7}
+record rows 7461 by buildingElevationSource: {'finished_construction': 6889, 'building_under_construction': 289, 'construction_drawings': 236, '(null)': 47}
+  of those not finished_construction: touches_sfha 524  with bfe_call above/below: {'above': 308, 'below': 210, 'not_applicable': 48, nan: 4, 'too_close': 2}

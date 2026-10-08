@@ -1,0 +1,33 @@
+   dup_keys  dup_rows
+0       192     465.0
+buildings whose parcel_key is a duplicated key:    count_star()
+0            54
+                         parcel_key  geom_group dor_uc  buildings  below  any_building_below_bfe
+0  FL-12103-14 30 24 64137 000 6010      219772    004          2    0.0                   False
+1  FL-12103-14 30 24 64137 000 6010      219772    004          2    0.0                   False
+2  FL-12103-14 30 24 64137 000 6020      219772    004          2    0.0                   False
+3  FL-12103-14 30 24 64137 000 6020      219772    004          2    0.0                   False
+4  FL-12103-15 27 01 00001 777 0000       47104    098          6    0.0                   False
+5  FL-12103-15 27 01 00001 777 0000      154215    098          6    0.0                   False
+6  FL-12103-15 27 01 00001 777 0000      106247    098          6    0.0                   False
+7  FL-12103-15 27 01 00001 777 0000      152815    098          6    0.0                   False
+dup keys with conflicting any_building_below_bfe:    count_star()
+0             0
+geom_group sizes:
+   geom_group  parcels  buildings  below          ucs
+0      141001     1104       1107    0.0      002,009
+1      145780      832        831    0.0  009,002,000
+2      146416      757        760    0.0  002,009,000
+3       18665      741        673  566.0  009,000,002
+4      154747      495        494    0.0  002,009,000
+5      107891      474        144    0.0      009,004
+                    parcels_per_group    mx
+0  [1.0, 1.0, 8.0, 69.01899999997113]  1104
+   max_buildings_on_parcel             q     gt50
+0                     1107  [1.0, 505.0]  16571.0
+parcel-building links: sum(buildings) over distinct geom_group:    sum(buildings)
+0        489269.0
+parcel keys for 1 geom_group vs building parcel_key: building parcel_key in parcel table with buildings=0:    count_star()
+0            50
+building's own id listed? (building centroid parcel has buildings>0 but building not >=10% in it): sample count of buildings with spans_parcels false & parcel buildings=0    count_star()
+0            18

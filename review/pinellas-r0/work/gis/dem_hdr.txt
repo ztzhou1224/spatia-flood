@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/a3f629f2-4a09-47e1-b726-b1e51a9838dc/scratchpad/review/work_gis/dem_hdr.py", line 3, in <module>
+    import rasterio
+ModuleNotFoundError: No module named 'rasterio'

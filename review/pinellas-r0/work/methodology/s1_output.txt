@@ -1,0 +1,87 @@
+n test 1315 test blocks 102 screened-out labels in test blocks 63 of 1378
+GATE REPRO: {'n': 1315.0, 'MAE': 1.0394, 'within 1 ft': 0.7422, 'raised n': 270.0, 'raised MAE': 2.4197, 'raised recall': 0.7407, 'SFHA with BFE': 1200.0, 'BFE side': 0.8975, 'coverage': 0.9179, 'coverage flagged': 0.9377, 'coverage not flagged': 0.9119, 'width median not flagged': 1.7756, 'width median flagged': 15.3758, 'BFE decided': 0.5792, 'decided correct': 0.9827}
+screened-out test labels: MAE 19.012 coverage 0.111 dh quantiles [-37.6    8.2   12.26  44.87 158.2 ]
+TEST calls: above n 111 precision 0.982 | below n 584 precision 0.9829 | too_close n 505 | base rate truly above among SFHA 0.361
+wrong above calls: ffe-bfe [-0.1 -3.8] band lo - bfe [0.   0.46]
+wrong below calls: ffe-bfe [1.2  2.15 1.42 0.3  0.1  1.3  0.2  0.1  6.8  2.1 ]
+test SFHA certs with ffe == bfe exactly 14 within 0.5 168
+                     group                      level     n  coverage    MAE  flagged_share  median_width  truly_raised_share
+0         dgroup x flagged        ('elev 5-9', False)   119     0.790  1.319          0.000         3.169               0.286
+1         dgroup x flagged         ('elev 5-9', True)   107     0.925  3.058          1.000        16.514               0.953
+2         dgroup x flagged       ('other 2-4', False)     7     1.000  0.787          0.000         3.645               0.143
+3         dgroup x flagged        ('other 2-4', True)     3     1.000  3.455          1.000        12.620               1.000
+4         dgroup x flagged      ('slab 1A/1B', False)   884     0.928  0.428          0.000         1.686               0.040
+5         dgroup x flagged       ('slab 1A/1B', True)   195     0.944  2.507          1.000        14.331               0.487
+6                   dgroup                   elev 5-9   226     0.854  2.142          0.473         6.983               0.602
+7                   dgroup                  other 2-4    10     1.000  1.588          0.300         4.795               0.400
+8                   dgroup                 slab 1A/1B  1079     0.930  0.803          0.181         1.899               0.120
+9                     zone                          A  1192     0.919  1.026          0.221         2.185               0.202
+10                    zone                          V    25     0.880  2.176          0.680        12.620               0.560
+11                    zone                    X/other    96     0.927  0.885          0.250         2.078               0.146
+12                    zone             other:08/24/21     1     1.000  0.106          0.000         1.535               0.000
+13                    zone             other:SHADED X     1     0.000  3.825          0.000         1.635               1.000
+14                  decade                       1900     2     1.000  0.900          0.500        10.058               0.000
+15                  decade                       1910     4     1.000  0.887          0.500         4.855               0.500
+16                  decade                       1920    31     0.968  0.847          0.129         4.240               0.226
+17                  decade                       1930     9     0.889  0.960          0.000         4.877               0.222
+18                  decade                       1940    58     0.948  0.577          0.052         3.476               0.121
+19                  decade                       1950   371     0.906  0.456          0.027         1.582               0.046
+20                  decade                       1960   191     0.921  0.528          0.058         1.540               0.068
+21                  decade                       1970   196     0.918  0.514          0.082         1.759               0.102
+22                  decade                       1980   133     0.947  1.315          0.398         3.461               0.331
+23                  decade                       1990    96     0.896  1.740          0.458         7.795               0.312
+24                  decade                       2000    84     0.917  2.798          0.750        16.255               0.488
+25                  decade                       2010    64     0.906  2.141          0.719        12.289               0.609
+26                  decade                       2020    43     0.907  3.083          0.767        17.348               0.721
+27                  decade                        nan    33     0.909  2.307          0.576         7.800               0.515
+28           g_lag tercile                       high   438     0.904  0.973          0.208         2.364               0.126
+29           g_lag tercile                        low   439     0.936  1.160          0.257         2.303               0.244
+30           g_lag tercile                        mid   438     0.913  0.985          0.231         1.994               0.247
+31         fp_area tercile                       high   438     0.929  1.090          0.315         2.900               0.281
+32         fp_area tercile                        low   439     0.911  1.149          0.216         2.321               0.178
+33         fp_area tercile                        mid   438     0.913  0.879          0.164         1.862               0.158
+34     living_area tercile                       high   427     0.932  1.586          0.419         5.221               0.340
+35     living_area tercile                        low   430     0.895  0.661          0.081         1.707               0.098
+36     living_area tercile                        mid   425     0.927  0.775          0.169         1.851               0.155
+37     living_area tercile                        nan    33     0.909  2.307          0.576         7.800               0.515
+38             raised_flag                      False  1010     0.912  0.535          0.000         1.776               0.069
+39             raised_flag                       True   305     0.938  2.709          1.000        15.376               0.656
+40  truly_raised x flagged             (False, False)   940     0.939  0.391          0.000         1.746               0.000
+41  truly_raised x flagged              (False, True)   105     0.952  3.300          1.000        18.530               0.000
+42  truly_raised x flagged              (True, False)    70     0.543  2.477          0.000         3.208               1.000
+43  truly_raised x flagged               (True, True)   200     0.930  2.400          1.000        14.272               1.000
+44          zone x flagged               ('A', False)   928     0.912  0.540          0.000         1.777               0.069
+45          zone x flagged                ('A', True)   264     0.943  2.735          1.000        15.800               0.670
+46          zone x flagged               ('V', False)     8     0.875  0.471          0.000         2.233               0.125
+47          zone x flagged                ('V', True)    17     0.882  2.979          1.000        15.403               0.765
+48          zone x flagged         ('X/other', False)    72     0.931  0.435          0.000         1.772               0.056
+49          zone x flagged          ('X/other', True)    24     0.917  2.234          1.000        10.377               0.417
+50          zone x flagged  ('other:08/24/21', False)     1     1.000  0.106          0.000         1.535               0.000
+51          zone x flagged  ('other:SHADED X', False)     1     0.000  3.825          0.000         1.635               1.000
+52   dgroup x truly_raised        ('elev 5-9', False)    90     0.889  0.707          0.056         3.159               0.000
+53   dgroup x truly_raised         ('elev 5-9', True)   136     0.831  3.092          0.750        14.274               1.000
+54   dgroup x truly_raised       ('other 2-4', False)     6     1.000  0.584          0.000         2.581               0.000
+55   dgroup x truly_raised        ('other 2-4', True)     4     1.000  3.093          0.750        11.305               1.000
+56   dgroup x truly_raised      ('slab 1A/1B', False)   949     0.945  0.681          0.105         1.773               0.000
+57   dgroup x truly_raised       ('slab 1A/1B', True)   130     0.823  1.696          0.731         5.124               1.000
+
+UNDER-COVERED (n>=50, coverage<0.85):
+                     group                 level    n  coverage    MAE  flagged_share  median_width  truly_raised_share
+0         dgroup x flagged   ('elev 5-9', False)  119     0.790  1.319          0.000         3.169               0.286
+42  truly_raised x flagged         (True, False)   70     0.543  2.477          0.000         3.208               1.000
+53   dgroup x truly_raised    ('elev 5-9', True)  136     0.831  3.092          0.750        14.274               1.000
+57   dgroup x truly_raised  ('slab 1A/1B', True)  130     0.823  1.696          0.731         5.124               1.000
+bootstrap MAE: sd 0.0466, 95% CI [0.9520, 1.1303]
+bootstrap coverage: sd 0.0077, 95% CI [0.9019, 0.9316]
+bootstrap BFE side: sd 0.0085, 95% CI [0.8805, 0.9146]
+bootstrap decided correct: sd 0.0051, 95% CI [0.9727, 0.9915]
+BLOCK bootstrap MAE: sd 0.0682, 95% CI [0.9214, 1.1819]
+BLOCK bootstrap coverage: sd 0.0109, 95% CI [0.8957, 0.9388]
+BLOCK bootstrap BFE side: sd 0.0099, 95% CI [0.8765, 0.9155]
+raised_flag all: n 1315, truly raised 270, flagged 305, precision 0.656, recall 0.741
+raised_flag slab: n 1079, truly raised 130, flagged 195, precision 0.487, recall 0.731
+raised_flag elev: n 226, truly raised 136, flagged 107, precision 0.953, recall 0.750
+raised_flag other: n 10, truly raised 4, flagged 3, precision 1.000, recall 0.750
+test dh quantiles [ 0.59  0.82  1.13  1.6   2.7   5.91 10.79]
+all screened label dh quantiles [ 0.63  0.83  1.15  1.69  3.13  8.94 11.74] share dh>3 0.262 share 2<dh<=4 0.217
+truly raised & unflagged: n 70 coverage 0.543 MAE 2.477 median width 3.21

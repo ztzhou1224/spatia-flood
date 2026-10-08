@@ -1,0 +1,62 @@
+== 6a: 10 random record rows vs the FDEM label parquet ==
+                            building_id  ffe_ft_x  ffe_ft_y  ffh_ft  cert_lag_ft  bfe_ft  cert_bfe_ft cert_zone zone_main bfe_call diagram diagram_src ffe_vintage      issued  ffe_record_lidar_conflict
+0  4f939836-139d-444f-b187-099115b21baa     10.10     10.10    0.80          9.3    10.0          9.0        AE         X    above      1A          1A  2018-03-21  2018-03-21                      False
+1  7cc7848f-f537-4e7d-9db3-a9bd51506f5b     16.70     16.70    0.60         16.1    17.0         17.0        AE        AE    below      1A          1A  2022-06-15  2022-06-15                      False
+2  4d892438-e66d-4594-8dad-28c2c1ecdf9d     12.80     12.80    3.30          9.5    11.0          9.0        AE        AE    above       8           8  2019-04-02  2019-04-02                      False
+3  81e15bae-9d94-48eb-acb5-b6b5522644b5      4.70      4.70    1.20          3.5     9.0          9.0        AE        AE    below      1A          1A  2025-05-01  2025-05-01                      False
+4  3de11666-94aa-4b9a-ad00-c81b07cddeb5      7.34      7.34    1.04          6.3     9.0          9.0        AE        AE    below      1A          1A  2018-06-13  2018-06-13                      False
+5  1040872c-d94c-45fc-9148-44ae21e0ba6c      7.70      7.70    2.20          5.5     9.0          9.0        AE        AE    below      1B          1B  2026-01-23  2026-01-23                      False
+6  bbe5a31a-b990-47da-8b6b-8a4fcf5b98fa      6.10      6.10    0.70          5.4     9.0          9.0        AE        AE    below      1A          1A  2023-04-20  2023-04-20                      False
+7  178a3193-6f8d-410e-869f-40e654d3122e      4.20      4.20    2.80          1.4     9.0          9.0        AE        AE    below      1B          1B  2025-06-05  2025-06-05                      False
+8  06f2c6f1-e109-408f-9731-d243bff1a73e      4.40      4.40    0.30          4.1     9.0          9.0        AE        AE    below      1B          1B  2026-07-27  2026-07-27                      False
+9  6f86c082-9c6b-4a68-bafe-ecde4290150f     11.50     11.50    4.50          7.0    10.0         12.0        AE        AE    above       8           8  2018-04-06  2018-04-06                      False
+agree ffe: True ; ffh==ffe-lag: 10 / 10 ; diagram agree: True ; vintage==issued: 10
+table bfe vs certificate bfe: |diff| [1.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0]
+ALL record rows with a table BFE and a cert BFE: n=6657, |diff|<=0.5: 0.546, median diff +0.00, |diff|>=2: 1383; cert zone vs zone_main agree: 0.911
+  call flips if the certificate's own BFE were used: 513 of 6657
+
+== 6b: 5 of the ffe_record_lidar_conflict rows ==
+                            building_id ffe_class  ffe_ft_x  ffe_ft_y  county_ffe diagram county_diag  cert_lag_ft  ground_ft  g_inside     dh  roof_p95  eave_main  bfe_ft        bfe_call         bfe_call_basis        match  footprint_area_m2                                                                                                               record_note
+0  ec760d5f-44bf-4e43-94bb-ae7da9aa7ceb    record     16.90     16.90         NaN       6         NaN         4.90       4.93      5.49  11.97     12.85       9.90     9.0           above  record_lidar_conflict       within             402.36                                                                                                                       NaN
+1  c1b21a26-a039-4517-98c5-61de59db3bfa    record     17.20     17.20         NaN      1A         NaN          NaN       4.13      4.56  13.07     13.52      11.27    10.0           above  record_lidar_conflict       within             353.82                     certificate has no usable lowest adjacent grade: no record floor height (its floor elevation is used)
+2  81ac7b8b-f8cf-430a-af18-66104cae3d0f    record     13.50     13.50        13.5      1A          1A        12.60       5.57      6.40   7.93     12.77      10.51    11.0           above  record_lidar_conflict       within             269.03                                                                                                                       NaN
+3  fe3f2b4e-3f89-440b-bbb5-fae85378a033   modeled     12.65      8.26         NaN       5         NaN         6.05       9.75     10.99  -1.49     11.70      11.31     NaN  not_applicable                    NaN  nearest_10m             217.23  FDEM certificate OBJECTID 18515 not used: its floor 8.26 ft NAVD88 is -1.49 ft from the lidar ground (outside -1..30 ft)
+4  2f47be61-66a6-49c9-82d8-0c09e5009cdc    record     19.20     19.20         NaN       5         NaN         4.00       2.86      3.23  16.34     14.23      10.75     9.0           above  record_lidar_conflict       within             179.44                                                                                                                       NaN
+all 300 conflict rows: dh<-1: 22, roof_p95-dh<6: 277, cert LAG - lidar ground: median +0.42, |>3 ft|: 43, match nearest_10m share 0.21 (vs all records 0.14); calls: {'above': 247, 'too_close': 21, 'below': 19, 'not_applicable': 12, nan: 1}
+  conflict rows with a county cert: 58; county ffe == FDEM ffe (|d|<0.5): 28
+
+== 6c: 10 random modeled SFHA 'above' calls with floor_minus_bfe < 1 ft ==
+population: 603 ; margin band_lo - bfe(hi): median 0.134 min 0.0002
+                            building_id zone_main  bfe_ft bfe_method  ffe_ft  ffe_band_lo  ffe_band_hi  margin_lo  ground_ft  ring_vs_inside  ffh_ft  ffh_band_lo  ffh_band_hi  roof_ft  eave_ft  raised_flag  year_built dor_use_code  floor_minus_bfe_ft
+0  7c87d59f-5590-47a0-a61f-c2ac78ff2a4a         X    13.0     static   13.90        13.18        14.62       0.18      12.58            0.82    1.32         0.60         2.04    12.48     9.37        False        1959          001                0.90
+1  d77e7e9a-c7b5-408c-a845-d4365b53a3c7         X     8.0     static    8.94         8.18         9.70       0.18       7.84            0.55    1.10         0.34         1.87    13.59    10.90        False        1955          001                0.94
+2  711b0545-f0bb-4f14-9476-6138e85a0f6f        AE     9.0     static    9.96         9.14        10.78       0.14       8.43            0.79    1.52         0.70         2.34    14.50     9.25        False        1975          001                0.96
+3  7069b445-5e31-4c46-a090-d233e8247f85         X    13.0     static   13.91        13.15        14.68       0.15      12.66            0.62    1.25         0.49         2.02    13.32     9.12        False        1972          001                0.91
+4  972b9520-216d-420c-829d-3aa0085287c6        AE     8.0     static    8.86         8.10         9.62       0.10       7.65            0.42    1.21         0.45         1.97    13.09    10.63        False        1957          001                0.86
+5  739a6b51-017d-4dbb-b896-dfed49b29de0         X    14.0     static   14.98        14.22        15.73       0.22      13.77            0.76    1.21         0.45         1.97    14.84     9.82        False        1971          004                0.98
+6  fbd746bd-2810-42a5-b39b-238c01ab456d         X    35.0     static   35.79        35.01        36.56       0.01      34.62            0.49    1.17         0.40         1.95    13.78     9.92        False        1955          001                0.79
+7  ea726f2e-0599-4b19-be19-0618a65f0a93        AE     9.0     static    9.79         9.14        10.44       0.14       7.35            1.71    2.44         1.79         3.09    13.81    10.89        False        1959          001                0.79
+8  cab5d1c0-1258-47a8-9011-5620a6722382         X    10.0     static   10.97        10.22        11.72       0.22       9.84            0.49    1.13         0.38         1.88    12.73     9.85        False        1960          001                0.97
+9  6a63b8bd-666c-42bd-9c24-239ae623c638        AE    11.0     static   11.67        11.05        12.29       0.05      10.59            0.47    1.08         0.46         1.70    12.01    11.75        False        1971          001                0.67
+
+  of the 603 near-margin modeled 'above' rows, 4 have a county-only certificate: county floor >= table bfe (call right): 4, county floor < bfe (call WRONG): 0; county floor inside the band: 4
+                            building_id diagram  county_ffe  ffe_ft  ffe_band_lo  ffe_band_hi  bfe_ft bfe_method  floor_minus_bfe_ft
+0  9863770f-42b6-4274-84f1-f62a50f81b9b      1A       16.92   16.95        16.00        17.89    16.0     static                0.95
+1  d78dbf5d-15a1-4a71-934c-68dbc53ea9da      1A       13.90   13.84        13.29        14.38    13.0     static                0.84
+2  360b4e2b-5619-4347-85f1-ea4512a28af5      1A       15.30   14.96        14.20        15.71    14.0     static                0.96
+3  f4a1eaf5-a98e-4a25-b98f-d4f2284fd6b3      1A       15.21   15.90        15.14        16.66    15.0     static                0.90
+  near-margin modeled 'below' rows (floor_minus_bfe > -1): 892; with county-only cert: 5; county floor < bfe (right): 4, >= bfe (WRONG): 1
+
+  modeled decided calls vs county-only certs, by band margin:
+                          n  correct
+bfe_call mb                         
+above    (-1e-09, 0.5]   63    1.000
+         (0.5, 1.0]      38    1.000
+         (1.0, 2.0]      59    0.966
+         (2.0, 4.0]      44    0.955
+         (4.0, 100.0]    32    0.969
+below    (-1e-09, 0.5]   30    0.833
+         (0.5, 1.0]      26    0.923
+         (1.0, 2.0]      50    0.820
+         (2.0, 4.0]     101    0.871
+         (4.0, 100.0]    35    0.943

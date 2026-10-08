@@ -1,0 +1,13 @@
+test blocks match saved: True | fit/cal/test disjoint: True
+sizes 4277 1595 1315
+q reproduced 2.3267 (saved 2.3267); finite-sample k = ceil((n+1)*0.9) = 1437 of n = 1595; np.quantile would give 2.3177
+retrained final model vs saved: max |diff| on test 0.0
+CAL coverage, m_fit (what q was calibrated on): 0.901, CAL MAE 1.326
+TEST coverage, m_fit (what q was calibrated on): 0.913, TEST MAE 1.064, median width 2.206
+CAL coverage, final FIT+CAL model (what ships): 0.925, CAL MAE 1.048
+TEST coverage, final FIT+CAL model (what ships): 0.918, TEST MAE 1.039, median width 2.211
+q over 20 alternative CAL draws (same difficulty model): mean 1.992 sd 0.078 min 1.847 max 2.159
+test blocks 102: 0.98 share with a FIT/CAL block among the 8 neighbours
+modeled rows 240356: in a block with >=1 screened label 0.724; nearest labelled block >= 2 km away 0.020, >= 5 km 0.000
+by touches_sfha: share in a labelled block {False: 0.614, True: 0.976}
+labelled blocks 509 modeled rows' blocks 793

@@ -1,0 +1,3 @@
+share of L1->L2 segment length OUTSIDE the SFHA: quantiles 50/75/90/99 [0.143, 0.423, 0.747, 1.0] ; n with >25% outside 2051 ; n with >50% outside 1109 of 5250
+calls where >25% outside: {'too_close': 1426, 'above': 374, nan: 216, 'below': 35}
+|e1-e2| where >25% outside: median 0.3 p90 1.0

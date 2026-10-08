@@ -1,0 +1,196 @@
+
+=== row counts / uniqueness
+rows 372764 building_id unique True nulls 0
+features rows 290540 unique True | run buildings 290540 True
+labels rows 7515 unique building True unique cert_objectid True
+fdem_lag rows 7515 unique True cols ['cert_objectid', 'cert_lag_ft', 'cert_datum'] datum {'navd_1988': 7515}
+records rows 287435 True
+in_risk_area 290540 run set in county True
+labels in county 7515 labels in run 7515
+issued_at dtype float64 null 264
+
+=== modeled arithmetic
+modeled 240356 record 7427
+ffe != ground+ffh (modeled), |d|>1e-6: 0 max 0.0
+ffe_band_lo mismatch: 0
+ffe_band_hi mismatch: 0
+ffe_class==ffh_class mismatch: 34
+ffh_class  <null>  modeled  record
+ffe_class                         
+<null>     124947        0       0
+modeled         0   240356       0
+record         34        0    7427
+record ffe with null ffh (no usable cert LAG): 34
+ffh band contains ffh (modeled) violations: 0
+ffh_ft range record {'min': -0.9000000000000004, '50%': 1.0999999999999996, 'max': 23.06}  modeled {'min': 0.33395784414528124, '50%': 1.6380736540402712, 'max': 15.069421704155067}
+record ffh outside -1..30: 0
+ffe_record - ground outside -1..30 (where ground present): 0
+
+=== floor minus bfe
+floor_minus_bfe mismatch: 0 | set where ffe or bfe null: 0
+band_lo mismatch: 0
+band_hi mismatch: 0
+band present but ffe or bfe null: 0
+
+=== bfe_call recompute (docs/06 rule)
+bfe_call mismatch: 0
+bfe_call values: {'not_applicable': 280521, 'too_close': 35994, 'below': 33039, nan: 15443, 'above': 7767}
+bfe_call_basis values: {nan: 295964, 'modeled_band': 65725, 'record': 6161, 'modeled_band+interpolated_bfe': 4365, 'record+interpolated_bfe': 303, 'record_lidar_conflict': 245, 'record_lidar_conflict+interpolated_bfe': 1}
+record too_close from sigma rule: 0 | sigma>0 rows: 0 sigma values {nan: 289740, 0.0: 83024}
+bfe_call_null values: {nan: 357321, 'not_evaluated': 10512, 'no_coverage': 4363, 'not_determinable': 568}
+bfe_call null & bfe_call_null null: 0
+sfha & call null & bfe present & ffe null -> bfe_call_null==ffe_null mismatches: 0
+
+=== raised_flag / touches / zone_main / sfha_share
+raised_flag == (model point > 3) on modeled rows mismatch: 0
+raised_flag set but ffh not modeled (record or null): ffh_class    <null>  modeled  record
+raised_flag                         
+False            10   200295    5430
+True             23    40061    1834
+<NA>         124948        0     163
+raised_flag null & raised_flag_null null: 0 | raised set & reason set: 0
+sfha_share vs sum(zones sfha shares) |d|>1e-3: 0 max |d| 9.833080468305e-05
+touches_sfha != (sfha_share>0): 0 | touches != any zone sfha: 99
+zone_main != zones[0].zone: 0
+zone_main_subtype != zones[0].subtype: 0
+zones sorted desc by share violations: 0
+share sums >1.01: 0
+zones_null values: {nan: 372752, 'no_coverage': 12} | zones None but zones_null None: 0
+zone_main counts: {'X': 287741, 'AE': 80929, 'A': 2914, 'VE': 1076, 'AO': 92, nan: 12}
+bfe_method x zone_main (interpolated): {'AE': 4102, 'X': 1141, 'A': 7}
+bfe static but zone_main not SFHA: touches_sfha   False  True 
+bfe_method                 
+<null>        280521   3969
+interpolated       0   5250
+static             0  83024
+
+=== string columns: distinct values / truncation check
+bfe_class {nan: 284490, 'record': 83024, 'modeled': 5250}
+bfe_method {nan: 284490, 'static': 83024, 'interpolated': 5250}
+bfe_null {'not_applicable': 280521, nan: 88274, 'no_coverage': 3402, 'not_determinable': 567}
+ground_class {'observed': 290540, nan: 82224}
+ground_null {nan: 290540, 'not_evaluated': 82224}
+roof_null {nan: 280361, 'not_evaluated': 84598, 'not_determinable': 7805}
+eave_null {nan: 280025, 'not_evaluated': 84598, 'not_determinable': 8141}
+year_built_null {nan: 362328, 'not_determinable': 6472, 'no_coverage': 3964}
+living_area_sqft_null {nan: 362326, 'not_determinable': 6474, 'no_coverage': 3964}
+raised_flag_null {nan: 247653, 'not_evaluated': 122004, 'no_coverage': 3105, 'not_determinable': 2}
+ffh_class {'modeled': 240356, nan: 124981, 'record': 7427}
+ffh_null {nan: 247783, 'not_evaluated': 121907, 'no_coverage': 3038, 'not_determinable': 36}
+ffe_class {'modeled': 240356, nan: 124947, 'record': 7461}
+ffe_null {nan: 247817, 'not_evaluated': 121904, 'no_coverage': 3038, 'not_determinable': 5}
+bfe_call {'not_applicable': 280521, 'too_close': 35994, 'below': 33039, nan: 15443, 'above': 7767}
+bfe_call_basis {nan: 295964, 'modeled_band': 65725, 'record': 6161, 'modeled_band+interpolated_bfe': 4365, 'record+interpolated_bfe': 303, 'record_lidar_conflict': 245, 'record_lidar_conflict+interpolated_bfe': 1}
+bfe_call_null {nan: 357321, 'not_evaluated': 10512, 'no_coverage': 4363, 'not_determinable': 568}
+address_null {nan: 372620, 'not_evaluated': 144}
+lift_or_rebuild_null {'not_evaluated': 372764}
+zones_null {nan: 372752, 'no_coverage': 12}
+provider {'public': 372764}
+release {'pinellas-r0': 372764}
+lidar_ql {'QL 1': 372764}
+ground_geoid {'GEOID12B': 290540, nan: 82224}
+address_source {'overture_addresses (point in footprint)': 298440, 'fl_parcels situs address (DOR NAL)': 73453, 'geocodio reverse (Pinellas (Pinellas County), rooftop)': 692, nan: 144, 'geocodio reverse (City of Pinellas Park, rooftop)': 17, 'geocodio reverse (Loveland, rooftop)': 8, 'geocodio reverse (OpenStreetMap Contributors, nearest_street)': 6, 'geocodio reverse (TIGER/Line® from the US Census Bureau, nearest_street)': 2, 'geocodio reverse (TIGER/Line® from the US Census Bureau, nearest_place)': 2}
+county_fips {'12103': 372764}
+ffe_datum: {'NAVD88 ft US survey, GEOID12B': 240356, nan: 124947, 'NAVD88 ft (certificate, vertical datum filtered to NAVD 1988; geoid not stated)': 7461}
+bfe_datum: {nan: 284490, 'NAVD88 ft; navd88_verbatim': 88274}
+ground_vintage: {'2018-12-07/2019-03-08': 290540, nan: 82224}
+ffe_vintage unknown: 0 | windows: 240616  examples ['2018-12-07/2019-03-08', '2019-12-01/2023-10-31', '2018-01-01/2021-12-31', '2018-12-01/2022-11-30', '2015-12-01/2018-11-30']
+ffh_vintage != ffe_vintage where both set: 0
+record vintage date range: 2009-11-16 00:00:00 2026-09-28 00:00:00 | > built 2026-10-07: 0 | < 1990: 0
+firm_effective_date range: 2003-09-03 2021-08-24 | > 2026-10-08: 0 | bfe_vintage > today: 0 {}
+firm_effective_date null: 12 'NaT' strings: 0
+
+=== addresses
+address null: 144 | in risk & null: 0
+address ending ' nan' or containing 'nan': 0 | 'None': 0 | ending ', ': 4 | starting ', ': 0
+[]
+address_source: {'overture_addresses (point in footprint)': 298440, 'fl_parcels situs address (DOR NAL)': 73453, 'geocodio reverse (Pinellas (Pinellas County), rooftop)': 692, nan: 144, 'geocodio reverse (City of Pinellas Park, rooftop)': 17, 'geocodio reverse (Loveland, rooftop)': 8, 'geocodio reverse (OpenStreetMap Contributors, nearest_street)': 6, 'geocodio reverse (TIGER/Line® from the US Census Bureau, nearest_street)': 2, 'geocodio reverse (TIGER/Line® from the US Census Bureau, nearest_place)': 2}
+empty-ish address (len<8): 0 []
+
+=== dor_use_code
+dtype str null 3964 lengths {3: 368800}
+codes starting with 0 (<'010' lexical): 315459 | 3-digit zero padded 000-009: 315459
+codes lexically < '010' but not 000-009: {}
+sample codes {'001': 254525, '028': 25995, '008': 17683, '002': 17630, '004': 12579, '003': 5901, '009': 4011, '011': 3155, '000': 2964, '048': 2830, '041': 2639, '017': 2456}
+
+=== ground / lidar
+ground_ft in risk null: 0  outside risk non-null: 0
+ground_precision values: {0.32808334366795866: 290540, nan: 82224}
+lidar_workunit: {'FL_Peninsular_Pinellas_2018': 372764}
+in risk but no workunit: 0
+ground_ft != g_lag (risk): 0
+roof_ft != ridge where lpc ok: 0 | eave != eave_main: 0
+lpc_status x roof_null:
+roof_null         <value>  not_determinable  not_evaluated
+lpc_status                                                
+<none>                  0                 0          82224
+no_points               0                 2              0
+not_determinable        0                 3              0
+ok                 280361              7800              0
+too_large               0                 0           2374
+ground_status x ground_null:
+ground_null    <value>  not_evaluated
+ground_status                        
+<none>               0          82224
+ok              290540              0
+
+=== null-reason crosstabs: ffh_null x in_risk x residential x lpc
+risk   parcel  resid  lpc               ground  ffh_null        
+False  False   False  <none>            False   not_evaluated          859
+       True    False  <none>            False   not_evaluated        13979
+               True   <none>            False   not_evaluated        67386
+True   False   False  ok                True    <value>:record          67
+                                                no_coverage           3035
+                      too_large         True    no_coverage              3
+       True    False  no_points         True    not_evaluated            2
+                      not_determinable  True    not_evaluated            1
+                      ok                True    <value>:record          68
+                                                not_evaluated        37338
+                      too_large         True    <value>:record           8
+                                                not_evaluated         1945
+               True   not_determinable  True    not_determinable         2
+                      ok                True    <value>:modeled     240356
+                                                <value>:record        7264
+                                                not_determinable        33
+                      too_large         True    <value>:record          20
+                                                not_determinable         1
+                                                not_evaluated          397
+
+ffe_null x ffh_null:
+ffh_null          <value>  no_coverage  not_determinable  not_evaluated
+ffe_null                                                               
+<value>            247783            0                34              0
+no_coverage             0         3038                 0              0
+not_determinable        0            0                 2              3
+not_evaluated           0            0                 0         121904
+
+raised_flag_null x ffh_null:
+ffh_null          <value>  no_coverage  not_determinable  not_evaluated
+raised_flag_null                                                       
+<value>            247620            0                33              0
+no_coverage            67         3038                 0              0
+not_determinable        0            0                 2              0
+not_evaluated          96            0                 1         121907
+
+bfe_null x touches_sfha:
+touches_sfha       False  True 
+bfe_null                       
+<value>                0  88274
+no_coverage            0   3402
+not_applicable    280521      0
+not_determinable       0    567
+
+year_built_null x parcel:
+parcel_key        False   True 
+year_built_null                
+<value>               0  362328
+no_coverage        3964       0
+not_determinable      0    6472
+record_note count: 88 | conflict: {<NA>: 365278, np.False_: 7186, np.True_: 300}
+record_note kinds: {'FDEM certificate OBJECTID N not used: its floor N ft NAVDN is N ft from the lida': 32, 'certificate has no usable lowest adjacent grade: no record floor height (its flo': 32, 'FDEM certificate OBJECTID N not used: its floor N ft NAVDN is -N ft from the lid': 21, 'certificate floor minus its own lowest adjacent grade = -N ft, outside -N..N ft:': 2, 'FDEM certificate OBJECTID N not used: its floor -N ft NAVDN is -N ft from the li': 1}
+model_version set x ffh_class:
+ffh_class      <null>  modeled  record
+model_version                         
+False          124948        0     163
+True               33   240356    7264
+parcels_at_centroid: {1: 340254, 0: 3964, 1104: 1107, 832: 831, 757: 760, 742: 673} | parcel_key null but parcels_at_centroid>0: 0 | parcel set but 0: 0

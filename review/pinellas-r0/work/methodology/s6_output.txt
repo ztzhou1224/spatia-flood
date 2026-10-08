@@ -1,0 +1,4 @@
+test band misses: truth below band 39 (0.030), truth above band 69 (0.052); by flag: {False: (29, 60), True: (10, 9)}
+truth below band among SFHA houses: 37
+static-BFE buildings 83024: overlapping >1 distinct static BFE: 6787 (8.175%); max-min spread quantiles ft {0.5: 1.0, 0.9: 1.0, 1.0: 6.0}
+record rows on multi-BFE buildings: 703 | called below under highest BFE but above under largest-share BFE: 27 | calls on multi-BFE buildings: {'below': 3463, 'too_close': 2344, nan: 632, 'above': 348}

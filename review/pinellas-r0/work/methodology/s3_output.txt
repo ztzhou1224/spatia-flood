@@ -1,0 +1,18 @@
+lines 9832 {'BFE_LINE': 7240, 'XS': 2592} | whole-foot elevations: BFE_LINE 0.945 XS 0.048
+static+touches_sfha buildings 83024
+SFHA polygons crossed by a line 336 of 2463
+candidate buildings 373
+linear: n 124, MAE 0.415, median |err| 0.309, within 1 ft 0.960, static inside band 0.960, bias +0.108, |err|>2 ft: 4
+nearest: n 370, MAE 0.632, median |err| 0.500, within 1 ft 0.670, static inside band 0.573, bias -0.070, |err|>2 ft: 4
+linear_same_source: n 123, MAE 0.416, median |err| 0.311, within 1 ft 0.959, static inside band 0.959, bias +0.112, |err|>2 ft: 4
+same 124 buildings: linear MAE 0.415 vs nearest MAE 0.408; linear better on 40, worse on 29, tie 55
+linear check pairs by source type: {'XS/XS': 117, 'BFE_LINE/BFE_LINE': 5, 'XS/BFE_LINE': 2}
+linear check: |e1-e2| quantiles {0.5: 0.1999999999999993, 0.9: 0.20000000000000107, 1.0: 1.9000000000000004} | static BFE of these buildings quantiles [11. 12. 36.]
+large errors (>1 ft):
+         bfe    e1    e2      d1      d2        t1        t2   err
+a                                                                 
+17477  11.90  11.9  11.9  209.51  243.50        XS        XS -1.10
+27152  33.76  34.0  33.0   62.91  203.20  BFE_LINE  BFE_LINE -2.24
+27153  33.83  34.0  33.0   45.11  221.64  BFE_LINE  BFE_LINE -2.17
+27154  33.60  34.0  33.0  106.16  158.16  BFE_LINE  BFE_LINE -2.40
+27155  33.68  34.0  33.0   83.93  180.89  BFE_LINE  BFE_LINE -2.32

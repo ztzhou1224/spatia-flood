@@ -1,0 +1,43 @@
+=== in_risk_area vs risk polygon
+risk parquet cols ['geom'] 1
+risk geom type MultiPolygon valid True
+centroid in risk polygon: 290540 | in_risk_area: 290540
+in polygon but in_risk_area False: 0 | in_risk_area True but centroid outside polygon: 0
+lon/lat col == centroid max diff: 0.0 0.0
+centroid outside own footprint: 1193
+invalid footprints: 0
+in_poly  in_risk  ground_null  
+False    False    not_evaluated     82224
+True     True     <value>          290540
+
+=== BFE line interpolation: recompute from cached inputs
+lines 9913 elev null 81 eff null 0 source_type {'BFE_LINE': 7240, 'XS': 2673} status {'navd88_verbatim': 9832, 'withheld_no_elevation': 81} elev range 6.0 199.84
+tried 9219 interpolated 5259 null {'no_coverage': 2945, 'not_determinable': 1015}
+stored interpolated: 5250 | recomputed bfe differs > 1e-6: 0 | recomputed null where stored interpolated: 0
+band lo/hi mismatch: 0 0
+null reasons recomputed vs stored: col_0             <bfe>  no_coverage  not_determinable
+null                                                  
+<bfe>              5250            9                 0
+no_coverage           0         2945                 0
+not_determinable      0          448               567
+interp bfe outside its band: 0
+band width quantiles {0.0: 1.0, 0.5: 1.4, 0.9: 2.0, 1.0: 9.0} | >5 ft: 9
+interpolated with zone_main A: 7  zones for these: [array([{'zone': 'A', 'subtype': None, 'sfha': True, 'share': 0.9733},
+       {'zone': 'AE', 'subtype': None, 'sfha': True, 'share': 0.0267}],
+      dtype=object), array([{'zone': 'A', 'subtype': None, 'sfha': True, 'share': 0.9123},
+       {'zone': 'AE', 'subtype': None, 'sfha': True, 'share': 0.0877}],
+      dtype=object), array([{'zone': 'A', 'subtype': None, 'sfha': True, 'share': 0.9851},
+       {'zone': 'AE', 'subtype': None, 'sfha': True, 'share': 0.0149}],
+      dtype=object)]
+
+=== addresses ending with ','
+['N BELLEAIR AVE,', 'N BAYVIEW CT S,', 'N BAYVIEW CT S,', 'N BAYVIEW CT S,']
+=== OSM licence tag present on OSM-sourced rows: 6 of 6
+licence tag counts: {'fema_nfhl:public': 372764, 'overture_buildings:ODbL-1.0': 372764, 'fl_dor_nal:public_record': 368800, 'overture_addresses:FL_public_domain': 298440, 'usgs_3dep:public_domain': 290540, 'fdem_certificates:terms_unread': 7515, 'geocodio:stored_per_terms': 727, 'openstreetmap:ODbL-1.0': 6}
+
+=== parcel table
+rows 432360 unique parcel_key False cols ['parcel_key', 'parcel_id_native', 'dor_uc', 'geom_group', 'zones', 'below', 'above', 'too_close', 'buildings', 'primary_building_id', 'any_building_below_bfe', 'release']
+buildings sum 7137267 | any_below 56619 | below sum 884412.0 | buildings with below call 33039
+parcel_key in b not in p: 0
+geom_group sizes top: {141001: 1104, 145780: 832, 146416: 757}
+primary_building_id null with buildings>0: 0

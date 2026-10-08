@@ -1,0 +1,5 @@
+buildings with >1 SFHA element 1508
+buildings with >1 SFHA polygon carrying a static BFE: 1323 ; highest != largest-share BFE: 559 ; max diff ft 4.0 ; median diff where >0 1.0
+calls among those: {'below': 273, 'too_close': 175, 'above': 28}
+below calls that would be at/above the largest-share polygon's BFE: 1
+{'AE+VE': 555, 'AE': 4}

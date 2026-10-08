@@ -1,0 +1,5 @@
+Clearwater meridional 1.00213 parallel 0.99787 areal 1.0
+St Pete meridional 1.00213 parallel 0.99787 areal 1.0
+Tarpon meridional 1.00212 parallel 0.99789 areal 1.0
+tiles.json keys ['lpc', 'dem', 'project', 'ept'] project FL_Peninsular_2018_D18 ept srs 3857 metric EPSG:6442 vertical NAVD88 metres (EPT z; matches the source LAZ NAVD88 ftUS heights to 5 mm, 99th pct)
+n dem tiles 22 first dem url https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/1m/Projects/FL_Peninsular_2018_D18/TIFF/USGS_1M_17_x31y308_FL_Peninsular_2018_D18.tif
