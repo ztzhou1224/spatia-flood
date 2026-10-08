@@ -1,21 +1,28 @@
-"""Release gate (plan docs/04 §4, decisions 12-13): a rebuilt floor model publishes only if, on the SAME held-out
-houses, it is no worse than the release it replaces.
+"""Release gate v2 (r1 plan docs/09 D2 and §4; plan docs/04 §4, decisions 12-13): a rebuilt floor model publishes only
+if, on the SAME houses, it is not worse than the release it replaces, by more than the noise of the comparison.
 
-Both models (a directory each, holding model_<FIPS>.txt, difficulty_<FIPS>.txt, bands_<FIPS>.json as train.py writes
-them) are scored with train.score on one test set: the screened labels in the CANDIDATE's held-out blocks (its
-bands json `test_blocks`; train.py draws them from every label batch, so a new batch's 20% is inside). Scoring the
-two on the same houses is what makes "no worse" a comparison of models, not of test sets.
-Thresholds (fixed in phase 1; tolerances absorb run-to-run noise of one held-out draw):
-  MAE              candidate <= baseline + 0.05 ft
-  BFE side correct candidate >= baseline - 0.01
-  90% coverage     candidate >= baseline - 0.01, and >= 0.88 (never far below the nominal 0.90)
-  decided correct  candidate >= baseline - 0.01 (precision of the above / below calls)
-With no baseline (the first release), only the absolute coverage floor applies.
-Output: the comparison table on stdout and pipeline/train/out/gate_<FIPS>_<release>.json; exit 1 when the gate fails.
-Labels: data/flood_v1/train/labels_<FIPS>.parquet by default; --labels FILE scores on another label set with the same
-columns (added 2026-10-07 for r1b, whose held-out blocks include Pinellas County certificate labels; omitting it gives
-the original behaviour).
-Usage: python pipeline/train/gate.py 12103 pinellas_2018 --candidate DIR [--baseline DIR] --release NAME [--labels FILE]
+Both models (a directory each: model_<FIPS>.txt, difficulty_<FIPS>.txt, bands_<FIPS>.json, as train.py writes them)
+are scored per house with train.score's definitions, on four tables:
+  benchmark | fdem       r0's 102 test blocks (split_<FIPS>.json, origin r0, part test), FDEM labels
+  benchmark | combined   the same blocks, FDEM + Pinellas County labels (labels_pinellas/build.py)
+  held_out  | fdem       every test block of the split (benchmark + blocks hashed into test later)
+  held_out  | combined
+Labels are screened as train.py screens them. A house both models trained or calibrated on can only be in a FIT /
+CAL block, so no table holds one.
+Pass rule, on the two BENCHMARK tables:
+  - paired block bootstrap (resample blocks with replacement, --boot draws, seed 0) of candidate - baseline for MAE,
+    BFE side, coverage, decided correct, and the conditional coverage of truly raised & unflagged houses
+    (dh > 3 ft, p <= 3 ft): a regression is a 95% interval that excludes zero the wrong way (MAE: lower bound > 0;
+    the others: upper bound < 0);
+  - r0's fixed tolerances kept as a floor: MAE diff <= +0.05 ft, the others >= -0.01;
+  - absolute coverage >= 0.88 on every table (benchmark and held-out, both label sets).
+The held-out tables and the conditional-coverage rows (truly raised & unflagged, diagram 5-9 unflagged, slab 1A/1B
+truly raised) are printed and stored for every table, with n, and the marginal bootstrap sd of each candidate metric.
+With no baseline only the absolute coverage floor applies.
+--self-test runs the gate twice with the baseline as candidate: unchanged (must pass) and with q halved (must fail).
+Output: pipeline/train/out/gate_<FIPS>_<release>.json (all four tables); exit 1 when the gate (or self-test) fails.
+Usage: python pipeline/train/gate.py 12103 pinellas_2018 --candidate DIR [--baseline DIR] --release NAME
+           [--labels FILE] [--labels-combined FILE] [--boot 2000] [--self-test]
 """
 
 from __future__ import annotations
@@ -30,10 +37,14 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import split
 from train import DATA, FEATS, features, score
 
 TOL = {"MAE": 0.05, "BFE side": 0.01, "coverage": 0.01, "decided correct": 0.01}
 COVERAGE_FLOOR = 0.88
+METRICS = ["MAE", "BFE side", "coverage", "decided correct", "raised unflagged coverage"]
+LOWER_IS_BETTER = {"MAE"}
+COMBINED = DATA / "labels_pinellas" / "labels_combined_12103.parquet"
 
 
 def load(d: Path, fips: str):
@@ -46,72 +57,205 @@ def load(d: Path, fips: str):
     )
 
 
-def scored(d: Path, fips: str, t: pd.DataFrame) -> dict:
+def predict(d: Path, fips: str, t: pd.DataFrame, q_mult: float = 1.0):
     model, diff, bands = load(d, fips)
     p = model.predict(t[FEATS])
     s = np.maximum(diff.predict(t[FEATS].assign(p=p)), 0.05)
-    return {k: float(v) for k, v in score(t, p, p - bands["q"] * s, p + bands["q"] * s).items()}
+    q = bands["q"] * q_mult
+    return p, p - q * s, p + q * s
+
+
+def scored(d: Path, fips: str, t: pd.DataFrame) -> dict:
+    p, lo, hi = predict(d, fips, t)
+    return {k: float(v) for k, v in score(t, p, lo, hi).items()}
+
+
+def per_house(t: pd.DataFrame, p, lo, hi) -> pd.DataFrame:
+    """train.score's quantities per house, so a block bootstrap can re-aggregate them."""
+    y = t.dh.values
+    s = t.cert_zone.astype(str).str.upper().str[:1].isin(["A", "V"]).values & t.cert_bfe_ft.notna().values
+    lag, bfe, ffe = t.g_lag.values, t.cert_bfe_ft.values, t.ffe_ft.values
+    above, below = s & (lag + lo >= bfe), s & (lag + hi < bfe)
+    dec = above | below
+    ru = (y > 3) & (p <= 3)
+    cov = (y >= lo) & (y <= hi)
+    return pd.DataFrame(
+        {
+            "block": t.block.values,
+            "n": 1.0,
+            "abs_err": np.abs(p - y),
+            "s": s.astype(float),
+            "side_ok": (s & ((ffe >= bfe) == (lag + p >= bfe))).astype(float),
+            "cov": cov.astype(float),
+            "dec": dec.astype(float),
+            "dec_ok": ((above & (ffe >= bfe)) | (below & (ffe < bfe))).astype(float),
+            "ru": ru.astype(float),
+            "ru_cov": (ru & cov).astype(float),
+        }
+    )
+
+
+def ratios(sums: np.ndarray) -> np.ndarray:
+    """sums[..., k] in per_house column order (n, abs_err, s, side_ok, cov, dec, dec_ok, ru, ru_cov) -> METRICS."""
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.stack(
+            [
+                sums[..., 1] / sums[..., 0],
+                sums[..., 3] / sums[..., 2],
+                sums[..., 4] / sums[..., 0],
+                sums[..., 6] / sums[..., 5],
+                sums[..., 8] / sums[..., 7],
+            ],
+            axis=-1,
+        )
+
+
+COLS = ["n", "abs_err", "s", "side_ok", "cov", "dec", "dec_ok", "ru", "ru_cov"]
+
+
+def bootstrap(hc: pd.DataFrame, hb: pd.DataFrame | None, boot: int) -> dict:
+    """Paired block bootstrap: the same resampled blocks for both models."""
+    bc = hc.groupby("block")[COLS].sum()
+    w = np.random.default_rng(0).multinomial(len(bc), np.full(len(bc), 1 / len(bc)), size=boot)
+    rc = ratios(w @ bc.values)
+    out = {"blocks": len(bc), "candidate_sd": dict(zip(METRICS, np.nanstd(rc, axis=0).round(4).tolist(), strict=True))}
+    if hb is not None:
+        bb = hb.groupby("block")[COLS].sum().reindex(bc.index)
+        d = rc - ratios(w @ bb.values)
+        lo, hi = np.nanpercentile(d, 2.5, axis=0), np.nanpercentile(d, 97.5, axis=0)
+        out["diff_ci95"] = {
+            m: [round(float(a), 4), round(float(b), 4)] for m, a, b in zip(METRICS, lo, hi, strict=True)
+        }
+        out["diff_sd"] = dict(zip(METRICS, np.nanstd(d, axis=0).round(4).tolist(), strict=True))
+    return out
+
+
+def conditional(t: pd.DataFrame, p, lo, hi) -> dict:
+    y = t.dh.values
+    cov = (y >= lo) & (y <= hi)
+    dg = t.diagram.astype(str)
+    rows = {
+        "truly raised & unflagged (dh > 3, p <= 3)": (y > 3) & (p <= 3),
+        "diagram 5-9 unflagged (p <= 3)": dg.str[0].isin(list("56789")).values & (p <= 3),
+        "slab 1A/1B truly raised (dh > 3)": dg.isin(["1A", "1B"]).values & (y > 3),
+    }
+    return {
+        k: {"n": int(m.sum()), "coverage": round(float(cov[m].mean()), 3) if m.any() else None} for k, m in rows.items()
+    }
+
+
+def screened(path: Path, f: pd.DataFrame) -> pd.DataFrame:
+    return split.screened(pd.read_parquet(path), f)
+
+
+def evaluate(a, f: pd.DataFrame, q_mult: float = 1.0) -> dict:
+    s = split.load(a.fips)["blocks"]
+    bench = split.benchmark(a.fips)
+    held = {b for b, v in s.items() if v["part"] == "test"}
+    labels = {"fdem": a.labels, "combined": a.labels_combined}
+    tables: dict = {}
+    checks: dict[str, bool] = {}
+    for lname, lpath in labels.items():
+        d = screened(lpath, f)
+        # blocks the split has not seen (only train.py extends it) belong to no table: counted, never scored
+        unknown = set(d.block) - set(s)
+        tables[f"{lname}: label blocks not in the split"] = {
+            "blocks": len(unknown),
+            "houses": int(d.block.isin(unknown).sum()),
+        }
+        for sname, blocks in (("benchmark", bench), ("held_out", held)):
+            t = d[d.block.isin(blocks)].reset_index(drop=True)
+            pc = predict(a.candidate, a.fips, t, q_mult)
+            pb = predict(a.baseline, a.fips, t) if a.baseline else None
+            row: dict = {"houses": len(t), "candidate": {k: float(v) for k, v in score(t, *pc).items()}}
+            row["candidate_conditional"] = conditional(t, *pc)
+            hc = per_house(t, *pc)
+            hb = None
+            if pb is not None:
+                row["baseline"] = {k: float(v) for k, v in score(t, *pb).items()}
+                row["baseline_conditional"] = conditional(t, *pb)
+                hb = per_house(t, *pb)
+            row["bootstrap"] = bootstrap(hc, hb, a.boot)
+            key = f"{sname} | {lname}"
+            tables[key] = row
+            checks[f"{key}: coverage >= {COVERAGE_FLOOR}"] = row["candidate"]["coverage"] >= COVERAGE_FLOOR
+            if pb is None or sname != "benchmark":
+                continue
+            ci = row["bootstrap"]["diff_ci95"]
+            for m in METRICS:
+                lo_, hi_ = ci[m]
+                regress = lo_ > 0 if m in LOWER_IS_BETTER else hi_ < 0
+                checks[f"{key}: {m} no regression (95% CI {lo_:+.4f} .. {hi_:+.4f})"] = not regress
+            cand, base = row["candidate"], row["baseline"]
+            checks[f"{key}: MAE floor (diff <= +{TOL['MAE']})"] = cand["MAE"] - base["MAE"] <= TOL["MAE"]
+            for m in ("BFE side", "coverage", "decided correct"):
+                checks[f"{key}: {m} floor (diff >= -{TOL[m]})"] = cand[m] - base[m] >= -TOL[m]
+    return {"tables": tables, "checks": checks, "passed": all(checks.values())}
+
+
+def report(res: dict) -> None:
+    cols = ["n", "MAE", "within 1 ft", "BFE side", "coverage", "decided correct", "BFE decided"]
+    for key, row in res["tables"].items():
+        if "candidate" not in row:
+            print(f"\n{key}: {row}")
+            continue
+        rows = {m: row[m] for m in ("candidate", "baseline") if m in row}
+        print(f"\n## {key}: {row['houses']} houses, {row['bootstrap']['blocks']} blocks")
+        print(pd.DataFrame(rows).T[cols].round(3).to_markdown())
+        cond = {m: {k: f"{v['coverage']} (n {v['n']})" for k, v in row[f"{m}_conditional"].items()} for m in rows}
+        print(pd.DataFrame(cond).to_markdown())
+        if "diff_ci95" in row["bootstrap"]:
+            print("paired bootstrap 95% CI of candidate - baseline:", row["bootstrap"]["diff_ci95"])
+        print("marginal sd of the candidate:", row["bootstrap"]["candidate_sd"])
+    print()
+    for k, ok in res["checks"].items():
+        print(f"{'pass' if ok else 'FAIL'} {k}")
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("fips")
     ap.add_argument("run")
-    ap.add_argument("--candidate", type=Path, required=True)
+    ap.add_argument("--candidate", type=Path)
     ap.add_argument("--baseline", type=Path)
     ap.add_argument("--release", required=True)
-    ap.add_argument("--labels", type=Path, help="label parquet (default data/flood_v1/train/labels_<FIPS>.parquet)")
+    ap.add_argument("--labels", type=Path, help="FDEM labels (default data/flood_v1/train/labels_<FIPS>.parquet)")
+    ap.add_argument("--labels-combined", type=Path, default=COMBINED)
+    ap.add_argument("--boot", type=int, default=2000)
+    ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
-    labels = a.labels or DATA / "train" / f"labels_{a.fips}.parquet"
-    lab = pd.read_parquet(labels)
-    d = lab.merge(features(a.fips, a.run), on="building_id")
-    d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
-    d["dh"] = d.ffe_ft - d.g_lag
-    d = d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))]
-    test = set(load(a.candidate, a.fips)[2]["test_blocks"])
-    t = d[d.block.isin(test)].reset_index(drop=True)
-    cand = scored(a.candidate, a.fips, t)
-    base = scored(a.baseline, a.fips, t) if a.baseline else None
-    checks = {"coverage >= floor": cand["coverage"] >= COVERAGE_FLOOR}
-    if base:
-        checks |= {
-            "MAE": cand["MAE"] <= base["MAE"] + TOL["MAE"],
-            "BFE side": cand["BFE side"] >= base["BFE side"] - TOL["BFE side"],
-            "coverage": cand["coverage"] >= base["coverage"] - TOL["coverage"],
-            "decided correct": cand["decided correct"] >= base["decided correct"] - TOL["decided correct"],
-        }
-    rows = {"candidate": cand} | ({"baseline": base} if base else {})
-    print(f"held-out houses: {len(t)} in {len(test)} blocks (candidate's test split)")
-    print(
-        pd.DataFrame(rows)
-        .T[["n", "MAE", "BFE side", "coverage", "decided correct", "BFE decided"]]
-        .round(3)
-        .to_markdown()
-    )
-    for k, ok in checks.items():
-        print(f"{'pass' if ok else 'FAIL'} {k}")
-    passed = all(checks.values())
+    a.labels = a.labels or DATA / "train" / f"labels_{a.fips}.parquet"
+    f = features(a.fips, a.run)
     out = Path(__file__).parent / "out" / f"gate_{a.fips}_{a.release}.json"
-    out.write_text(
-        json.dumps(
-            {
-                "fips": a.fips,
-                "release": a.release,
-                "candidate": str(a.candidate),
-                "baseline": str(a.baseline) if a.baseline else None,
-                "labels": str(labels),
-                "n_test": len(t),
-                "tolerances": TOL,
-                "coverage_floor": COVERAGE_FLOOR,
-                "scores": rows,
-                "checks": checks,
-                "passed": passed,
-            },
-            indent=1,
+    meta = {
+        "fips": a.fips,
+        "release": a.release,
+        "labels": str(a.labels),
+        "labels_combined": str(a.labels_combined),
+        "boot": a.boot,
+        "tolerances_floor": TOL,
+        "coverage_floor": COVERAGE_FLOOR,
+    }
+    if a.self_test:
+        assert a.baseline, "--self-test needs --baseline"
+        a.candidate = a.baseline
+        same, halved = evaluate(a, f), evaluate(a, f, q_mult=0.5)
+        ok = same["passed"] and not halved["passed"]
+        print(
+            f"self-test: same model {'passes' if same['passed'] else 'FAILS'}, "
+            f"halved q {'fails' if not halved['passed'] else 'PASSES'} -> {'OK' if ok else 'BROKEN'}"
         )
-    )
-    print("GATE", "PASSED" if passed else "FAILED")
-    sys.exit(0 if passed else 1)
+        for k, v in halved["checks"].items():
+            if not v:
+                print(f"  halved q fails: {k}")
+        out.write_text(json.dumps(meta | {"self_test": {"same": same, "halved_q": halved, "ok": ok}}, indent=1))
+        sys.exit(0 if ok else 1)
+    assert a.candidate, "--candidate is required"
+    res = evaluate(a, f)
+    report(res)
+    out.write_text(json.dumps(meta | {"candidate": str(a.candidate), "baseline": str(a.baseline)} | res, indent=1))
+    print("GATE", "PASSED" if res["passed"] else "FAILED", "->", out)
+    sys.exit(0 if res["passed"] else 1)
 
 
 if __name__ == "__main__":

@@ -8,8 +8,10 @@ Target (label only, never a feature): dh = certificate first living floor (ft NA
 Features: ground shape g_p10 / g_med / g_hag / g_inside / g_far minus g_lag; point cloud (12, eval_lpc.LPC); year built
 and living area (DOR NAL); footprint area; lidar stories (1 if eave_main < 14 ft else 2); eave estimates
 eave - median eave of all county houses with the same lidar stories (label-free) + 1 ft. LightGBM eval_lpc.P, n_jobs 1.
-Splits by 1 km block (EPSG:6442, building centroid), seed 0: TEST 20% of blocks (held out, scored once), CAL 20%,
-FIT 60%. Bands: normalised split conformal: difficulty model s(x) (LightGBM on |out-of-fold residual| within FIT,
+Splits by 1 km block (EPSG:6442, building centroid) from the persisted split (split.py, split_<FIPS>.json; docs/09
+D1): r0's blocks keep r0's seed-0 draw (TEST 20% = the benchmark, CAL 20%, FIT 60%); a block first seen in a later
+label batch is assigned by a hash of its id (20 / 20 / 60) and never moves.
+Bands: normalised split conformal: difficulty model s(x) (LightGBM on |out-of-fold residual| within FIT,
 5 folds by block), q = finite-sample 90% quantile of |y - p| / s on CAL (point model trained on FIT); final point
 model trained on FIT + CAL; band = p +- q s(x). Raised flag (label-free): p > 3 ft; coverage reported per flag.
 Scores on TEST (screened labels): MAE, within 1 ft, raised (dh > 3) MAE / recall, BFE side (certificate zone A* / V*
@@ -29,6 +31,9 @@ import pandas as pd
 import shapely
 from pyproj import Transformer
 from sklearn.model_selection import GroupKFold
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import split
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "flood_v1"
@@ -129,18 +134,18 @@ def score(d, p, lo, hi) -> dict:
 
 def main(fips: str, run: str) -> None:
     f = features(fips, run)
-    lab = pd.read_parquet(DATA / "train" / f"labels_{fips}.parquet")
+    labels_path = DATA / "train" / f"labels_{fips}.parquet"
+    lab = pd.read_parquet(labels_path)
     d = lab.merge(f, on="building_id", how="inner")
     d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
     d["dh"] = d.ffe_ft - d.g_lag
     n0 = len(d)
     d = d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))].reset_index(drop=True)
-    blocks = np.array(sorted(d.block.unique()))
-    rng = np.random.default_rng(0)
-    rng.shuffle(blocks)
-    k = len(blocks)
-    test_b, cal_b = set(blocks[: round(0.2 * k)]), set(blocks[round(0.2 * k) : round(0.4 * k)])
-    part = np.where(d.block.isin(test_b), "test", np.where(d.block.isin(cal_b), "cal", "fit"))
+    # the persisted split (split.py, docs/09 D1): r0's blocks keep their part, new blocks are hashed in
+    parts, new_blocks = split.extend(fips, d.block.unique(), batch=labels_path.name)
+    k = d.block.nunique()
+    part = d.block.map(parts).values
+    test_b = set(d.block[part == "test"])
     fit_d, cal_d, test_d = (
         d[part == "fit"].reset_index(drop=True),
         d[part == "cal"].reset_index(drop=True),
@@ -179,7 +184,8 @@ def main(fips: str, run: str) -> None:
         f"# {fips} ({run}): floor model, held-out 20% by 1 km block",
         "",
         f"labels joined to lidar features with ground and points: {n0}; after the label screen: {len(d)}; "
-        f"blocks {k}: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)} houses",
+        f"blocks {k}: fit {len(fit_d)} / cal {len(cal_d)} / test {len(test_d)} houses; blocks new to the split "
+        f"(hashed in): {new_blocks or 'none'}",
         f"90% normalised conformal scale q = {q:.3f} (CAL, n = {len(cal_d)})",
         "",
         pd.DataFrame(rows).T.round(3).to_markdown(),
