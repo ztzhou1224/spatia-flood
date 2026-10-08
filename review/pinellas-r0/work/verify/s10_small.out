@@ -1,0 +1,10 @@
+modeled rows with ground_ft < -1.99 by call: [('too_close', 45), ('below', 28)]
+conflict-flagged (300) certs issued after 2019-03-08 (labels issued_at): [(300, 269, 9)]
+DA8: record rows w/ cert bfe, pre-2021-08-24: n, |d|>=2, side flip; post: n, within 0.5, >=2: [(4007, 1314, 481, 2439, 0.93, 31)]
+M4 production pair types: {'BFE_LINE/BFE_LINE': 1845, 'XS/XS': 1399, 'XS/BFE_LINE': 1097, 'BFE_LINE/XS': 909}
+|e1-e2| p95, max: 2.0 8.0
+sources10 record point-dated vs window: [(260, 7201)]
+record vintages by year (point dates only): [('2009', 1), ('2010', 2), ('2011', 3), ('2012', 5), ('2013', 3), ('2014', 3), ('2015', 5), ('2016', 10), ('2017', 1141), ('2018', 1103), ('2019', 1102), ('2020', 685), ('2021', 793), ('2022', 563), ('2023', 389), ('2024', 330), ('2025', 815), ('2026', 248)]
+point-dated >= 2024-09-26: [(1193,)]
+binomial sd coverage 0.918 n1315: 0.0076
+raised_flag non-null on ffe_class=record: [(7297,)]

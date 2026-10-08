@@ -1,0 +1,8 @@
+cached rows 10668 after filter 10668 issuedAt null 324
+as-written labels 7527 | r0 labels 7515 | same OBJECTID as r0 for same building: 7203 of 7515
+buildings with >1 matched certificate: 1308
+(a) buildings where as-written keeps an UNDATED cert while a dated candidate exists: 46
+(a') properties with a dated sibling where an undated cert is kept: 46 of 8184 properties
+(c) buildings with >=2 candidates on the same issuedAt: 658
+chosen certificate differs as-written vs na_first+stable: 357 | ffe differs >0.1 ft: 53
+quicksort vs mergesort (same rule): differs 311

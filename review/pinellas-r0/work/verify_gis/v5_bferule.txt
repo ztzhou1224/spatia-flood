@@ -1,0 +1,6 @@
+buildings with >1 SFHA zone element: 1508
+buildings overlapping >1 SFHA polygon with a static BFE: 1224 ; highest != largest-share: 559 ; median diff 1.0 max 4.0
+published bfe_ft == highest for those: 559 of 559 ; methods: {'static': 559}
+calls: {'below': 273, 'too_close': 175, nan: 83, 'above': 28}
+below calls with ffe >= largest-share BFE: 1
+zone combos: {'AE+VE': 555, 'AE': 4}

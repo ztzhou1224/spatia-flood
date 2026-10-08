@@ -1,0 +1,2 @@
+ITRF2014->NAD83(2011): Conversion from ITRF2014 (geog2D) to ITRF2014 (geocentric) + ITRF2014 to NAD83(2011) (1) + Conversion from NAD83(2011) (geocentric) to NAD83(2011) (geog2D) (with axis order normalized for visualization) acc 0.0
+offset if footprint is ITRF2014@2020: dx=0.640 dy=-0.635 |d|=0.902 m

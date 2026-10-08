@@ -1,0 +1,28 @@
+GATE reproduction n/MAE/cov/BFE side/decided correct: 1315 1.039 0.918 0.898 0.983 q 2.3267 screened-out 298
+  coverage truly raised & unflagged: n 70 cov 0.543 MAE 2.48
+  coverage diagram 5-9 & unflagged: n 119 cov 0.790 MAE 1.32
+  coverage slab 1A/1B truly raised: n 130 cov 0.823 MAE 1.70
+  coverage diag 5-9 truly raised: n 136 cov 0.831 MAE 3.09
+  coverage flagged: n 305 cov 0.938 MAE 2.71
+  coverage unflagged: n 1010 cov 0.912 MAE 0.54
+  coverage zone A/V: n 1217 cov 0.918 MAE 1.05
+  coverage zone X/other: n 98 cov 0.918 MAE 0.91
+  misses above band / below band: 69 39
+  raised flag: truly raised 270 flagged 305 precision 0.656 recall 0.741 slab precision 0.487
+county labels 5247 {'navd88_native': 5019, 'ngvd29_county_navd88': 228} {'C2a': 3687, 'C2b': 1560} {'pinellas_county': 5247}
+native matched to table: 5019 | on FDEM-labelled buildings: 3603 | ffe_class: {'record': 3592, 'modeled': 1321, nan: 106}
+county-only (no FDEM label): 1416 modeled: 1310 record(!): 0
+train.py screen removes 28 -> 1282
+  county-only modeled screened n  1282 MAE 2.223 med -0.18 within1 0.485 cov 0.884 cov_flag 0.907 cov_unfl 0.847 BFEside 0.861 decided 0.379 correct 0.951 (423/445)
+    of which r0 TEST blocks    n   199 MAE 2.282 med +0.04 within1 0.462 cov 0.874 cov_flag 0.893 cov_unfl 0.854 BFEside 0.881 decided 0.405 correct 0.941 (64/68)
+  slab 1A/1B                   n   566 MAE 1.072 med +0.16 within1 0.714 cov 0.905 cov_flag 0.871 cov_unfl 0.918 BFEside 0.884 decided 0.554 correct 0.978 (262/268)
+  elevated 5-9                 n   703 MAE 3.137 med -1.37 within1 0.303 cov 0.873 cov_flag 0.922 cov_unfl 0.539 BFEside 0.847 decided 0.257 correct 0.909 (159/175)
+  other                        n    13 MAE 2.970 med -0.86 within1 0.385 cov 0.538 cov_flag 0.556 cov_unfl 0.500 BFEside 0.700 decided 0.200 correct 1.000 (2/2)
+   diagram 5: n 32 median err -1.58 cov 0.719
+   diagram 6: n 195 median err -1.61 cov 0.892
+   diagram 7: n 376 median err -1.58 cov 0.899
+   diagram 8: n 98 median err -0.74 cov 0.786
+   diagram 9: n 2 median err -0.00 cov 1.000
+  confusion: above right/wrong 217 5 | below right/wrong 206 17
+  ground_ft<0 rows: n 8 MAE 6.59 median -6.12
+both-cert buildings 3603 same-day 3173 MAE 0.016 | different dates 307 MAE 2.94

@@ -1,0 +1,114 @@
+--- (4) firm_effective_date counts
+┌─────────────────────┬────────┬───────┐
+│ firm_effective_date │   n    │ sfha  │
+│       varchar       │ int64  │ int64 │
+├─────────────────────┼────────┼───────┤
+│ 2021-08-24          │ 365809 │ 89392 │
+│ 2003-09-03          │   5126 │  1880 │
+│ 2009-08-18          │   1817 │   971 │
+│ NULL                │     12 │     0 │
+└─────────────────────┴────────┴───────┘
+
+--- (4) polygons 12103C pre-2021
+┌───────┬───────┐
+│   n   │ sfha  │
+│ int64 │ int64 │
+├───────┼───────┤
+│   658 │   122 │
+└───────┴───────┘
+
+--- (4) bfe_vintage 2003 by method
+┌──────────────┬───────┐
+│  bfe_method  │   n   │
+│   varchar    │ int64 │
+├──────────────┼───────┤
+│ static       │   127 │
+│ interpolated │  1320 │
+└──────────────┴───────┘
+
+--- (8) condo stacks
+┌─────────┬─────────┬───────┬───────┐
+│ stacked │ modeled │ below │  mx   │
+│  int64  │  int64  │ int64 │ int64 │
+├─────────┼─────────┼───────┼───────┤
+│   28546 │   22797 │  3395 │  1104 │
+└─────────┴─────────┴───────┴───────┘
+
+--- (8) stacked by DOR
+┌──────────────┬───────┬─────────┐
+│ dor_use_code │   n   │ modeled │
+│   varchar    │ int64 │  int64  │
+├──────────────┼───────┼─────────┤
+│ 002          │ 13409 │   10222 │
+│ 004          │ 10431 │    8881 │
+│ 009          │  2917 │    2487 │
+└──────────────┴───────┴─────────┘
+
+--- (7) coverage sums
+┌───────┬────────┬────────┬────────┬────────┬────────┐
+│ cells │   b    │   r    │   s    │  rec   │  mod   │
+│ int64 │ int128 │ int128 │ int128 │ int128 │ int128 │
+├───────┼────────┼────────┼────────┼────────┼────────┤
+│  1225 │ 372764 │ 290540 │  92243 │   7427 │ 240356 │
+└───────┴────────┴────────┴────────┴────────┴────────┘
+
+(7) independent h3 r8 recount: cells 1225 sum 372764 file cells 1225 mismatched cells 0 file cells missing from recount 0
+--- (2) zone_main=AO
+┌───────┬────────┬──────────┬────────┐
+│   n   │ static │ static_8 │ no_cov │
+│ int64 │ int64  │  int64   │ int64  │
+├───────┼────────┼──────────┼────────┤
+│    92 │     54 │       21 │     38 │
+└───────┴────────┴──────────┴────────┘
+
+--- (2) AO bfe_call
+┌───────────┬─────────────┬───────┐
+│ bfe_call  │  bfe_null   │   n   │
+│  varchar  │   varchar   │ int64 │
+├───────────┼─────────────┼───────┤
+│ too_close │ NULL        │    40 │
+│ NULL      │ no_coverage │    38 │
+│ below     │ NULL        │     7 │
+│ above     │ NULL        │     4 │
+│ NULL      │ NULL        │     3 │
+└───────────┴─────────────┴───────┘
+
+--- (2) AO static rows: the non-AO SFHA element share
+┌──────────────────────────────────────┬────────┬────────────┬────────────────────┬─────────────┬──────────┐
+│             building_id              │ bfe_ft │ other_zone │     other_sub      │ other_share │ ao_share │
+│               varchar                │ double │  varchar   │      varchar       │   double    │  double  │
+├──────────────────────────────────────┼────────┼────────────┼────────────────────┼─────────────┼──────────┤
+│ 21356d61-f742-4b17-b39e-17239a9ee413 │   10.0 │ VE         │ COASTAL FLOODPLAIN │         0.0 │      1.0 │
+│ 9e42dc8c-cff7-4f4f-a7d0-2f2e17f9d9cf │   10.0 │ VE         │ COASTAL FLOODPLAIN │      0.0002 │   0.9998 │
+│ 459c1a7a-2341-4eb7-9da9-632f62c262d3 │    8.0 │ AE         │ COASTAL FLOODPLAIN │      0.0024 │   0.9976 │
+│ 50d3b6c5-1b11-4674-b6db-6acc647e8f55 │    8.0 │ AE         │ COASTAL FLOODPLAIN │      0.0042 │   0.9958 │
+│ 17cc5411-2a2f-42db-b741-7d2dc03f6e0d │   10.0 │ VE         │ COASTAL FLOODPLAIN │      0.0091 │   0.9909 │
+│ 54b471b3-227b-4cdc-8aef-235bc24d7e53 │   10.0 │ VE         │ COASTAL FLOODPLAIN │      0.0112 │   0.9888 │
+└──────────────────────────────────────┴────────┴────────────┴────────────────────┴─────────────┴──────────┘
+
+--- (2) AO static rows: min/max share of non-AO element
+┌───────┬────────┬────────┐
+│   n   │   mn   │   mx   │
+│ int64 │ double │ double │
+├───────┼────────┼────────┤
+│    54 │    0.0 │  0.496 │
+└───────┴────────┴────────┘
+
+--- (2) buildings touching any AO polygon
+┌───────┬─────────┐
+│   n   │ decided │
+│ int64 │  int64  │
+├───────┼─────────┤
+│   127 │      16 │
+└───────┴─────────┘
+
+--- (2) AO polygons in NFHL
+┌──────────┬──────────────────────────┬───────┐
+│ fld_zone │ static_bfe_navd88_status │   n   │
+│ varchar  │         varchar          │ int64 │
+├──────────┼──────────────────────────┼───────┤
+│ AO       │ withheld_no_elevation    │     6 │
+│ AH       │ navd88_verbatim          │     6 │
+└──────────┴──────────────────────────┴───────┘
+
+(2) zones_raw columns: ['polygon_id', 'dfirm_id', 'fld_zone', 'zone_subty', 'sfha_tf', 'static_bfe', 'v_datum', 'len_unit', 'static_bfe_navd88_ft', 'static_bfe_navd88_sigma_ft', 'static_bfe_navd88_spread_ft', 'static_bfe_navd88_status', 'firm_panel_eff_date_min', 'firm_panel_eff_date_max', 'outside_home_state', 'first_seen', 'last_seen', 'wkb']

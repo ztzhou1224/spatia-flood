@@ -1,0 +1,7 @@
+test blocks equal saved: True
+sizes 4277 1595 1315 saved 4277 1595 1315
+q reproduced 2.3267 saved 2.3267 | n_cal 1595 k 1437 | np.quantile(0.9) 2.3177
+  shipped FIT+CAL  CAL coverage 0.925
+  shipped FIT+CAL  TEST coverage 0.918
+  m_fit            CAL coverage 0.901
+  m_fit            TEST coverage 0.913

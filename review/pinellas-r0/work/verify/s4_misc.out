@@ -1,0 +1,10 @@
+[('parcel_key', 'VARCHAR', 'YES', None, None, None), ('parcel_id_native', 'VARCHAR', 'YES', None, None, None), ('dor_uc', 'VARCHAR', 'YES', None, None, None), ('geom_group', 'BIGINT', 'YES', None, None, None), ('zones', 'STRUCT("zone" VARCHAR, sfha BOOLEAN, "share" DOUBLE)[]', 'YES', None, None, None), ('below', 'DOUBLE', 'YES', None, None, None), ('above', 'DOUBLE', 'YES', None, None, None), ('too_close', 'DOUBLE', 'YES', None, None, None), ('buildings', 'BIGINT', 'YES', None, None, None), ('primary_building_id', 'VARCHAR', 'YES', None, None, None), ('any_building_below_bfe', 'BOOLEAN', 'YES', None, None, None), ('release', 'VARCHAR', 'YES', None, None, None)]
+parcel rows, distinct keys, dup keys: [(432360, 432087, 192, 11)]
+rows in dup keys: [(465,)]
+buildings carrying dup key: [(54,)]
+sum buildings / below: [(7137267, 884412.0)]
+parcels_at_centroid=1104: [(1107,)] [(1104,)]
+metadata keys: [b'ARROW:schema', b'spatia_flood', b'geo', b'pandas']
+spatia_flood keys: ['producer', 'fips', 'run', 'release', 'built', 'model_version', 'inputs', 'lidar_workunits', 'gate']
+inputs keys: ['us_counties', 'overture_addresses', 'overture_buildings', 'fema_flood_zones', 'fema_bfe_context', 'fl_parcels', 'fema_flood_zones_release', 'fema_bfe_context_release']
+gate: {'n': 1315, 'MAE': 1.039, 'coverage': 0.918, 'q': 2.326714506848828}

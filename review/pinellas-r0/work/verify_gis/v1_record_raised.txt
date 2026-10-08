@@ -1,0 +1,12 @@
+┌─────────────┬─────────────┬───────┐
+│ cert_raised │ raised_flag │   n   │
+│   boolean   │   boolean   │ int64 │
+├─────────────┼─────────────┼───────┤
+│ false       │ false       │  5049 │
+│ false       │ true        │   708 │
+│ false       │ NULL        │   124 │
+│ true        │ false       │   381 │
+│ true        │ true        │  1126 │
+│ true        │ NULL        │    39 │
+└─────────────┴─────────────┴───────┘
+

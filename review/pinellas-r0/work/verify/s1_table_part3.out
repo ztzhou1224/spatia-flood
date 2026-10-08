@@ -1,0 +1,19 @@
+## (i) touches & no sfha zone with share>0: n, with bfe, calls
+   (99, 92)
+## (i) calls for those
+   ('above', 44)
+   (None, 15)
+   ('too_close', 40)
+## (i) sfha_share<0.001 & touches
+   ('above', 154)
+   ('below', 1)
+   (None, 91)
+   ('too_close', 128)
+## (i) area*share<1 m2 & touches: n, decided
+   (754, 337, 1)
+## (i) zone_main=A with interpolated bfe
+   (7,)
+## touches_sfha vs sfha_share>0 mismatch
+   (0,)
+## min share precision (4dp?)
+   (4476,)

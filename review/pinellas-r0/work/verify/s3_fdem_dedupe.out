@@ -1,0 +1,1 @@
+10668 ['OBJECTID', 'propertyId', 'issuedAt', 'verticalDatum', 'buildingUse', 'buildingDiagramNumber', 'topOfBottomFloor', 'topOfNextHigherFloor', 'lowestAdjacentGrade', 'floodZone', 'baseFloodElevation', 'formYear', 'firmPanelEffectiveDate', 'lon', 'lat']

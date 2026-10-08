@@ -1,0 +1,71 @@
+## ffh_class
+   ('modeled', 240356)
+   ('record', 7427)
+   (None, 124981)
+## bfe_call
+   ('above', 7767)
+   ('below', 33039)
+   ('not_applicable', 280521)
+   ('too_close', 35994)
+   (None, 15443)
+## conflict flag
+   (False, 7186)
+   (None, 365278)
+   (True, 300)
+## decided share of SFHA with call
+   (0.5313,)
+## (h) record conflict calls
+   ('above', 244)
+   ('below', 2)
+## (h) basis record_lidar_conflict
+   ('above', 244)
+   ('below', 2)
+## (h) record above within 0.5/0.1/0 of BFE
+   (2492, 403, 141, 74, 314)
+## (h) record above within 0.5 strict <
+   (344,)
+## (d) ground_ft -1.999865 / <-1.99 / <0
+   (250, 291, 770)
+## (d) most frequent ground_ft values
+   (-1.9998651998241743, 244)
+   (-0.8010486463208993, 54)
+   (1.3324771598974865, 28)
+   (61.19718351999919, 11)
+   (2.584115095337232, 4)
+## (d) sentinel rows by ffh_class and call
+   ('modeled', 'below', 19)
+   ('modeled', 'too_close', 32)
+   ('record', 'above', 1)
+   (None, 'not_applicable', 2)
+   (None, None, 196)
+## (d) 4 most extreme floor_minus_bfe
+   (-12.67, -1.9999, 13.0, 'VE', 'below', 'modeled')
+   (-11.4, -1.9999, 13.0, 'VE', 'below', 'modeled')
+   (-10.63, -1.9999, 13.0, 'VE', 'below', 'modeled')
+   (-10.0, -1.9999, 14.0, 'VE', 'below', 'modeled')
+   (-9.89, -1.9999, 14.0, 'VE', 'below', 'modeled')
+   (-9.81, -1.8082, 14.0, 'VE', 'below', 'modeled')
+## (d) below share for -1.99<ground<0 vs all SFHA-called
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/a3f629f2-4a09-47e1-b726-b1e51a9838dc/scratchpad/review/work_verify/s1_table.py", line 22, in <module>
+    q("(d) below share for -1.99<ground<0 vs all SFHA-called", "SELECT CASE WHEN ground_ft>-1.99 AND ground_ft<0 THEN 'neg' ELSE 'other' END g, count(*), round(avg(bfe_call='below'),3) FROM b WHERE bfe_call IN ('above','below','too_close') GROUP BY 1")
+  File "/tmp/claude-0/-home-user/a3f629f2-4a09-47e1-b726-b1e51a9838dc/scratchpad/review/work_verify/s1_table.py", line 7, in q
+    for r in c.execute(sql).fetchall(): print("  ", r)
+             ^^^^^^^^^^^^^^
+_duckdb.BinderException: Binder Error: No function matches the given name and argument types 'avg(BOOLEAN)'. You might need to add explicit type casts.
+	Candidate functions:
+	avg(DECIMAL) -> DECIMAL
+	avg(SMALLINT) -> DOUBLE
+	avg(INTEGER) -> DOUBLE
+	avg(BIGINT) -> DOUBLE
+	avg(HUGEINT) -> DOUBLE
+	avg(INTERVAL) -> INTERVAL
+	avg(DOUBLE) -> DOUBLE
+	avg(TIMESTAMP) -> TIMESTAMP
+	avg(TIMESTAMP WITH TIME ZONE) -> TIMESTAMP WITH TIME ZONE
+	avg(TIME) -> TIME
+	avg(TIME WITH TIME ZONE) -> TIME WITH TIME ZONE
+
+
+LINE 1: ... ground_ft<0 THEN 'neg' ELSE 'other' END g, count(*), round(avg(bfe_call='below'),3) FROM b WHERE bfe_call IN ('above...
+                                                                       ^

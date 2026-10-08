@@ -1,0 +1,6 @@
+picked: Inverse of NAD83(2011) to WGS 84 (1) + SPCS83 Florida West zone (meter) (with axis order normalized for visualization) | accuracy: 2.0
+definition: proj=pipeline step proj=unitconvert xy_in=deg xy_out=rad step proj=tmerc lat_0=24.3333333333333 lon_0=-82 k=0.999941177 x_0=200000 y_0=0 ellps=GRS80
+  avail: Inverse of NAD83(2011) to WGS 84 (1) + SPCS83 Florida West zone (meter) (with axis order normalized for visualization) | acc 2.0
+unavailable: []
+26917 picked: Inverse of NAD83 to WGS 84 (1) + UTM zone 17N (with axis order normalized for visualization) | acc 4.0
+4326->6318: Inverse of NAD83(2011) to WGS 84 (1) (with axis order normalized for visualization) (-82.7873, 27.9659)

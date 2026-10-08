@@ -1,0 +1,14 @@
+7515 ['OBJECTID', 'buildingElevationSource', 'verticalDatum', 'elevationDatum', 'benchmarkUtilized', 'elevationDatumComments', 'baseFloodElevationDatum', 'formYear', 'issuedAt', 'firmPanelEffectiveDate', 'buildingUse', 'buildingDiagramNumber']
+                                                 0                         1
+OBJECTID                                      9695                      9687
+buildingElevationSource      finished_construction     finished_construction
+verticalDatum                            navd_1988                 navd_1988
+elevationDatum                           navd_1988                 navd_1988
+benchmarkUtilized        City of Clearwater "J-02"  PINELLAS CO. B.M. AL0397
+elevationDatumComments                                                      
+baseFloodElevationDatum                  navd_1988                 navd_1988
+formYear                                      2022                      2022
+issuedAt                           1595980800000.0           1608508800000.0
+firmPanelEffectiveDate             1569801600000.0           1062547200000.0
+buildingUse                            residential               residential
+buildingDiagramNumber                           1A                         7

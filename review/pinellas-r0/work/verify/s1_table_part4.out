@@ -1,0 +1,130 @@
+## ffh_class
+   ('modeled', 240356)
+   ('record', 7427)
+   (None, 124981)
+## bfe_call
+   ('above', 7767)
+   ('below', 33039)
+   ('not_applicable', 280521)
+   ('too_close', 35994)
+   (None, 15443)
+## conflict flag
+   (None, 365278)
+   (False, 7186)
+   (True, 300)
+## decided share of SFHA with call
+   (0.5313,)
+## (f) year_built>=2019 by ffh_class
+   ('modeled', 3772)
+   ('record', 410)
+   (None, 3317)
+## (f) modeled & >=2020 calls
+   ('above', 59)
+   ('not_applicable', 2104)
+   ('too_close', 741)
+   (None, 16)
+   ('below', 18)
+## (f) modeled & >=2019 calls
+   ('above', 84)
+   ('too_close', 945)
+   (None, 18)
+   ('not_applicable', 2701)
+   ('below', 24)
+## (f) ffe_vintage modeled>=2020
+   ('2018-12-07/2019-03-08', 2938)
+## (f) year_built max, >=2025
+   (2024, 0)
+## DA5 conflict by ffe_class
+   ('modeled', 51)
+   ('record', 246)
+   (None, 3)
+## DA5 conflict record_note 'not used'
+   ('modeled', 51)
+   (None, 3)
+## DA5 conflict issued after lidar / yb>=2019
+   (232, 52)
+## DA6 record (ffe-ground)-ffh > 3
+   (7427, 0.444, 249, 13.53)
+## DA6 record ffh max, >20
+   (23.06, 6, 17.8)
+## DA7 modeled band >10ft
+   (240356, 26638, 6259, 18.01, 124.3, 10.33, 1.92)
+## M1 record rows diagram
+   ('1A', 4760, 876)
+   ('1B', 1027, 432)
+   ('7', 582, 555)
+   ('8', 466, 167)
+   ('6', 347, 326)
+   ('5', 196, 94)
+   ('3', 46, 25)
+   ('9', 24, 6)
+   ('2A', 6, 5)
+   ('2B', 4, 3)
+   ('4', 3, 3)
+## M1 modeled above raised_flag
+   (1807,)
+## M8 too_close modeled flagged
+   (35860, 14843)
+## M4 interpolated bfe_source pair types
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE bf289923c308919bf189743416f593c7-1 44 ft at 19 m; BFE_LINE 93ce7eb4be30eb1c66af5b962e5f2f9e-1 42 ft at 47 m', 4)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): XS 55bb292c53514bd0dcb7ba6bb3a1ae7d-1 15.8 ft at 31 m; BFE_LINE 764a1525aff8e84d95d57d80089069e1-1 16 ft at 113 m', 4)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): XS bad5b972d421f5e82e5605b729f17837-1 16.6 ft at 106 m; BFE_LINE 764a1525aff8e84d95d57d80089069e1-1 16 ft at 111 m', 3)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE 984dfd9252fc426d371d12ce80b5e658-1 17 ft at 9 m; XS 1bbc8e5f51075d5643a5263afbab9770-1 17.2 ft at 80 m', 3)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): XS bad5b972d421f5e82e5605b729f17837-1 16.6 ft at 69 m; BFE_LINE 764a1525aff8e84d95d57d80089069e1-1 16 ft at 147 m', 3)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE 984dfd9252fc426d371d12ce80b5e658-1 17 ft at 16 m; XS 1bbc8e5f51075d5643a5263afbab9770-1 17.2 ft at 72 m', 3)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): XS 1bbc8e5f51075d5643a5263afbab9770-1 17.2 ft at 0 m; BFE_LINE 984dfd9252fc426d371d12ce80b5e658-1 17 ft at 88 m', 3)
+   ('FEMA NFHL BFE lines / cross-sections, DFIRM 12103C (spatia-data fema_bfe_context@20260930T082454Z-9c7789f1): BFE_LINE 764a1525aff8e84d95d57d80089069e1-1 16 ft at 20 m; XS 55bb292c53514bd0dcb7ba6bb3a1ae7d-1 15.8 ft at 123 m', 3)
+## M4 interpolated calls
+   ('above', 671)
+   (None, 581)
+   ('too_close', 3848)
+   ('below', 150)
+## M4 interp band widths
+   (1.4, 451, 9.0)
+## bfe_precision by method
+   ('static', 0.0, 83024)
+   (None, None, 284490)
+   ('interpolated', None, 5250)
+## licences
+   ('overture_addresses:FL_public_domain', 298440)
+   ('fdem_certificates:terms_unread', 7515)
+   ('openstreetmap:ODbL-1.0', 6)
+   ('fl_dor_nal:public_record', 368800)
+   ('fema_nfhl:public', 372764)
+   ('overture_buildings:ODbL-1.0', 372764)
+   ('usgs_3dep:public_domain', 290540)
+   ('geocodio:stored_per_terms', 727)
+## provider
+   ('public', 372764)
+## ground_geoid
+   (None, 82224)
+   ('GEOID12B', 290540)
+## lift_or_rebuild_null
+   ('not_evaluated', 372764)
+## model_version on record rows / raised_flag on record
+   (7264, 7264)
+## impl4 ffe_null not_determinable & ffh_null not_evaluated
+   (3,)
+## impl4 address null not_evaluated
+   ('not_evaluated', False, 144)
+## record vintages by year
+   ('2009', 1)
+   ('2010', 2)
+   ('2011', 3)
+   ('2012', 5)
+   ('2013', 3)
+   ('2014', 3)
+   ('2015', 78)
+   ('2016', 10)
+   ('2017', 1141)
+   ('2018', 1160)
+   ('2019', 1120)
+   ('2020', 685)
+   ('2021', 820)
+   ('2022', 608)
+   ('2023', 417)
+   ('2024', 330)
+   ('2025', 815)
+   ('2026', 260)
+## record vintage >= 2024-09-26
+   (1205,)

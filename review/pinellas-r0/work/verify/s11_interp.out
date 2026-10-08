@@ -1,0 +1,6 @@
+M9 static buildings: 83024 | overlapping >1 distinct static BFE: 6787 | spread median/max: 1.0 6.0
+   record rows called below under max BFE that would be above under min BFE (upper bound, polygon share unknown): 462
+M4 check reproduced: n 124 MAE 0.415 within1 0.96 inside band 0.96
+   pair types: {'XS/XS': 117, 'BFE_LINE/BFE_LINE': 5, 'XS/BFE_LINE': 2} | |e1-e2| median 0.2
+   nearest-line MAE 0.408 linear better/worse/tie: 40 29 55
+   BFE_LINE/BFE_LINE pairs: 5 errors: [0.0, -2.24, -2.17, -2.4, -2.32]

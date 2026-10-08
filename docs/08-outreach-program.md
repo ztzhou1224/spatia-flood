@@ -32,12 +32,12 @@ first reviewer login:
 
 | # | Precondition | Why | Source |
 |---|---|---|---|
-| P1 | The accuracy card shows the **fresh held-out score against the Pinellas county certificate layer** (MAE 2.21 ft, band coverage 0.883, BFE side 0.863 on 1,267 buildings) next to the FDEM gate (1.04 / 0.918 / 0.898), and says why they differ (elevated houses: MAE 3.1 ft, bias -1.4 ft) | the county holds those certificates; they will run the comparison themselves | 07 §F1 |
-| P2 | Every row states **which floor** `ffe_ft` is (first living floor vs NFIP lowest floor) and record rows carry the lowest floor too; `bfe_call` on a next-higher-floor certificate is not shown as a bare `above` | 443 of 472 such `above` calls are `below` on the lowest floor | 07 §F2 |
-| P3 | Lidar ground that is a DEM sentinel or water carries a null reason, not `observed` with 0.33 ft precision | waterfront rows: the ones a floodplain manager looks at first | 07 §F3 |
-| P4 | A certificate that conflicts with the lidar gives `too_close` / null, not `above` | 244 `above` vs 2 `below` from conflict rows | 07 §F4 |
+| P1 | The accuracy card shows the **fresh held-out score against the Pinellas county certificate layer** (MAE 2.22 ft, band coverage 0.884, BFE side 0.861 on 1,282 buildings) next to the FDEM gate (1.04 / 0.918 / 0.898), and says why they differ (elevated houses: MAE 3.1 ft, bias -1.4 ft; the slab stock scores 1.07 ft) | the county holds those certificates; they will run the comparison themselves | 07 DA1 |
+| P2 | Every row states **which floor** `ffe_ft` is (first living floor vs NFIP lowest floor) and record rows carry the lowest floor too; `bfe_call` on a next-higher-floor certificate is not shown as a bare `above` | 434 of 462 such `above` calls are `below` on the lowest floor; 44 % of the enclosures are not documented vent-compliant | 07 M1 |
+| P3 | Lidar ground that is water or a seawall base carries a null reason or a `ground_suspect` flag, and `raised_flag` is not driven by a sloped ring (228 of 510 certificate lots with a sloped ring are falsely flagged) | waterfront rows are the ones a floodplain manager looks at first | 07 G1 / DA2 |
+| P4 | A certificate that conflicts with the lidar gives `too_close` / null, not `above`; `raised_flag` on record rows comes from the certificate's own floor height | 244 `above` vs 2 `below` from conflict rows; 708 record rows flagged raised against their own certificate | 07 M3, V1 |
 | P5 | Viewer: a **known-limitations page** (the NYC BES precedent, facts §D), the datum / geoid statement on every building card, "screening, not a determination" on every page, and a per-building **flag** button | what reviewers need to do the job | §4 |
-| P6 | Handoff and viewer counts regenerated from the pinned run13 table | the §8 counts are run9 | 07 §F6 |
+| P6 | Handoff and viewer counts regenerated from the pinned run13 table | the §8 counts are run9 | 07 DA3 |
 
 Until P1-P4 ship in a release that passes the gate, show the map only in a guided demo (owner present), never a login.
 
@@ -68,7 +68,7 @@ Ordered by what moves the layer most, per `docs/07` and the fact sheet.
 
 | # | Record set | Holder | Why it matters | Route | Terms / notes |
 |---|---|---|---|---|---|
-| A1 | **Municipal elevation certificates**: the structured index behind `ElevationCertificatesCityNewest_Redacted` (1,513 records seen; Madeira Beach, Pinellas Park, Tarpon Springs) and each city's own file | Pinellas County eGIS; the 10 cities on Forerunner (pinellascountyfl, clearwaterfl, largofl, pinellasparkfl, seminolefl, madeirabeachfl, gulfportfl, oldsmarfl, stpetebeachfl, treasureislandfl) and the 4 without (St. Petersburg, Dunedin, Tarpon Springs, Safety Harbor) (facts §B) | **more elevated-house labels** is the owner's stated next step; the county layer's 19,382 records already cut the gap (07 §F1); city certificates are the ones FDEM's 2023+ filing rule does not reach back to | ch. 119 to each city's floodplain administrator / building department: "the index and the FEMA form fields of all elevation certificates on file, as a CSV or your GIS export, owner name redacted" | no licence text on any county layer; FDEM/Forerunner clause avoided by asking the city |
+| A1 | **Municipal elevation certificates**: the structured index behind `ElevationCertificatesCityNewest_Redacted` (1,513 records seen; Madeira Beach, Pinellas Park, Tarpon Springs) and each city's own file | Pinellas County eGIS; the 10 cities on Forerunner (pinellascountyfl, clearwaterfl, largofl, pinellasparkfl, seminolefl, madeirabeachfl, gulfportfl, oldsmarfl, stpetebeachfl, treasureislandfl) and the 4 without (St. Petersburg, Dunedin, Tarpon Springs, Safety Harbor) (facts §B) | **more elevated-house labels** is the owner's stated next step; the county layer's 19,382 records already expose the gap (07 DA1) and add 763 elevated labelled buildings; city certificates are the ones FDEM's 2023+ filing rule does not reach back to | ch. 119 to each city's floodplain administrator / building department: "the index and the FEMA form fields of all elevation certificates on file, as a CSV or your GIS export, owner name redacted" | no licence text on any county layer; FDEM/Forerunner clause avoided by asking the city |
 | A2 | **Substantial-damage determinations** after Helene / Milton: parcel id, determination date, damage %, repair / elevate / demolish outcome | Pinellas County (unincorporated: 1,600+ letters by 2024-12-20, app exists, no bulk export), St. Petersburg (12,000+ damaged properties, codes database only), St. Pete Beach, Treasure Island, Madeira Beach (facts §B) | the 2018 lidar and many certificates are **stale** for these buildings (plan §3.1 `stale`); SD status is the first thing a local reviewer will check; a demolished or elevated house must not keep a 2018 floor | ch. 119 for the list (not the letters); county Floodplain Management (floodplain@pinellas.gov) | personal data in letters: ask for the list with owner fields removed |
 | A3 | **Permits since 2019-01-01**: new construction, demolition, elevation (lift), fill | county and city building departments; some in county/city permit portals already | change detection with one lidar flight (owner answer 3: `not_evaluated`); a permit list gives `lift_or_rebuild` a record-class source | ch. 119: permit type, parcel, issue and final dates | public record |
 | A4 | **LOMAs / LOMR-F** | FEMA NFHL MapServer layer 34 (LOMA points) and layer 1 (LOMRs); MSC weekly LOMC batches (facts §B) | a building removed from the SFHA by letter still reads `touches_sfha` from the polygons; reviewers will test exactly those | **no request needed**: pipeline step (download, point-in-footprint, `loma_case` column) | public domain |
@@ -110,7 +110,7 @@ No reason is given and none is required (facts §B). A one-paragraph cover note 
 | 2 | **Tampa Bay Regional CRS Committee** and the **TBRPC Regional Resiliency Coalition** (companies may join as Resiliency Coalition Partners) | one room with every Tampa Bay floodplain office; TBRPC also sits on FRMPIWG | sign up as a partner (free, facts §A); ask Pinellas for the CRS committee date |
 | 2 | **Surveyors** (FSMS Tampa Bay chapter) | they wrote the certificates; they know the datum / geoid practice in the county (which geoid a 2015 certificate used) and the diagram conventions; they are also a lead channel (`docs/03` §3) | chapter meeting; one or two firms that file many Pinellas certificates |
 | 3 | **One private flood insurer** (Neptune Flood is headquartered in St. Petersburg; Florida is the #1 state for private residential flood premium, facts §A) | the buyer's review: a blind backtest on their book (`docs/03` §7 motion 1) | after wave 1-2 fixes; this is the first discovery call, not outreach |
-| 3 | **SWFWMD** (watershed models for Pinellas; FEMA CTP role) and **FEMA Region 4** mitigation | the modelled-BFE side (interpolated BFEs, 07 §F5) | WMP@WaterMatters.org; FEMA-R4-Info@fema.dhs.gov |
+| 3 | **SWFWMD** (watershed models for Pinellas; FEMA CTP role) and **FEMA Region 4** mitigation | the modelled-BFE side (07 M4 / G3) | WMP@WaterMatters.org; FEMA-R4-Info@fema.dhs.gov |
 
 ### 4.2 What a reviewer gets and is asked to do
 
@@ -142,7 +142,7 @@ wrong ground / building changed / wrong address / other; free text; optional att
   source and band (CLAUDE.md). Certificates shown carry their licence tag; nothing Bee Maps / NFIP-derived exists
   in this edition.
 - Reviewers see addresses (needed for the job) but no owner, taxpayer or contact field; the viewer export already
-  carries none (07 §checked).
+  carries none (07 §4).
 - Nothing a reviewer tells us is attributed to a named person in any doc or commit; organisations only, with consent.
 - We do not represent the map as FEMA's, the county's or FDEM's; a disclaimer and our name are on every page.
 - A reviewer's correction changes the layer only through the inbox → rebuild → gate → release-notes loop

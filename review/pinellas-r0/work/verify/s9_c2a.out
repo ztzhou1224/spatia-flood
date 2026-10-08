@@ -1,0 +1,8 @@
+r0 record rows diag 2-4/6-9 with county C2A and C2B: 660 | county C2B within 0.5 ft of r0 ffe: 619
+of those 'above': 462 | C2A < BFE: 434 (93.9%) | C2A-BFE median -3.39 IQR [-4.8, -2.0]
+county-wide next-bottom median ft: 9.1 n 2326
+flip rows diag 6-9: 417 | A8A enclosure sqft present: 364 >0: 359 | A8B openings present: 301 | A8c net area present: 308
+A8D engineered values: {'N': 309, 'Y': 85, ' ': 18, 'NA': 5}
+enclosure>0 sqft: 359 | meets 2-openings & 1 sq in/sq ft: 173 | engineered flag: 83 | either: 200 | no openings recorded (A8B null/0): 85
+enclosure A8A null/0 among flips (cannot say): 58
+E5_BOTTOM_FLOOR_ELEVATED values: {' ': 417}

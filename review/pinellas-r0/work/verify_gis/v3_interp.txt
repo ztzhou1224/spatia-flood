@@ -1,0 +1,13 @@
+interpolated rows: 5250 zone_main: {'AE': 4102, 'X': 1141, 'A': 7}
+parsed: 5250
+|e1-e2| median/p90/n>3: 0.4 1.0 31
+line_id unique: True lines: 9913
+pairs with different panel dates: 85 ; L1 panel date != building polygon panel date: 268
+distance-to-L1 recomputed vs bfe_source: max abs diff m 1.07
+segment L1->L2 length median m: 252.0
+segments with >= 0.999 of length inside SFHA union: 1831 of 5250 (0.349)
+segments with >= 0.990 of length inside SFHA union: 1871 of 5250 (0.356)
+segments with >= 0.950 of length inside SFHA union: 2041 of 5250 (0.389)
+segments with > 25% outside: 2050 ; > 50% outside: 1110
+|e1-e2| median where <75% inside: 0.3 where fully inside: 0.5
+calls where <75% inside: {'too_close': 1425, 'above': 374, nan: 216, 'below': 35}

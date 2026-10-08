@@ -1,0 +1,13 @@
+== https://hazards.fema.gov/arcgis/rest/services/PrelimPending/Prelim_NFHL/MapServer/28/query?where=DFIRM_ID%3D%2712103C%27&returnCountOnly=true&f=json
+curl: (28) Operation timed out after 60000 milliseconds with 0 bytes received
+
+== https://hazards.fema.gov/arcgis/rest/services/PrelimPending/Prelim_NFHL/MapServer/3/query?where=DFIRM_ID%3D%2712103C%27&returnCountOnly=true&f=json
+{"count":135}
+== https://hazards.fema.gov/arcgis/rest/services/PrelimPending/Prelim_NFHL/MapServer/16/query?where=DFIRM_ID%3D%2712103C%27&returnCountOnly=true&f=json
+{"count":238}
+== https://hazards.fema.gov/arcgis/rest/services/PrelimPending/Prelim_NFHL/MapServer/0/query?where=DFIRM_ID%3D%2712103C%27&outFields=DFIRM_ID,PRELM_CODE,PRELM_ISSUE_DATE&returnGeometry=false&f=json
+{"displayFieldName":"PFIDX_ID","fieldAliases":{"DFIRM_ID":"DFIRM_ID","PRELM_CODE":"PRELM_CODE","PRELM_ISSUE_DATE":"PRELM_ISSUE_DATE"},"fields":[{"name":"DFIRM_ID","type":"esriFieldTypeString","alias":"DFIRM_ID","length":8},{"name":"PRELM_CODE","type":"esriFieldTypeString","alias":"PRELM_CODE","length":20},{"name":"PRELM_ISSUE_DATE","type":"esriFieldTypeDate","alias":"PRELM_ISSUE_DATE","length":8}],"features":[{"attributes":{"DFIRM_ID":"12103C","PRELM_CODE":"12103C_20250515","PRELM_ISSUE_DATE":1747306800000}}]}
+== https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/34/query?geometry=-82.86,27.6,-82.62,28.18&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json
+{"count":2212}
+== https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/34?f=json
+{"currentVersion":11.1,"cimVersion":"3.1.0","id":34,"name":"LOMAs","type":"Feature Layer","description":"","geometryType":"esriGeometryPoint","sourceSpatialReference":{"wkid":4269,"latestWkid":4269,"xyTolerance":3.35276236575677E-7,"zTolerance":0.001,"mTolerance":0.001,"falseX":-399.999999873023,"falseY":-399.999999963749,"xyUnits":7.63549491650944E8,"falseZ":0,"zUnits":1,"falseM":0,"mUnits":1},"copyrightText":"","parentLayer":null,"subLayers":[],"minScale":36111.909643,"maxScale":0,"referenceScale":0.0,"drawingInfo":{"renderer":{"type":"uniqueValue","valueExpression":"if(Trim(Lower($feature.O

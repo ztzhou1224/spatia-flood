@@ -1,0 +1,4 @@
+record rows [(7461, 7461)]
+[('finished_construction', 6889), ('building_under_construction', 289), ('construction_drawings', 236), ('(null)', 47)]
+non-finished: n, touches_sfha, calls [(525, 487, 295, 188, 2)]
+matched attrs by source (all 7515): [('(null)', 47), ('construction_drawings', 238), ('finished_construction', 6939), ('building_under_construction', 291)]

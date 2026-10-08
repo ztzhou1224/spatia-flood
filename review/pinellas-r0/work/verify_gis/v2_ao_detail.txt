@@ -1,0 +1,45 @@
+┌────────┬─────────┬───────┬──────────┬──────────┐
+│ bfe_ft │   oz    │   n   │ mn_share │ mx_share │
+│ double │ varchar │ int64 │  double  │  double  │
+├────────┼─────────┼───────┼──────────┼──────────┤
+│    8.0 │ AE      │    21 │   0.0024 │    0.496 │
+│   10.0 │ VE      │    18 │      0.0 │   0.2342 │
+│   13.0 │ VE      │     8 │    0.146 │   0.4202 │
+│   11.0 │ VE      │     6 │   0.0607 │   0.4775 │
+│   10.0 │ AE      │     1 │   0.1848 │   0.1848 │
+└────────┴─────────┴───────┴──────────┴──────────┘
+
+┌───────────┬──────────────┐
+│ bfe_call  │ count_star() │
+│  varchar  │    int64     │
+├───────────┼──────────────┤
+│ too_close │           40 │
+│ NULL      │            3 │
+│ below     │            7 │
+│ above     │            4 │
+└───────────┴──────────────┘
+
+┌───────────┬───────┬──────────┐
+│ zone_main │   n   │ with_bfe │
+│  varchar  │ int64 │  int64   │
+├───────────┼───────┼──────────┤
+│ AO        │    92 │       54 │
+│ A         │  2914 │       11 │
+└───────────┴───────┴──────────┘
+
+  retires, its centre-held children appear) — a history consumer sees those as retired +
+  new rows, not a source edit.
+- **`static_bfe_value` (GIS 7), appended LAST on both flood halves** (after
+  `outside_home_state`; `_write_parquet` / `write_geom_partition` derive it from
+  `static_bfe` via `static_bfe_value_sql`): `static_bfe` with EXACTLY -9999 / -8888 as NULL
+  (0.0 and 999.0 kept). Outside the `polygon_id` signature, history DERIVED, and the
+  `static_bfe` description points at it as the value to read; its own description says
+  never to compare across `v_datum` (use `static_bfe_navd88_ft`). The flood halves publish
+  no DEPTH / VELOCITY, so there is no twin for them; `v_datum` rides both flood halves and
+  the BFE lines.
+- **The writers' repair is measured per product (GIS 9)**: `repair_polygons` runs in the
+  flood loader after the out-of-state rule, on the KEPT polygons — the count INVALID
+  before repair, each repaired polygon's |delta ground area| (EPSG:5070 equal-area,
+  against the invalid ring's own shoelace area), counts over 1% / over 100 m2, and it
+  DROPS a polygon the repair empties under the counted reason `degenerate_after_repair`
+  (never fatal). Sidecar block `geometry_repair`; `verify` warns on a product over either

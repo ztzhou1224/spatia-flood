@@ -1,0 +1,15 @@
+## (d) below share for -1.99<ground<0 vs all SFHA-called
+   ('other', 76444, 0.429)
+   ('neg', 356, 0.708)
+## (i) touches_sfha & all sfha zone shares round to 0
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/a3f629f2-4a09-47e1-b726-b1e51a9838dc/scratchpad/review/work_verify/s1_table.py", line 24, in <module>
+    q("(i) touches_sfha & all sfha zone shares round to 0", "SELECT count(*), count(*) FILTER (WHERE bfe_ft IS NOT NULL) FROM b WHERE touches_sfha AND NOT EXISTS (SELECT 1 FROM unnest(zones) z WHERE z.sfha AND z.share > 0)")
+  File "/tmp/claude-0/-home-user/a3f629f2-4a09-47e1-b726-b1e51a9838dc/scratchpad/review/work_verify/s1_table.py", line 7, in q
+    for r in c.execute(sql).fetchall(): print("  ", r)
+             ^^^^^^^^^^^^^^
+_duckdb.BinderException: Binder Error: Referenced table "z" not found!
+Candidate tables: "b"
+
+LINE 1: ...s_sfha AND NOT EXISTS (SELECT 1 FROM unnest(zones) z WHERE z.sfha AND z.share > 0)
+                                                                      ^
