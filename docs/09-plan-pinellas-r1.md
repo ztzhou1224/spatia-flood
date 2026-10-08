@@ -1,9 +1,10 @@
 # Plan: Pinellas `pinellas-r1` (the fixes the review requires before anyone outside sees the map)
 
-Status: **draft for the owner, 2026-10-08.** Built from `docs/07-review-pinellas-r0.md` (five reviews, verified in round 2)
+Status: **approved by the owner 2026-10-08** ("Agree to all": every §2 default and E13's cap, as written).
+Built from `docs/07-review-pinellas-r0.md` (five reviews, verified in round 2)
 and `docs/08-outreach-program.md` §2 (preconditions P1-P6). Every number here is the review's, cited by finding id; the
 plan adds none of its own. Where the review left a decision to the owner (`docs/07` §6), this plan **proposes** a
-default, marked *proposed*; the owner's answers replace them and are recorded in §2.
+default; the owner accepted all of them on 2026-10-08, and §2 now records them as decisions.
 
 ## 1. What r1 is
 
@@ -18,18 +19,18 @@ spatia-data layer changes, §6), the legal reads (owner's, §6), new lidar (none
 
 ## 2. Decisions
 
-| # | Question (`docs/07` §6) | Proposed default | Why |
+| # | Question (`docs/07` §6) | Decision (owner, 2026-10-08) | Why |
 |---|---|---|---|
-| Q1 | Which floor is the product's floor? | *proposed:* **both, named per row.** `floor_definition` on every row (`first_living_floor` / `lowest_floor`); `ffe_ft` and `bfe_call` stay the first living floor (the insurance "first floor height" sense, and the only floor the model can predict); record rows add `lowest_floor_ft` (certificate C2a) and `bfe_call_lowest_floor`; modeled rows get `bfe_call_lowest_floor = null, not_determinable` | M1: 434 of 462 checkable `above` calls on elevated-with-enclosure houses are `below` on the lowest floor; a floodplain manager's question is the lowest floor, a buyer's is the living floor |
-| Q2 | Does a certificate that fails the lidar screen produce a call? | *proposed:* **no.** `bfe_call = null`, `bfe_call_null = not_determinable`, value kept in `ffe_ft` with `record_note`; basis token `record_lidar_conflict` retired | M3: 244 `above` vs 2 `below` from conflict rows; on the 63 test labels the screen removes, model MAE is 19 ft: these are not this footprint's floors. `too_close` would assert a nearness that is not known |
-| Q3 | Ground definition | *proposed:* **ring median**, water and sentinel cells masked. `ground_ft` = ring median; `ground_ring_min_ft`, `ground_ring_range_ft`, `ground_suspect` published; model target retrained on `ffe − g_med` | G1: surveyed LAG vs ring median MAE 0.51 ft, vs ring minimum 0.81 ft; 12.9 % of surveyed LAGs sit below the minimum; the minimum is the canal on 770 waterfront lots and drives 35 % of all raised flags on sloped lots |
-| Q4 | Rebuild r0 now for the label sort (I1) and stage filter (S2), or carry to r1? | *proposed:* **carry to r1**: one re-pin, one spatia-data harness pass. The disclosure items (§3 A) ship to the viewer and docs now without a re-pin | a re-pin costs a full harness pass; r1 is weeks, not months (§5) |
-| Q5 | Is a construction-drawings / under-construction certificate ever `record`? | *proposed:* **no.** `record` only for `finished_construction`; the other stages are kept as `record_stage` + `record_note` and the row falls back to the model (as rejected certificates do today); excluded from labels | S2: 572 such rows, 524 in the SFHA, calls above 308 / below 210 on values that are designs, not measurements |
+| Q1 | Which floor is the product's floor? | **both, named per row.** `floor_definition` on every row (`first_living_floor` / `lowest_floor`); `ffe_ft` and `bfe_call` stay the first living floor (the insurance "first floor height" sense, and the only floor the model can predict); record rows add `lowest_floor_ft` (certificate C2a) and `bfe_call_lowest_floor`; modeled rows get `bfe_call_lowest_floor = null, not_determinable` | M1: 434 of 462 checkable `above` calls on elevated-with-enclosure houses are `below` on the lowest floor; a floodplain manager's question is the lowest floor, a buyer's is the living floor |
+| Q2 | Does a certificate that fails the lidar screen produce a call? | **no.** `bfe_call = null`, `bfe_call_null = not_determinable`, value kept in `ffe_ft` with `record_note`; basis token `record_lidar_conflict` retired | M3: 244 `above` vs 2 `below` from conflict rows; on the 63 test labels the screen removes, model MAE is 19 ft: these are not this footprint's floors. `too_close` would assert a nearness that is not known |
+| Q3 | Ground definition | **ring median**, water and sentinel cells masked. `ground_ft` = ring median; `ground_ring_min_ft`, `ground_ring_range_ft`, `ground_suspect` published; model target retrained on `ffe − g_med` | G1: surveyed LAG vs ring median MAE 0.51 ft, vs ring minimum 0.81 ft; 12.9 % of surveyed LAGs sit below the minimum; the minimum is the canal on 770 waterfront lots and drives 35 % of all raised flags on sloped lots |
+| Q4 | Rebuild r0 now for the label sort (I1) and stage filter (S2), or carry to r1? | **carry to r1**: one re-pin, one spatia-data harness pass. The disclosure items (§3 A) ship to the viewer and docs now without a re-pin | a re-pin costs a full harness pass; r1 is weeks, not months (§5) |
+| Q5 | Is a construction-drawings / under-construction certificate ever `record`? | **no.** `record` only for `finished_construction`; the other stages are kept as `record_stage` + `record_note` and the row falls back to the model (as rejected certificates do today); excluded from labels | S2: 572 such rows, 524 in the SFHA, calls above 308 / below 210 on values that are designs, not measurements |
 | Q6 | ODbL and FDEM / Forerunner legal read | owner's; **tags made honest now**: `fdem_certificates:terms_unread` → `fdem_certificates:forerunner_internal_noncommercial` (what the survey found), `provider` must not read `public` on those rows | S3 |
-| Q7 | Preliminary FIRM in r1? | *proposed:* a **county-level note now** (`firm_status` column: `effective 2021-08-24; preliminary 2025-05-15 pending; 3 effective dates in county`), the data in the release after r1 (§6) | S4, G4 |
-| Q8 | Freeze the r0 test blocks? | *proposed:* **yes, as a permanent benchmark**, plus a stable hash split for every new block (§4) | M7, r1b report §5: redrawing the split put 1,139 of 1,782 gate houses in blocks r0 had trained on |
+| Q7 | Preliminary FIRM in r1? | a **county-level note now** (`firm_status` column: `effective 2021-08-24; preliminary 2025-05-15 pending; 3 effective dates in county`), the data in the release after r1 (§6) | S4, G4 |
+| Q8 | Freeze the r0 test blocks? | **yes, as a permanent benchmark**, plus a stable hash split for every new block (§4) | M7, r1b report §5: redrawing the split put 1,139 of 1,782 gate houses in blocks r0 had trained on |
 | Q9 | Can spatia-data carry NFHL `DEPTH` and `WTR_NM`? | ask (§6); r1 does not wait: AO → `bfe_null = not_evaluated`; interpolation gets the review's own rule that needs no new column (segment inside the building's SFHA polygon) | G2, M4 / G3 |
-| Q10 | Certificate OBJECTIDs in the viewer record? | *proposed:* **drop from the browser JSON** (kept in the table); also drop `parcel_id_native` from the browser record | I6: resolvable to owner names on the public FDEM layer |
+| Q10 | Certificate OBJECTIDs in the viewer record? | **drop from the browser JSON** (kept in the table); also drop `parcel_id_native` from the browser record | I6: resolvable to owner names on the public FDEM layer |
 
 Still the owner's, unchanged from `docs/04` §8 and `docs/05` §9: no floor-count / foundation columns, FDEM values
 published with tags, model and interpolation allowed, FEMA parents declared (withdraw before a FEMA release).
@@ -93,7 +94,7 @@ copied from this doc.
 | E10 | S3, Q6 | Honest licence tags (`fdem_certificates:forerunner_internal_noncommercial`; `provider` not `public` on those rows; Geocodio source strings as returned) | tags listed in `docs/06` |
 | E11 | S4, G4, Q7 | `firm_status` (county-level note: effective and preliminary FIRM dates), `firm_effective_date` already per row; `docs/06` names the three effective dates and their counts | column present on every row |
 | E12 | S6, G5, DA8, M5 | Interpolated `bfe_precision_ft` from the band; `docs/06` states: highest-BFE rule and that straddling lots use the VE BFE; record calls use the 2021 FIRM BFE, not the certificate's; the two standards of proof (`>=` for record, band for modeled) with `floor_minus_bfe_ft` as the margin | doc lines present; `bfe_precision_ft` non-null on interpolated rows |
-| E13 | DA7 | Bands wider than the roof: `ffh_band_hi` capped at `roof_ft` with a note, or the row nulled `not_determinable` (owner's call; *proposed:* cap and note) | 0 bands above the roof |
+| E13 | DA7 | Bands wider than the roof: `ffh_band_hi` capped at `roof_ft` with a note, or the row nulled `not_determinable` (owner, 2026-10-08: cap and note) | 0 bands above the roof |
 
 ### F. Hygiene (`pyproject.toml`, `tests/`)
 
