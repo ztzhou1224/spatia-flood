@@ -20,9 +20,10 @@ Each value `x` travels with `x_class` (`record` / `observed` / `modeled`), `x_so
 | `stale` | not produced in v1: needs a second flight to detect a lift / rebuild |
 | `withheld` | not produced in v1: no licence-restricted input is used |
 
-All elevations are feet NAVD88; lidar values are US survey feet with the geoid named in `lag_geoid` (GEOID12B for
-Pinellas 2018). Heights (`roof_ft`, `eave_ft`) are feet above `ground_ft`. `ground_ft` is a lidar ring minimum, NOT the
-Elevation Certificate's Lowest Adjacent Grade (renamed from `lag_ft` 2026-10-07 for that reason). The file's parquet
+All elevations are feet NAVD88; lidar values are US survey feet with the geoid named in `ground_geoid` (GEOID12B
+for Pinellas 2018). Heights (`roof_ft`, `eave_ft`, modeled `ffh_ft`) are feet above `ground_ft`. `ground_ft` is lidar
+ground (r1: masked ring median; r0: ring minimum), NOT the Elevation Certificate's Lowest Adjacent Grade (renamed from
+`lag_ft` 2026-10-07 for that reason). The file's parquet
 key-value metadata `spatia_flood` holds the producer, release, model version, held-out gate, the two-population
 accuracy card (from r1 on; see "Accuracy" below) and every input layer's
 version + full `file_hash` (Overture buildings / addresses, fl_parcels, us_counties, FEMA zones and BFE lines).
@@ -44,7 +45,8 @@ version + full `file_hash` (Overture buildings / addresses, fl_parcels, us_count
 | | `firm_effective_date` | FIRM panel effective date of the largest-share polygon |
 | | `bfe_ft` (+ `_class`, `_method`, `_source`, `_vintage`, `_band_lo`, `_band_hi`, `_precision_ft`, `_datum`, `_null`) | `static` (record): highest static BFE of the SFHA polygons the footprint overlaps; precision = spatia-data's NGVD29 -> NAVD88 conversion sigma (0 when published in NAVD88). `interpolated` (modeled), where no static BFE exists: linear in distance between the nearest FEMA BFE line / cross-section and the nearest one on the other side of the building, among those crossing its SFHA polygons within 1 km (spatia-data `fema_bfe_context`); band = the two elevations widened by 0.5 ft (FIRM BFEs are whole feet) |
 | | `in_risk_area` | centroid in the risk polygon (the lidar run's building set) |
-| Ground | `ground_ft` (+ `_class`, `_source`, `_vintage`, `_precision_ft`, `_geoid`, `_null`) | lowest 1 m DEM cell in a 0.5-2.5 m ring outside the footprint (not the certificate LAG); precision = the work unit's QL RMSEz from the 3DEP Lidar Base Specification (non-vegetated), not a per-building error |
+| Ground | `ground_ft` (+ `_class`, `_source`, `_vintage`, `_precision_ft`, `_geoid`, `_null`) | r1: **median** of the 1 m DEM cells in a 0.5-2.5 m ring outside the footprint, with cells below −1.5 ft NAVD88 and the tile's hydro-flattened water surface (the tile's most frequent value, when below 0) masked first (owner, 2026-10-08, `docs/09` Q3 / C1-C2); `not_determinable` when fewer than 5 ring cells survive the mask. r0: the unmasked ring **minimum**, which on waterfront and sloped lots is the water, a seawall toe or the low side (review G1). Never the certificate LAG; precision = the work unit's QL RMSEz from the 3DEP Lidar Base Specification (non-vegetated), not a per-building error |
+| | `ground_ring_min_ft`, `ground_ring_range_ft`, `ground_ring_masked_cells`, `ground_suspect` | r1: the masked ring's minimum and max − min, how many ring cells the mask removed, and `ground_suspect` = range > 3 ft, or minimum below 0 ft NAVD88, or any cell masked (a sloped, terraced or waterfront lot: the ground, and every height above it, is less certain there) |
 | | `lidar_workunit`, `lidar_ql` | USGS WESM work unit holding the centroid |
 | Building | `year_built`, `living_area_sqft` (+ `_class`, `_source`, `_vintage`, `_null`) | DOR NAL via spatia-data `fl_parcels`; `dor_use_code` alongside. No floor count or foundation column (owner, 2026-10-07) |
 | Roof / eave | `roof_ft`, `eave_ft` (+ `_class`, `_source`, `_vintage`, `_null`) | point cloud: 99th percentile of building returns (`ridge`), main-roof eave (`eave_main`); ft above `ground_ft` |

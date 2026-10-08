@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "pipeline" / "phase0"))
 sys.path.insert(0, str(ROOT / "pipeline" / "train"))
 from risk_area import BLDG, ZONES, connect
-from train import FEATS, features
+from train import feats, features, run_base, screen
 
 DATA = ROOT / "data" / "flood_v1"
 OUT = DATA / "assemble"
@@ -65,11 +65,16 @@ FDEM = (
 ALBERS = "EPSG:3086"
 BFE_LINES = "layers/national/fema_bfe_context@20260930T082454Z-9c7789f1/current/data.parquet"
 LINE_SEARCH_M = 1000.0
+SEGMENT_OUTSIDE = 0.01  # share of the L1 -> building -> L2 path allowed outside the SFHA (numerical tolerance; E8)
 LINES_EDITION = BFE_LINES.split("@")[1].split("/")[0]
 BFE_ROUND_FT = 0.5  # FIRM BFEs are whole feet: an interpolated BFE carries +-0.5 ft beyond its two lines
 Z90 = 1.645
 RAISED_FT = 3.0  # train.py raised flag
 FINISHED = "finished_construction"  # the only certificate stage used as a record (docs/09 Q5 / E7)
+SLIVER_M2 = 1.0  # an SFHA overlap smaller than this is a sliver (FEMA's touch rule still applies; docs/09 E5)
+# FEMA preliminary FIRMs not used (they are not effective); docs/07 S4: Prelim_NFHL PRELM_CODE 12103C_20250515
+PRELIMINARY_FIRM = {"12103": "2025-05-15"}
+SUSPECT_RANGE_FT = 3.0  # ring max - min above this: sloped / terraced lot, ground uncertain (docs/09 C2)
 CONFLICT_LAG_FT = 3.0  # certificate LAG this far from ground_ft: the certificate conflicts with the lidar (docs/09 E2)
 QL_RMSEZ_FT = {"QL 0": 5 / 30.48006, "QL 1": 10 / 30.48006, "QL 2": 10 / 30.48006, "QL 3": 20 / 30.48006}  # 3DEP LBS
 LIC = {
@@ -206,13 +211,16 @@ def fdem_lag(ids: list[int]) -> pd.DataFrame:
 
 
 def interpolate_bfe(
-    cen: np.ndarray, polys_of: dict, zg: np.ndarray, lines: pd.DataFrame, lg: np.ndarray
+    cen: np.ndarray, polys_of: dict, zg: np.ndarray, lines: pd.DataFrame, lg: np.ndarray, exclude: dict | None = None
 ) -> pd.DataFrame:
     """BFE between FEMA BFE lines / cross-sections, per building index in polys_of (building -> SFHA polygon indices).
     Candidates: lines crossing one of the building's SFHA polygons, within LINE_SEARCH_M of its centroid (EPSG:3086).
     L1 = nearest; L2 = nearest line on the other side (vector to its nearest point opposite to L1's). BFE = linear in
     distance between them, band = [min - 0.5, max + 0.5] of the two elevations (BFE_ROUND_FT). No L2: not_determinable;
-    no candidate: no_coverage."""
+    no candidate: no_coverage.
+    r1 (docs/09 E8, review M4 / G3): L2 prefers L1's source type (BFE line vs cross-section) among the opposite
+    lines; and the path L1 -> building -> L2 (nearest points) must lie inside the union of the building's SFHA
+    polygons (at most SEGMENT_OUTSIDE of its length outside), else not_determinable: never across non-SFHA ground."""
     need = sorted({q for ps in polys_of.values() for q in ps})
     li, pi = shapely.STRtree(lg).query(zg[need], predicate="intersects")
     by_poly: dict[int, set] = {}
@@ -221,6 +229,8 @@ def interpolate_bfe(
     rows = []
     for a, ps in polys_of.items():
         cand = sorted(set().union(*(by_poly.get(q, set()) for q in ps)))
+        if exclude is not None:
+            cand = [k for k in cand if k != exclude.get(a)]
         c = cen[a]
         if cand:
             d = shapely.distance(c, lg[cand])
@@ -238,9 +248,23 @@ def interpolate_bfe(
         else:
             opp = [k for k in o[1:] if d[k] > 0 and near[k] @ near[i1] < 0]
             if not opp:
-                rows.append({"a": a, "null": "not_determinable"})
+                rows.append({"a": a, "null": "not_determinable", "why": "lines on one side only"})
                 continue
-            i2 = opp[0]
+            st = lines.source_type.values
+            same = [k for k in opp if st[cand[k]] == st[cand[i1]]]
+            i2 = (same or opp)[0]
+            p1, p2 = (
+                shapely.points(near[i1] + shapely.get_coordinates(c)[0]),
+                shapely.points(near[i2] + shapely.get_coordinates(c)[0]),
+            )
+            path = shapely.LineString(
+                np.vstack([shapely.get_coordinates(p1), shapely.get_coordinates(c), shapely.get_coordinates(p2)])
+            )
+            area = shapely.union_all(zg[sorted(ps)])
+            out_frac = shapely.length(shapely.difference(path, area)) / max(shapely.length(path), 1e-9)
+            if out_frac > SEGMENT_OUTSIDE:
+                rows.append({"a": a, "null": "not_determinable", "why": "path between the lines leaves the SFHA"})
+                continue
             e2 = lines.elev.values[cand[i2]]
             f = d[i1] / (d[i1] + d[i2])
         l1, l2 = lines.iloc[cand[i1]], lines.iloc[cand[i2]]
@@ -257,7 +281,7 @@ def interpolate_bfe(
                 "status": l1.status,
             }
         )
-    return pd.DataFrame(rows, columns=["a", "bfe", "lo", "hi", "src", "dfirm", "eff", "status", "null"])
+    return pd.DataFrame(rows, columns=["a", "bfe", "lo", "hi", "src", "dfirm", "eff", "status", "null", "why"])
 
 
 def lists(s: pd.Series, idx) -> np.ndarray:
@@ -368,6 +392,14 @@ def main() -> None:
     b["touches_sfha"] = b.sfha_share > 0
     eff = pr.sort_values("share", ascending=False).drop_duplicates("a").set_index("a").firm_panel_eff_date_max
     b["firm_effective_date"] = pd.to_datetime(eff.reindex(range(len(b)))).dt.strftime("%Y-%m-%d").values
+    eff_n = pd.Series(b.firm_effective_date).value_counts().sort_index()
+    status = "effective FIRM panel dates in the county: " + "; ".join(
+        f"{d_} ({n_:,} buildings)" for d_, n_ in eff_n.items()
+    )
+    if fips in PRELIMINARY_FIRM:
+        status += f". FEMA preliminary countywide FIRM issued {PRELIMINARY_FIRM[fips]}: not effective, not used"
+    b["firm_status"] = status  # docs/09 E11 (county-level note; LOMAs are not applied either)
+    rep["firm_status"] = status
     sb = (
         pr[pr.sfha & pr.static_bfe_navd88_ft.notna()]
         .sort_values("static_bfe_navd88_ft", ascending=False)
@@ -395,6 +427,24 @@ def main() -> None:
             np.where(~b.touches_sfha, "not_applicable", np.where(only_a, "no_coverage", "not_evaluated")), index=b.index
         ),
     )
+    # E5: how much SFHA the footprint holds; a sliver keeps FEMA's touch rule but gets no interpolated BFE
+    b["sfha_area_m2"] = pr[pr.sfha].groupby("a").area.sum().reindex(range(len(b))).fillna(0).values
+    sliver = b.touches_sfha.values & (b.sfha_area_m2.values < SLIVER_M2)
+    b["sfha_sliver"] = sliver
+    # E4: an AO building's BFE would come from a neighbouring AE / VE polygon it touches; AO is a depth zone, so no BFE
+    # until NFHL DEPTH is carried (docs/09 Q9)
+    ao = b.zone_main.values == "AO"
+    rep["ao_static_bfe_removed"] = int((ao & b.bfe_ft.notna().values).sum())
+    for col in ("bfe_ft", "bfe_precision_ft"):
+        b.loc[ao, col] = np.nan
+    for col in ("bfe_class", "bfe_method", "bfe_source", "bfe_vintage", "bfe_datum"):
+        b.loc[ao, col] = None
+    b.loc[ao & b.touches_sfha.values, "bfe_null"] = "not_evaluated"
+    b["bfe_note"] = np.where(
+        ao & b.touches_sfha.values,
+        "zone AO (shallow flooding with a depth, not an elevation): no BFE until FEMA's depth is carried",
+        np.where(sliver, "SFHA overlap under 1 m2: in the SFHA by FEMA's touch rule; no interpolated BFE", None),
+    )
     b["bfe_band_lo"], b["bfe_band_hi"] = np.nan, np.nan
     lines = cached(
         OUT / f"bfe_lines_{fips}.parquet",
@@ -410,7 +460,7 @@ def main() -> None:
     lg = projected(shapely.from_wkb(lines.wkb.map(bytes).values), ALBERS)
     cen_a = shapely.centroid(ga)
     sp = pr[pr.sfha]
-    todo = set(np.where(b.bfe_null.values == "not_evaluated")[0])
+    todo = set(np.where((b.bfe_null.values == "not_evaluated") & ~ao & ~sliver)[0])
     polys_of = {int(k): set(v) for k, v in sp[sp.a.isin(todo)].groupby("a").p}
     ip = interpolate_bfe(cen_a, polys_of, zg, lines, lg)
     ok_ = ip[ip.bfe.notna()]
@@ -427,6 +477,7 @@ def main() -> None:
     b.loc[ia, "bfe_vintage"] = pd.to_datetime(ok_.eff).dt.strftime("%Y-%m-%d").values
     b.loc[ia, "bfe_datum"] = ("NAVD88 ft; " + ok_.status.astype(str)).values
     b.loc[ia, "bfe_null"] = None
+    b.loc[ia, "bfe_precision_ft"] = ((ok_.hi - ok_.lo) / 2).values  # E12: half the band (a bound, not a sigma)
     nn = ip[ip.bfe.isna()]
     b.loc[nn.a.values.astype(int), "bfe_null"] = nn.null.values
     # the same method where a static BFE exists (AE / VE with lines): how close does interpolation get?
@@ -437,11 +488,44 @@ def main() -> None:
     inb = (b.bfe_ft.values[chk.a.values.astype(int)] >= chk.lo.values - 1e-9) & (
         b.bfe_ft.values[chk.a.values.astype(int)] <= chk.hi.values + 1e-9
     )
+    # E8 validation: hold out each BFE line (BFE_LINE; riverine and coastal alike), predict it at its midpoint from the
+    # others crossing the same SFHA polygons; reported apart from the static check, which tests coastal flats only
+    bl = np.where(lines.source_type.values == "BFE_LINE")[0]
+    mids = shapely.line_interpolate_point(lg[bl], 0.5, normalized=True)
+    mz, pz = shapely.STRtree(zg).query(mids, predicate="within")
+    sfha_poly = set(np.where(z.sfha_tf.values == "T")[0])
+    hp: dict[int, set] = {}
+    for i, q in zip(mz, pz, strict=True):
+        if int(q) in sfha_poly:
+            hp.setdefault(int(i), set()).add(int(q))
+    ho = interpolate_bfe(mids, hp, zg, lines, lg, exclude={i: int(bl[i]) for i in hp})
+    hv = ho[ho.bfe.notna()]
+    herr = hv.bfe.values - lines.elev.values[bl[hv.a.values.astype(int)]]
+    rep["bfe_line_holdout"] = {
+        "bfe_lines_with_elevation": len(bl),
+        "midpoint_in_sfha": len(hp),
+        "predicted": len(hv),
+        "MAE_ft": round(float(np.abs(herr).mean()), 3) if len(hv) else None,
+        "within_1ft": round(float((np.abs(herr) <= 1).mean()), 3) if len(hv) else None,
+        "inside_band": round(
+            float(
+                (
+                    (lines.elev.values[bl[hv.a.values.astype(int)]] >= hv.lo.values)
+                    & (lines.elev.values[bl[hv.a.values.astype(int)]] <= hv.hi.values)
+                ).mean()
+            ),
+            3,
+        )
+        if len(hv)
+        else None,
+        "null": ho[ho.bfe.isna()].why.value_counts().to_dict(),
+    }
     rep["bfe_interpolation"] = {
         "lines_with_elevation": len(lines),
         "buildings_tried": len(polys_of),
         "interpolated": len(ok_),
         "null": nn.null.value_counts().to_dict(),
+        "null_why": nn.why.value_counts().to_dict(),
         "band_width_median_ft": round(float((ok_.hi - ok_.lo).median()), 2) if len(ok_) else None,
         "check_on_static_bfe": {
             "n": len(chk),
@@ -483,15 +567,34 @@ def main() -> None:
     lidar_vint = w.collect_start.astype(str) + "/" + w.collect_end.astype(str)
     f = b[["building_id"]].merge(feat, on="building_id", how="left")
     risk = b.in_risk_area.values
-    lag = pd.Series(np.where(risk, f.g_lag, np.nan))
-    b["ground_ft"] = lag  # lidar ring minimum, NOT the Elevation Certificate's Lowest Adjacent Grade
+    base = run_base(run)  # r0: ring minimum; r1: masked ring median (docs/09 C1-C2, owner Q3)
+    lag = pd.Series(np.where(risk, f[f"g_{base}"], np.nan))
+    b["ground_ft"] = lag  # lidar ground, NOT the Elevation Certificate's Lowest Adjacent Grade
     b["ground_class"] = np.where(lag.notna(), "observed", None)
+    ground_def = (
+        "median of the 1 m DEM cells in a 0.5-2.5 m ring outside the footprint, cells below -1.5 ft NAVD88 and the "
+        "tile's flattened water surface masked"
+        if base == "med"
+        else "lowest cell in a 0.5-2.5 m ring outside the footprint"
+    )
     b["ground_source"] = np.where(
         lag.notna(),
-        "lidar 1 m DEM, lowest cell in a 0.5-2.5 m ring outside the footprint "
-        "(not the Elevation Certificate LAG); " + lidar_src,
+        f"lidar 1 m DEM, {ground_def} (not the Elevation Certificate LAG); " + lidar_src,
         None,
     )
+    if base == "med":
+        rmin = pd.Series(np.where(risk, f.g_lag, np.nan))
+        b["ground_ring_min_ft"] = rmin
+        b["ground_ring_range_ft"] = pd.Series(np.where(risk, f.g_hag - f.g_lag, np.nan))
+        b["ground_ring_masked_cells"] = pd.array(np.where(risk, f.g_ring_n_masked, pd.NA), dtype="Int64")
+        suspect = (b.ground_ring_range_ft > SUSPECT_RANGE_FT) | (rmin < 0) | (b.ground_ring_masked_cells > 0)
+        b["ground_suspect"] = pd.array(np.where(lag.notna(), suspect.fillna(False), pd.NA), dtype="boolean")
+        rep["ground_suspect"] = {
+            "range_gt_3ft": int((b.ground_ring_range_ft > SUSPECT_RANGE_FT).sum()),
+            "min_below_0": int((rmin < 0).sum()),
+            "cells_masked": int((b.ground_ring_masked_cells > 0).sum()),
+            "any": int(b.ground_suspect.fillna(False).sum()),
+        }
     b["ground_vintage"] = np.where(lag.notna(), lidar_vint, None)
     b["ground_precision_ft"] = np.where(lag.notna(), w.ql.map(QL_RMSEZ_FT), np.nan)
     b["ground_geoid"] = np.where(lag.notna(), w.geoid, None)
@@ -573,7 +676,10 @@ def main() -> None:
     model = lgb.Booster(model_file=str(md / f"model_{fips}.txt"))
     diff = lgb.Booster(model_file=str(md / f"difficulty_{fips}.txt"))
     bands = json.loads((md / f"bands_{fips}.json").read_text())
-    assert bands["features"] == FEATS, "train.py features changed since the model was saved"
+    bands.setdefault("base", "lag")  # r0's bands json predates the field
+    assert bands["features"] == feats(bands["base"]), "train.py features changed since the model was saved"
+    assert bands["base"] == base, f"model base {bands['base']} != run {run} base {base}"
+    FE = bands["features"]
     q = bands["q"]
     h = hashlib.sha256()
     for fn in (f"model_{fips}.txt", f"difficulty_{fips}.txt", f"bands_{fips}.json"):
@@ -581,16 +687,13 @@ def main() -> None:
     version = f"E-lgbm-{fips}-{h.hexdigest()[:12]}"
 
     def predict(x: pd.DataFrame):
-        p = model.predict(x[FEATS])
-        s = np.maximum(diff.predict(x[FEATS].assign(p=p)), 0.05)
+        p = model.predict(x[FE])
+        s = np.maximum(diff.predict(x[FE].assign(p=p)), 0.05)
         return p, p - q * s, p + q * s
 
     # gate re-check: the saved artefacts must reproduce train.py's held-out score
     lab = pd.read_parquet(md / f"labels_{fips}.parquet")
-    d = lab.merge(m, on="building_id")
-    d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
-    d["dh"] = d.ffe_ft - d.g_lag
-    d = d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))]
+    d = screen(lab, m)
     t = d[d.block.isin(set(bands["test_blocks"]))]
     pt, lo, hi = predict(t)
     rep["gate_recheck"] = {
@@ -607,7 +710,7 @@ def main() -> None:
     accuracy = {k: acc[k] for k in ("populations", "fdem_held_out", "county_independent")}
 
     mm = b[["building_id"]].merge(m, on="building_id", how="left")
-    elig = risk & residential & (mm.lpc_status == "ok").values & mm.g_lag.notna().values
+    elig = risk & residential & (mm.lpc_status == "ok").values & mm.g_base.notna().values
     p = np.full(len(b), np.nan)
     plo, phi = p.copy(), p.copy()
     p[elig], plo[elig], phi[elig] = predict(mm[elig])
@@ -763,6 +866,59 @@ def main() -> None:
     b["lift_or_rebuild"] = pd.array([pd.NA] * len(b), dtype="boolean")
     b["lift_or_rebuild_null"] = "not_evaluated"  # one lidar flight (owner answer 3); so no record is marked stale
 
+    # E6: a building the DOR dates to the lidar flight's last year or later was modeled from the ground as it was before
+    # it stood: the modeled floor is stale (roof / eave / ground stay, with a note); record floors are unaffected
+    flight_end = pd.to_datetime(w.collect_end, errors="coerce").dt.year.values
+    after = (b.year_built.values >= flight_end) & ~np.isnan(b.year_built.values.astype(float))
+    b["built_after_lidar"] = pd.array(np.where(np.isnan(flight_end), pd.NA, after), dtype="boolean")
+    b["lidar_note"] = np.where(
+        after,
+        "DOR year built is in or after the lidar flight's last year: roof, eave and ground may describe the site "
+        "before this building",
+        None,
+    )
+    stale = model_floor & after
+    for col in ("ffh_ft", "ffh_band_lo", "ffh_band_hi", "ffe_ft", "ffe_band_lo", "ffe_band_hi"):
+        b.loc[stale, col] = np.nan
+    for col in ("ffh_class", "ffh_source", "ffh_vintage", "ffe_class", "ffe_source", "ffe_vintage", "ffe_datum"):
+        b.loc[stale, col] = None
+    b.loc[stale, ["ffh_null", "ffe_null"]] = "stale"
+    flag_from_model = b.raised_flag_source.values == "model point estimate > 3 ft"
+    b.loc[stale & flag_from_model, "raised_flag"] = pd.NA
+    b.loc[stale & flag_from_model, ["raised_flag_source"]] = None
+    b.loc[stale & flag_from_model, "raised_flag_null"] = "stale"
+    rep["stale_modeled"] = int(stale.sum())
+    model_floor = model_floor & ~stale
+    ffe = b.ffe_ft.values
+
+    # E13: a band above the roof is not a floor: cap ffh_band_hi at the roof height (never below the estimate itself)
+    roof = b.roof_ft.values
+    over = model_floor & ~np.isnan(roof) & (b.ffh_band_hi.values > roof)
+    cap = np.maximum(roof, b.ffh_ft.values)
+    b.loc[over, "ffh_band_hi"] = cap[over]
+    b.loc[over, "ffe_band_hi"] = b.ground_ft.values[over] + cap[over]
+    b["band_note"] = np.where(
+        over, "90% band capped at the roof height (roof_ft): the model's band reached above it", None
+    )
+    rep["bands_capped_at_roof"] = {
+        "n": int(over.sum()),
+        "estimate_above_roof": int((over & (b.ffh_ft.values > roof)).sum()),
+    }
+
+    # E1: which floor the floor columns are (owner Q1); the lowest floor (certificate C2a) on record rows
+    b["floor_definition"] = np.where(b.ffe_ft.notna(), "first_living_floor", None)
+    low = r.lowest_floor_ft.values.astype(float) if "lowest_floor_ft" in r.columns else np.full(len(b), np.nan)
+    low_ok = rec & ~np.isnan(low)
+    b["lowest_floor_ft"] = np.where(low_ok, low, np.nan)
+    b["lowest_floor_class"] = np.where(low_ok, "record", None)
+    b["lowest_floor_source"] = np.where(
+        low_ok, "FDEM elevation certificate OBJECTID " + oid_s + ", C2a top of bottom floor (NFIP lowest floor)", None
+    )
+    b["lowest_floor_vintage"] = np.where(low_ok, issued, None)
+    b["lowest_floor_null"] = np.where(
+        low_ok, None, np.where(rec, "not_determinable", np.where(b.ffe_ft.notna(), "not_determinable", b.ffe_null))
+    )
+
     # ---------------------------------------------------------------- floor vs BFE
     bfe = b.bfe_ft.values
     blo, bhi = b.bfe_band_lo.fillna(b.bfe_ft).values, b.bfe_band_hi.fillna(b.bfe_ft).values  # static: lo = hi = BFE
@@ -771,7 +927,8 @@ def main() -> None:
     b["floor_minus_bfe_ft"] = ffe - bfe
     b["floor_minus_bfe_band_lo"] = np.where(banded, flo - bhi, np.nan)
     b["floor_minus_bfe_band_hi"] = np.where(banded, fhi - blo, np.nan)
-    sig = np.nan_to_num(b.bfe_precision_ft.values.astype(float))
+    # the conversion sigma of a STATIC BFE only; an interpolated BFE's uncertainty is its band (E12)
+    sig = np.where(b.bfe_method.values == "static", np.nan_to_num(b.bfe_precision_ft.values.astype(float)), 0.0)
     have = b.touches_sfha.values & ~np.isnan(bfe) & ~np.isnan(ffe)
     rec_call = np.where(
         np.abs(ffe - bfe) < Z90 * sig,
@@ -795,6 +952,26 @@ def main() -> None:
         np.where(conflict & have, "not_determinable", np.where(np.isnan(bfe), b.bfe_null, b.ffe_null)),
         None,
     )
+    # E1: the same record rule on the certificate's lowest floor (C2a); never on a modeled floor, never on a conflict
+    lf = b.lowest_floor_ft.values
+    have_l = b.touches_sfha.values & ~np.isnan(bfe) & ~np.isnan(lf) & ~conflict
+    low_call = np.where(
+        np.abs(lf - bfe) < Z90 * sig,
+        "too_close",
+        np.where(lf >= bhi, "above", np.where(lf < blo, "below", "too_close")),
+    )
+    lcall = np.where(~b.touches_sfha.values, "not_applicable", np.where(have_l, low_call, None))
+    b["bfe_call_lowest_floor"] = lcall
+    b["bfe_call_lowest_floor_null"] = np.where(
+        pd.isna(lcall),
+        np.where(np.isnan(bfe), b.bfe_null, np.where(conflict, "not_determinable", b.lowest_floor_null)),
+        None,
+    )
+    rep["lowest_floor"] = {
+        "record_rows_with_lowest_floor": int((~np.isnan(lf)).sum()),
+        "calls": pd.Series(lcall).value_counts(dropna=False).to_dict(),
+        "living_above_lowest_below": int(((call == "above") & (lcall == "below")).sum()),
+    }
 
     # ---------------------------------------------------------------- addresses
     def read_addr():
@@ -845,7 +1022,10 @@ def main() -> None:
         )[use]
     b["address"], b["address_source"] = addr.values, asrc.values
     b["address_points_in_footprint"] = n_pts.reindex(range(len(b))).fillna(0).astype(int).values
-    b["address_null"] = np.where(addr.notna(), None, "not_evaluated")  # until geocodio.py has run
+    # geocodio.py looks up every risk-area building without a free address: once it has run, a risk-area row still
+    # without one was looked up and got none (not_determinable); rows outside the risk area were never looked up
+    looked = gpath.exists() & risk
+    b["address_null"] = np.where(addr.notna(), None, np.where(looked, "not_determinable", "not_evaluated"))
     rep["addresses"] = b.address_source.fillna("none").value_counts().to_dict()
     rep["addresses_missing_in_risk_area"] = int((addr.isna().values & risk).sum())
 
@@ -878,7 +1058,7 @@ def main() -> None:
         ("fdem_forerunner" if LIC["fdem"] in s else "") + ("+geocodio" if LIC["geocodio"] in s else "") for s in lic
     ]
     b["provider"] = [x.strip("+") or "public" for x in restricted]
-    b["model_version"] = np.where(elig, version, None)
+    b["model_version"] = np.where(b.ffh_class.values == "modeled", version, None)  # E9
     b["release"] = a.release
 
     # ---------------------------------------------------------------- report

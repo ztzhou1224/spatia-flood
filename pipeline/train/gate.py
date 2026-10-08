@@ -7,8 +7,11 @@ are scored per house with train.score's definitions, on four tables:
   benchmark | combined   the same blocks, FDEM + Pinellas County labels (labels_pinellas/build.py)
   held_out  | fdem       every test block of the split (benchmark + blocks hashed into test later)
   held_out  | combined
-Labels are screened as train.py screens them. A house both models trained or calibrated on can only be in a FIT /
-CAL block, so no table holds one.
+Each model is scored on its OWN run's features and ground base (bands json `run` / `base`; r0: pinellas_2018, ring
+minimum), on the houses both models' train.py screens keep. Every metric is then a floor-elevation comparison
+(predicted floor = base + p), so models with different bases compare like for like. "Truly raised" is the
+certificate's own floor height (floor - certificate LAG) > 3 ft, model-independent, where the label carries it.
+A house either model trained or calibrated on can only be in a FIT / CAL block, so no table holds one.
 Pass rule, on the two BENCHMARK tables:
   - paired block bootstrap (resample blocks with replacement, --boot draws, seed 0) of candidate - baseline for MAE,
     BFE side, coverage, decided correct, and the conditional coverage of truly raised & unflagged houses
@@ -38,7 +41,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import split
-from train import DATA, FEATS, features, score
+from train import DATA, feats, features, score
 
 TOL = {"MAE": 0.05, "BFE side": 0.01, "coverage": 0.01, "decided correct": 0.01}
 COVERAGE_FLOOR = 0.88
@@ -48,8 +51,11 @@ COMBINED = DATA / "labels_pinellas" / "labels_combined_12103.parquet"
 
 
 def load(d: Path, fips: str):
+    """A model dir; its bands json names its run and ground base (r0's has neither: pinellas_2018, ring minimum)."""
     bands = json.loads((d / f"bands_{fips}.json").read_text())
-    assert bands["features"] == FEATS, f"{d}: model features differ from train.py's"
+    bands.setdefault("run", "pinellas_2018")
+    bands.setdefault("base", "lag")
+    assert bands["features"] == feats(bands["base"]), f"{d}: model features differ from train.py's for its base"
     return (
         lgb.Booster(model_file=str(d / f"model_{fips}.txt")),
         lgb.Booster(model_file=str(d / f"difficulty_{fips}.txt")),
@@ -58,9 +64,11 @@ def load(d: Path, fips: str):
 
 
 def predict(d: Path, fips: str, t: pd.DataFrame, q_mult: float = 1.0):
+    """p, lo, hi for t, which must hold this model's run features (frame())."""
     model, diff, bands = load(d, fips)
-    p = model.predict(t[FEATS])
-    s = np.maximum(diff.predict(t[FEATS].assign(p=p)), 0.05)
+    fe = bands["features"]
+    p = model.predict(t[fe])
+    s = np.maximum(diff.predict(t[fe].assign(p=p)), 0.05)
     q = bands["q"] * q_mult
     return p, p - q * s, p + q * s
 
@@ -70,14 +78,22 @@ def scored(d: Path, fips: str, t: pd.DataFrame) -> dict:
     return {k: float(v) for k, v in score(t, p, lo, hi).items()}
 
 
+def raised_truth(t: pd.DataFrame) -> np.ndarray:
+    """Certificate floor minus the certificate's own LAG > 3 ft where the label has it, else dh > 3."""
+    if "cert_lag_ft" in t.columns:
+        own = t.ffe_ft.values - t.cert_lag_ft.values
+        return np.where(np.isnan(own), t.dh.values > 3, own > 3)
+    return t.dh.values > 3
+
+
 def per_house(t: pd.DataFrame, p, lo, hi) -> pd.DataFrame:
     """train.score's quantities per house, so a block bootstrap can re-aggregate them."""
     y = t.dh.values
     s = t.cert_zone.astype(str).str.upper().str[:1].isin(["A", "V"]).values & t.cert_bfe_ft.notna().values
-    lag, bfe, ffe = t.g_lag.values, t.cert_bfe_ft.values, t.ffe_ft.values
+    lag, bfe, ffe = t.g_base.values, t.cert_bfe_ft.values, t.ffe_ft.values
     above, below = s & (lag + lo >= bfe), s & (lag + hi < bfe)
     dec = above | below
-    ru = (y > 3) & (p <= 3)
+    ru = raised_truth(t) & (p <= 3)
     cov = (y >= lo) & (y <= hi)
     return pd.DataFrame(
         {
@@ -131,24 +147,46 @@ def bootstrap(hc: pd.DataFrame, hb: pd.DataFrame | None, boot: int) -> dict:
 
 
 def conditional(t: pd.DataFrame, p, lo, hi) -> dict:
+    """Conditional coverage rows. "Truly raised" = certificate floor - the certificate's own LAG > 3 ft where the label
+    carries cert_lag_ft (model-independent, so both models are judged on the same houses), else dh > 3."""
     y = t.dh.values
     cov = (y >= lo) & (y <= hi)
     dg = t.diagram.astype(str)
+    tr = raised_truth(t)
     rows = {
-        "truly raised & unflagged (dh > 3, p <= 3)": (y > 3) & (p <= 3),
+        "truly raised & unflagged (p <= 3)": tr & (p <= 3),
         "diagram 5-9 unflagged (p <= 3)": dg.str[0].isin(list("56789")).values & (p <= 3),
-        "slab 1A/1B truly raised (dh > 3)": dg.isin(["1A", "1B"]).values & (y > 3),
+        "slab 1A/1B truly raised": dg.isin(["1A", "1B"]).values & tr,
     }
     return {
         k: {"n": int(m.sum()), "coverage": round(float(cov[m].mean()), 3) if m.any() else None} for k, m in rows.items()
     }
 
 
-def screened(path: Path, f: pd.DataFrame) -> pd.DataFrame:
-    return split.screened(pd.read_parquet(path), f)
+FRAMES: dict[str, pd.DataFrame] = {}
 
 
-def evaluate(a, f: pd.DataFrame, q_mult: float = 1.0) -> dict:
+def frame(fips: str, run: str) -> pd.DataFrame:
+    if run not in FRAMES:
+        FRAMES[run] = features(fips, run)
+    return FRAMES[run]
+
+
+def paired(lpath: Path, fips: str, cand: Path, base: Path | None):
+    """The label set screened on each model's own run, restricted to houses BOTH screens keep, in one order."""
+    lab = pd.read_parquet(lpath)
+    dc = split.screened(lab, frame(fips, load(cand, fips)[2]["run"]))
+    if base is None:
+        return dc, None
+    db = split.screened(lab, frame(fips, load(base, fips)[2]["run"]))
+    ids = sorted(set(dc.building_id) & set(db.building_id))
+    dc = dc.set_index("building_id").loc[ids].reset_index()
+    db = db.set_index("building_id").loc[ids].reset_index()
+    assert (dc.block.values == db.block.values).all()
+    return dc, db
+
+
+def evaluate(a, q_mult: float = 1.0) -> dict:
     s = split.load(a.fips)["blocks"]
     bench = split.benchmark(a.fips)
     held = {b for b, v in s.items() if v["part"] == "test"}
@@ -156,7 +194,7 @@ def evaluate(a, f: pd.DataFrame, q_mult: float = 1.0) -> dict:
     tables: dict = {}
     checks: dict[str, bool] = {}
     for lname, lpath in labels.items():
-        d = screened(lpath, f)
+        d, db = paired(lpath, a.fips, a.candidate, a.baseline)
         # blocks the split has not seen (only train.py extends it) belong to no table: counted, never scored
         unknown = set(d.block) - set(s)
         tables[f"{lname}: label blocks not in the split"] = {
@@ -164,17 +202,19 @@ def evaluate(a, f: pd.DataFrame, q_mult: float = 1.0) -> dict:
             "houses": int(d.block.isin(unknown).sum()),
         }
         for sname, blocks in (("benchmark", bench), ("held_out", held)):
-            t = d[d.block.isin(blocks)].reset_index(drop=True)
+            m = d.block.isin(blocks).values
+            t = d[m].reset_index(drop=True)
+            tb = db[m].reset_index(drop=True) if db is not None else None
             pc = predict(a.candidate, a.fips, t, q_mult)
-            pb = predict(a.baseline, a.fips, t) if a.baseline else None
+            pb = predict(a.baseline, a.fips, tb) if tb is not None else None
             row: dict = {"houses": len(t), "candidate": {k: float(v) for k, v in score(t, *pc).items()}}
             row["candidate_conditional"] = conditional(t, *pc)
             hc = per_house(t, *pc)
             hb = None
             if pb is not None:
-                row["baseline"] = {k: float(v) for k, v in score(t, *pb).items()}
-                row["baseline_conditional"] = conditional(t, *pb)
-                hb = per_house(t, *pb)
+                row["baseline"] = {k: float(v) for k, v in score(tb, *pb).items()}
+                row["baseline_conditional"] = conditional(tb, *pb)
+                hb = per_house(tb, *pb)
             row["bootstrap"] = bootstrap(hc, hb, a.boot)
             key = f"{sname} | {lname}"
             tables[key] = row
@@ -225,7 +265,6 @@ def main() -> None:
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
     a.labels = a.labels or DATA / "train" / f"labels_{a.fips}.parquet"
-    f = features(a.fips, a.run)
     out = Path(__file__).parent / "out" / f"gate_{a.fips}_{a.release}.json"
     meta = {
         "fips": a.fips,
@@ -239,7 +278,7 @@ def main() -> None:
     if a.self_test:
         assert a.baseline, "--self-test needs --baseline"
         a.candidate = a.baseline
-        same, halved = evaluate(a, f), evaluate(a, f, q_mult=0.5)
+        same, halved = evaluate(a), evaluate(a, q_mult=0.5)
         ok = same["passed"] and not halved["passed"]
         print(
             f"self-test: same model {'passes' if same['passed'] else 'FAILS'}, "
@@ -251,7 +290,7 @@ def main() -> None:
         out.write_text(json.dumps(meta | {"self_test": {"same": same, "halved_q": halved, "ok": ok}}, indent=1))
         sys.exit(0 if ok else 1)
     assert a.candidate, "--candidate is required"
-    res = evaluate(a, f)
+    res = evaluate(a)
     report(res)
     out.write_text(json.dumps(meta | {"candidate": str(a.candidate), "baseline": str(a.baseline)} | res, indent=1))
     print("GATE", "PASSED" if res["passed"] else "FAILED", "->", out)

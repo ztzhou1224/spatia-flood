@@ -9,7 +9,8 @@ with its population stated, so no single score is mistaken for the whole story.
                   floor for them and the model never saw them as labels), all blocks; the r0-TEST-block subset is
                   reported beside it.
 
-Both are scored by train.score on the same screened target (dh = certificate first living floor - g_lag; screen:
+Both are scored by train.score on the same screened target (dh = certificate first living floor - the model's run
+ground base g_base, ring minimum for r0, masked ring median for r1; screen:
 roof_p95 - dh < 6 or dh < -1 dropped), with the model's own bands, and certificate zone / BFE for the BFE side. The
 county population is the one that is independent of the training labels' source; the FDEM one is the gate's.
 Per population: overall, slab (1A / 1B), elevated (diagram 5-9) and elevated not flagged (p <= 3 ft, the band the
@@ -35,7 +36,7 @@ import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gate import load
-from train import DATA, FEATS, features, score
+from train import DATA, features, score, screen
 
 ELEVATED = list("56789")
 KEYS = [
@@ -64,15 +65,12 @@ def wilson(k: int, n: int) -> list:
 
 
 def screened(lab: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
-    d = lab.merge(f, on="building_id", how="inner")
-    d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
-    d["dh"] = d.ffe_ft - d.g_lag
-    return d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))].reset_index(drop=True)
+    return screen(lab, f)
 
 
-def card(d: pd.DataFrame, model, diff, q: float) -> dict:
-    p = model.predict(d[FEATS])
-    s = np.maximum(diff.predict(d[FEATS].assign(p=p)), 0.05)
+def card(d: pd.DataFrame, model, diff, q: float, fe: list[str]) -> dict:
+    p = model.predict(d[fe])
+    s = np.maximum(diff.predict(d[fe].assign(p=p)), 0.05)
     lo, hi = p - q * s, p + q * s
     cov = (d.dh.values >= lo) & (d.dh.values <= hi)
     elev = d.diagram.astype(str).str[0].isin(ELEVATED).values
@@ -114,7 +112,7 @@ def main() -> None:
     a = ap.parse_args()
     model, diff, bands = load(a.model, a.fips)
     q, test = bands["q"], set(bands["test_blocks"])
-    f = features(a.fips, a.run)
+    f = features(a.fips, bands["run"])  # the model's own run (its ground base and features)
     fd = pd.read_parquet(a.model / f"labels_{a.fips}.parquet")  # the labels this model was trained on
     co = pd.read_parquet(a.county_labels)
     co_native = co[co.vertical_datum_route == "navd88_native"]
@@ -145,9 +143,11 @@ def main() -> None:
             "county native, no FDEM label": len(co_only),
             "county scored (screened, lidar ok)": len(dco),
         },
-        "fdem_held_out": card(dfd[dfd.block.isin(test)].reset_index(drop=True), model, diff, q),
-        "county_independent": card(dco, model, diff, q),
-        "county_independent_r0_test_blocks": card(dco[dco.block.isin(test)].reset_index(drop=True), model, diff, q),
+        "fdem_held_out": card(dfd[dfd.block.isin(test)].reset_index(drop=True), model, diff, q, bands["features"]),
+        "county_independent": card(dco, model, diff, q, bands["features"]),
+        "county_independent_r0_test_blocks": card(
+            dco[dco.block.isin(test)].reset_index(drop=True), model, diff, q, bands["features"]
+        ),
     }
     # the published table's calls on the county population, checked against the surveyed certificate
     out = Path(__file__).parent / "out" / f"accuracy_{a.fips}_{a.release}.json"

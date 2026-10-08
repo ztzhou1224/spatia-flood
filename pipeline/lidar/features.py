@@ -3,6 +3,10 @@
 Ground (research/harris_mini/ground.py, fl_build.py): USGS 1 m DEM, ft NAVD88 (metres / US survey foot):
   lag = min in a 0.5-2.5 m ring outside the footprint (lowest adjacent grade), p10 / med / hag = 10th pct / median /
   max of that ring, inside = median under the footprint, far = median 10-30 m away.
+  Masked before any statistic (r1 plan docs/09 C1, review G1 / DA2): cells below WATER_FLOOR_FT ft NAVD88 and cells
+  equal to the tile's hydro-flattened water constant (job.water_constants: a tile's most frequent value, when it is
+  below 0). ring_n / ring_n_masked count the ring's cells before masking and how many were masked; lag_unmasked is
+  the r0 definition (ring minimum with nothing masked), kept for comparison.
 Point cloud (research/harris_mini/lpc_features.py, default flight, class-6 rule): heights in ft above lag; classes
 7, 9, 10, 14, 17, 18 dropped; returns in a disc around the footprint centroid (Hausdorff radius + 3.5 m).
 Units: point-cloud coordinates in US survey feet are scaled to metres by the caller (metric twin CRS).
@@ -16,8 +20,10 @@ from rasterio.features import geometry_mask
 from shapely.geometry import mapping
 
 USFT = 1200 / 3937  # m per US survey foot
+WATER_FLOOR_FT = -1.5  # ring cells below this (ft NAVD88) are water / seawall toe, never grade (docs/09 C1)
+WATER_TOL_M = 1e-4  # a cell within this of the tile's water constant is the flattened water surface
 DROP = (7, 9, 10, 14, 17, 18)  # noise, water, rail, wire conductor, bridge deck, high noise
-GROUND_COLS = ["lag", "p10", "med", "hag", "inside", "far"]
+GROUND_COLS = ["lag", "p10", "med", "hag", "inside", "far", "ring_n", "ring_n_masked", "lag_unmasked"]
 LPC_COLS = [
     "n_in",
     "pts_m2",
@@ -36,16 +42,31 @@ LPC_COLS = [
 MAX_AREA_M2 = 2000.0  # point-cloud features only for footprints up to this area (the training population)
 
 
-def ground_stats(g, a: np.ndarray, t) -> dict:
-    """g: footprint in the DEM CRS; a: DEM window (metres, NaN = nodata) covering g buffered 31 m; t: its transform."""
+def ground_stats(g, a: np.ndarray, t, water_m: tuple[float, ...] = ()) -> dict:
+    """g: footprint in the DEM CRS; a: DEM window (metres, NaN = nodata) covering g buffered 31 m; t: its transform;
+    water_m: the hydro-flattened constants (metres) of the tile(s) the window comes from."""
+
+    def cells(geom):
+        v = a[~geometry_mask([mapping(geom)], a.shape, t)]
+        return v[np.isfinite(v)]
+
+    def keep(v):
+        m = v / USFT >= WATER_FLOOR_FT
+        for w in water_m:
+            m &= np.abs(v - w) > WATER_TOL_M
+        return m
 
     def stat(geom):
-        v = a[~geometry_mask([mapping(geom)], a.shape, t)]
-        v = v[np.isfinite(v)]
-        return v / USFT
+        v = cells(geom)
+        return v[keep(v)] / USFT
 
     rec: dict = {}
-    v, vi, vf = stat(g.buffer(2.5).difference(g.buffer(0.5))), stat(g), stat(g.buffer(30).difference(g.buffer(10)))
+    ring = cells(g.buffer(2.5).difference(g.buffer(0.5)))
+    k = keep(ring)
+    rec.update(ring_n=int(ring.size), ring_n_masked=int((~k).sum()))
+    if ring.size >= 5:
+        rec["lag_unmasked"] = float(ring.min() / USFT)
+    v, vi, vf = ring[k] / USFT, stat(g), stat(g.buffer(30).difference(g.buffer(10)))
     if v.size >= 5:
         rec.update(lag=float(v.min()), p10=float(np.percentile(v, 10)), med=float(np.median(v)), hag=float(v.max()))
     if vi.size >= 5:

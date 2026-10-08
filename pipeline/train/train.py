@@ -3,9 +3,11 @@
 Fixed before the first run (2026-10-07). Inputs: lidar features (lidar/job.py features.parquet, per building),
 labels and records (train/labels.py). No NSI, no floor-count or foundation record (owner, 2026-10-07; research
 eval_no_records.py "E-lidar").
-Target (label only, never a feature): dh = certificate first living floor (ft NAVD88) - lidar lowest adjacent grade
-(g_lag, ft NAVD88). Screened labels (research rule): drop when roof_p95 - dh < 6 ft or dh < -1 ft.
-Features: ground shape g_p10 / g_med / g_hag / g_inside / g_far minus g_lag; point cloud (12, eval_lpc.LPC); year built
+Target (label only, never a feature): dh = certificate first living floor (ft NAVD88) - the run's ground BASE g_base
+(ft NAVD88): r0 runs the lidar ring minimum (g_lag), re-grounded r1 runs the masked ring median (g_med; docs/09 C3,
+owner Q3; lidar/reground.py). Screened labels (research rule): drop when roof_p95 - dh < 6 ft or dh < -1 ft.
+Features: ground shape (GROUND_BY_BASE: the other ring / footprint statistics minus the base); point cloud (12,
+eval_lpc.LPC, heights above the base); year built
 and living area (DOR NAL); footprint area; lidar stories (1 if eave_main < 14 ft else 2); eave estimates
 eave - median eave of all county houses with the same lidar stories (label-free) + 1 ft. LightGBM eval_lpc.P, n_jobs 1.
 Splits by 1 km block (EPSG:6442, building centroid) from the persisted split (split.py, split_<FIPS>.json; docs/09
@@ -16,12 +18,15 @@ Bands: normalised split conformal: difficulty model s(x) (LightGBM on |out-of-fo
 model trained on FIT + CAL; band = p +- q s(x). Raised flag (label-free): p > 3 ft; coverage reported per flag.
 Scores on TEST (screened labels): MAE, within 1 ft, raised (dh > 3) MAE / recall, BFE side (certificate zone A* / V*
 with a certificate BFE), band coverage (all / flagged / not), median width, BFE decided and decided correct.
-Outputs: pipeline/train/out/train_<FIPS>.txt (this report), data/flood_v1/train/model_<FIPS>.txt (point model),
-difficulty_<FIPS>.txt, and bands_<FIPS>.json (q, split sizes).
-Usage: python pipeline/train/train.py 12103 pinellas_2018
+Outputs: pipeline/train/out/train_<FIPS>_<out dir name>.txt (this report); in --out (default data/flood_v1/train):
+model_<FIPS>.txt (point model), difficulty_<FIPS>.txt, bands_<FIPS>.json (q, split sizes, run, base, features) and
+a copy of the labels it was trained on.
+Usage: python pipeline/train/train.py 12103 RUN [--labels FILE] [--out DIR]
 """
 
+import argparse
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -63,22 +68,43 @@ LPC = [
     "ring_low_p90",
     "pts_m2",
 ]
-GROUND = ["g_p10", "g_med", "g_hag", "g_inside", "g_far"]
-FEATS = (
-    GROUND + LPC + ["year_built", "living_area", "fp_area_m2", "stories", "est_eave_p50", "est_eave_main", "est_split"]
-)
+# Ground shape features are other ring / footprint statistics minus the run's BASE: r0's base is the ring minimum
+# (g_lag), r1's the masked ring median (g_med; owner decision Q3, docs/09 C3). The run's meta.json says which.
+GROUND_BY_BASE = {
+    "lag": ["g_p10", "g_med", "g_hag", "g_inside", "g_far"],
+    "med": ["g_lag", "g_p10", "g_hag", "g_inside", "g_far"],
+}
+REST = ["year_built", "living_area", "fp_area_m2", "stories", "est_eave_p50", "est_eave_main", "est_split"]
+GROUND = GROUND_BY_BASE["lag"]
+
+
+def feats(base: str) -> list[str]:
+    return GROUND_BY_BASE[base] + LPC + REST
+
+
+FEATS = feats("lag")  # r0's list (scripts that only ever read r0 runs)
 SLAB_FT = 1.0
 C = 0.90
 
 
+def run_base(run: str) -> str:
+    """'med' for a run re-grounded on the masked ring median (lidar/reground.py), else r0's 'lag'."""
+    meta = json.loads((DATA / "lidar" / run / "meta.json").read_text())
+    return "med" if str(meta.get("height_base", "")).startswith("g_med") else "lag"
+
+
 def features(fips: str, run: str) -> pd.DataFrame:
-    """One row per building in the run, label-free (all buildings, not only labelled ones)."""
+    """One row per building in the run, label-free (all buildings, not only labelled ones). g_base is the run's
+    absolute ground base (ft NAVD88); the GROUND_BY_BASE columns are relative to it; point-cloud heights are already
+    relative to it in the run's features.parquet."""
     f = pd.read_parquet(DATA / "lidar" / run / "features.parquet")
     b = pd.read_parquet(DATA / "lidar" / run / "buildings.parquet")
     rec = pd.read_parquet(DATA / "train" / f"records_{fips}.parquet")
     f = f.merge(rec[["building_id", "dor_uc", "act_yr_blt", "tot_lvg_ar"]], on="building_id", how="left")
-    for c in ("p10", "med", "hag", "inside", "far"):
-        f[f"g_{c}"] = f[f"g_{c}"] - f.g_lag
+    base = run_base(run)
+    f["g_base"] = f[f"g_{base}"]
+    for c in GROUND_BY_BASE[base]:
+        f[c] = f[c] - f.g_base
     f["year_built"] = pd.to_numeric(f.act_yr_blt, errors="coerce").where(lambda s: s > 1800)
     f["living_area"] = pd.to_numeric(f.tot_lvg_ar, errors="coerce").where(lambda s: s > 0)
     st = pd.Series(np.where(f.eave_main.isna(), np.nan, np.where(f.eave_main < 14, 1.0, 2.0)), index=f.index)
@@ -93,6 +119,14 @@ def features(fips: str, run: str) -> pd.DataFrame:
     x, y = tr.transform(shapely.get_x(cen), shapely.get_y(cen))
     f["block"] = (np.floor(x / 1000).astype(int)).astype(str) + "_" + (np.floor(y / 1000).astype(int)).astype(str)
     return f
+
+
+def screen(lab: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
+    """Labels joined to a run's features, the target dh = certificate floor - g_base, and the label screen."""
+    d = lab.merge(f, on="building_id", how="inner")
+    d = d[d.g_base.notna() & (d.lpc_status == "ok")].copy()
+    d["dh"] = d.ffe_ft - d.g_base
+    return d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))].reset_index(drop=True)
 
 
 def fit(x, y):
@@ -110,7 +144,7 @@ def score(d, p, lo, hi) -> dict:
     r, flag = y > 3, p > 3
     cov = (y >= lo) & (y <= hi)
     s = d.cert_zone.astype(str).str.upper().str[:1].isin(["A", "V"]).values & d.cert_bfe_ft.notna().values
-    lag, bfe, ffe = d.g_lag.values[s], d.cert_bfe_ft.values[s], d.ffe_ft.values[s]
+    lag, bfe, ffe = d.g_base.values[s], d.cert_bfe_ft.values[s], d.ffe_ft.values[s]
     above, below = lag + lo[s] >= bfe, lag + hi[s] < bfe
     dec = above | below
     return {
@@ -132,15 +166,13 @@ def score(d, p, lo, hi) -> dict:
     }
 
 
-def main(fips: str, run: str) -> None:
+def main(fips: str, run: str, labels_path: Path, out_dir: Path) -> None:
     f = features(fips, run)
-    labels_path = DATA / "train" / f"labels_{fips}.parquet"
+    base = run_base(run)
+    FEATS = feats(base)  # this run's feature list (the module-level FEATS is r0's)
     lab = pd.read_parquet(labels_path)
-    d = lab.merge(f, on="building_id", how="inner")
-    d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
-    d["dh"] = d.ffe_ft - d.g_lag
-    n0 = len(d)
-    d = d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))].reset_index(drop=True)
+    n0 = int((lab.merge(f, on="building_id").pipe(lambda x: x.g_base.notna() & (x.lpc_status == "ok"))).sum())
+    d = screen(lab, f)
     # the persisted split (split.py, docs/09 D1): r0's blocks keep their part, new blocks are hashed in
     parts, new_blocks = split.extend(fips, d.block.unique(), batch=labels_path.name)
     k = d.block.nunique()
@@ -198,15 +230,20 @@ def main(fips: str, run: str) -> None:
             .index
         ),
     ]
-    (out / f"train_{fips}.txt").write_text("\n".join(rep) + "\n")
+    (out / f"train_{fips}_{out_dir.name}.txt").write_text("\n".join(rep) + "\n")
     print("\n".join(rep))
-    model.booster_.save_model(str(DATA / "train" / f"model_{fips}.txt"))
-    diff.booster_.save_model(str(DATA / "train" / f"difficulty_{fips}.txt"))
-    (DATA / "train" / f"bands_{fips}.json").write_text(
+    out_dir.mkdir(parents=True, exist_ok=True)
+    model.booster_.save_model(str(out_dir / f"model_{fips}.txt"))
+    diff.booster_.save_model(str(out_dir / f"difficulty_{fips}.txt"))
+    shutil.copy2(labels_path, out_dir / f"labels_{fips}.parquet")  # the labels this model was trained on
+    (out_dir / f"bands_{fips}.json").write_text(
         json.dumps(
             {
                 "q": q,
                 "c": C,
+                "run": run,
+                "base": base,
+                "labels": str(labels_path),
                 "features": FEATS,
                 "n_fit": len(fit_d),
                 "n_cal": len(cal_d),
@@ -220,4 +257,10 @@ def main(fips: str, run: str) -> None:
 
 if __name__ == "__main__":
     pd.set_option("display.width", 220)
-    main(*sys.argv[1:3])
+    ap = argparse.ArgumentParser()
+    ap.add_argument("fips")
+    ap.add_argument("run")
+    ap.add_argument("--labels", type=Path, help="default data/flood_v1/train/labels_<FIPS>.parquet")
+    ap.add_argument("--out", type=Path, default=DATA / "train", help="artefact dir (default data/flood_v1/train)")
+    a = ap.parse_args()
+    main(a.fips, a.run, a.labels or DATA / "train" / f"labels_{a.fips}.parquet", a.out)

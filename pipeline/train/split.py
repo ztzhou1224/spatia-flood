@@ -37,10 +37,9 @@ def hash_part(block: str) -> str:
 
 def screened(lab: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
     """train.py's label screen (the population every split and score is drawn from)."""
-    d = lab.merge(f, on="building_id", how="inner")
-    d = d[d.g_lag.notna() & (d.lpc_status == "ok")].copy()
-    d["dh"] = d.ffe_ft - d.g_lag
-    return d[~((d.roof_p95 - d.dh < 6) | (d.dh < -1))].reset_index(drop=True)
+    from train import screen  # train.py imports this module; import it here, not at the top
+
+    return screen(lab, f)
 
 
 def r0_parts(blocks: Iterable[str]) -> dict[str, str]:

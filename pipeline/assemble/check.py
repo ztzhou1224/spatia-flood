@@ -41,6 +41,37 @@ def main(fips: str, d: Path) -> None:
             bad[f"{stem}: band only on modeled"] = int((~m & lo.notna()).sum())
     bad["bfe_call: null without reason"] = int((b.bfe_call.isna() & b.bfe_call_null.isna()).sum())
     bad["owner / personal columns"] = sum(any(f in c.lower().split("_") for f in FORBIDDEN) for c in b.columns)
+    # r1 acceptance rules (docs/09), checked when the r1 columns exist
+    if "floor_definition" in b.columns:
+        bad["E1: floor_definition set iff a floor"] = int((b.floor_definition.notna() != b.ffe_ft.notna()).sum())
+        one = b.ffe_source.fillna("").str.contains(r"diagram (?:1A|1B|5),", regex=True)
+        both = one & b.bfe_call.notna() & b.bfe_call_lowest_floor.notna()
+        bad["E1: living and lowest-floor calls agree on 1A / 1B / 5"] = int(
+            (both & (b.bfe_call != b.bfe_call_lowest_floor)).sum()
+        )
+        bad["E2: no record_lidar_conflict basis"] = int(b.bfe_call_basis.fillna("").str.contains("conflict").sum())
+        bad["E2: no call on a conflicting record"] = int(
+            (
+                (b.ffe_class == "record")
+                & b.ffe_record_lidar_conflict.fillna(False)
+                & b.bfe_call.isin(["above", "below", "too_close"])
+            ).sum()
+        )
+        rec_h = b.ffh_class == "record"
+        bad["E3: raised_flag agrees with a record height"] = int(
+            (rec_h & b.raised_flag.notna() & (b.raised_flag.astype(bool) != (b.ffh_ft > 3))).sum()
+        )
+        bad["E4: no BFE on an AO building"] = int(((b.zone_main == "AO") & b.bfe_ft.notna()).sum())
+        bad["E9: model_version only on modeled floors"] = int(
+            (b.model_version.notna() != (b.ffh_class == "modeled")).sum()
+        )
+        both_null = b.ffe_ft.isna() & b.ffh_ft.isna()
+        bad["E9: ffe / ffh null reasons agree"] = int((both_null & (b.ffe_null != b.ffh_null)).sum())
+        bad["E13: no band above the roof"] = int(
+            ((b.ffh_class == "modeled") & (b.ffh_band_hi > b.roof_ft + 1e-9) & (b.ffh_ft <= b.roof_ft)).sum()
+        )
+    if "ground_ring_masked_cells" in b.columns:
+        bad["C2: observed ground has unmasked ring cells"] = int((b.ground_ft.notna() & b.ground_class.isna()).sum())
     p = pd.read_parquet(d / f"parcels_{fips}.parquet")
     bad["parcel table: (parcel_key, geom_group) unique"] = int(p.duplicated(["parcel_key", "geom_group"]).sum())
     bad["parcel table: owner / personal columns"] = sum(

@@ -127,8 +127,33 @@ def download(url: str, dest: Path) -> int:
 # ---------------------------------------------------------------- ground (DEM)
 
 
+def water_constants(dem_paths: list[Path]) -> dict[str, float]:
+    """Per tile, the hydro-flattened water surface: the tile's most frequent finite value, when it is below 0 m
+    (docs/09 C1; review DA2 found 250 buildings at exactly -0.60956 m). Tiles whose mode is >= 0 have none."""
+    out: dict[str, float] = {}
+    for p in dem_paths:
+        with rasterio.open(p) as r:
+            a = r.read(1, masked=True).compressed()
+        a = a[(a > -1e5) & (a < 1e5)]
+        if not a.size:
+            continue
+        vals, n = np.unique(a, return_counts=True)
+        mode = float(vals[np.argmax(n)])
+        if mode < 0:
+            out[Path(p).name] = mode
+        log.info(
+            "dem %s: mode %.5f m (%d cells of %d)%s",
+            Path(p).name,
+            mode,
+            n.max(),
+            a.size,
+            " -> water constant" if mode < 0 else "",
+        )
+    return out
+
+
 def _dem_worker(args):
-    path, all_paths, items = args
+    path, all_paths, items, water = args
     out = []
     with rasterio.open(path) as r:
         b = r.bounds
@@ -157,7 +182,7 @@ def _dem_worker(args):
                     out.append((i, {"dem_tiles": ""}))
                     continue
             a[(a < -1e5) | (a > 1e5)] = np.nan
-            rec = ground_stats(g, a, t)
+            rec = ground_stats(g, a, t, tuple(water[n] for n in tile.split("+") if n in water))
             rec["dem_tiles"] = tile
             out.append((i, rec))
     return out
@@ -174,8 +199,10 @@ def ground(fp_dem: list, dem_paths: list[Path], workers: int) -> pd.DataFrame:
     for k, b in enumerate(bounds):  # first tile holding the centroid
         m = (assign < 0) & (cx >= b.left) & (cx < b.right) & (cy >= b.bottom) & (cy < b.top)
         assign[m] = k
+    water = water_constants(dem_paths)
+    STATUS["water_constants_m"] = water
     jobs = [
-        (str(dem_paths[k]), [str(p) for p in dem_paths], [(i, fp_dem[i]) for i in np.where(assign == k)[0]])
+        (str(dem_paths[k]), [str(p) for p in dem_paths], [(i, fp_dem[i]) for i in np.where(assign == k)[0]], water)
         for k in range(len(dem_paths))
     ]
     jobs = [j for j in jobs if j[2]]
@@ -187,7 +214,10 @@ def ground(fp_dem: list, dem_paths: list[Path], workers: int) -> pd.DataFrame:
             log.info("dem tile %d of %d done", n, len(jobs))
     g = pd.DataFrame.from_dict(rows, orient="index")
     g = g.reindex(range(len(fp_dem)))
-    g["ground_status"] = np.where(assign < 0, "no_coverage", np.where(g["lag"].notna(), "ok", "not_determinable"))
+    no_tile = g["dem_tiles"].fillna("").eq("").values  # straddle branch found no tile: no coverage (review I4)
+    g["ground_status"] = np.where(
+        (assign < 0) | no_tile, "no_coverage", np.where(g["lag"].notna(), "ok", "not_determinable")
+    )
     return g
 
 
