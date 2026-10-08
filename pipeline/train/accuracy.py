@@ -35,7 +35,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from gate import load
+from gate import load, raised_truth
 from train import DATA, band_q, features, score, screen
 
 ELEVATED = list("56789")
@@ -92,6 +92,15 @@ def card(d: pd.DataFrame, model, diff, q: dict | float, fe: list[str]) -> dict:
         r["median error"] = round(float(np.median(p[m] - d.dh.values[m])), 3)
         r["coverage CI95"] = wilson(int(cov[m].sum()), int(m.sum()))
         out[name] = r
+    # D5: the raised flag (p > 3 ft) against the certificate's own floor height (raised_truth)
+    flag, truth = p > 3, raised_truth(d)
+    out["raised_flag"] = {
+        "flagged": int(flag.sum()),
+        "truly_raised": int(truth.sum()),
+        "precision": round(float(truth[flag].mean()), 3) if flag.any() else None,
+        "recall": round(float(flag[truth].mean()), 3) if truth.any() else None,
+        "slab_1A_1B_flagged_precision": round(float(truth[flag & slab].mean()), 3) if (flag & slab).any() else None,
+    }
     return out
 
 
@@ -177,7 +186,10 @@ def main() -> None:
         f"{pop} | {g}": v
         for pop in ("fdem_held_out", "county_independent", "county_independent_r0_test_blocks")
         for g, v in res[pop].items()
+        if "n" in v
     }
+    for pop in ("fdem_held_out", "county_independent"):
+        print(pop, "raised_flag:", res[pop].get("raised_flag"))
     pd.set_option("display.width", 250)
     print(json.dumps({k: res[k] for k in ("counts", "table_calls_vs_county_certificate")}, indent=1))
     print(

@@ -178,7 +178,9 @@ def score(d, p, lo, hi) -> dict:
     }
 
 
-def main(fips: str, run: str, labels_path: Path, out_dir: Path, mondrian: bool = False) -> None:
+def main(
+    fips: str, run: str, labels_path: Path, out_dir: Path, mondrian: bool = False, ship_fit_only: bool = False
+) -> None:
     f = features(fips, run)
     base = run_base(run)
     FEATS = feats(base)  # this run's feature list (the module-level FEATS is r0's)
@@ -222,7 +224,9 @@ def main(fips: str, run: str, labels_path: Path, out_dir: Path, mondrian: bool =
     def qv(p):
         return band_q({"q": q, **bands_extra}, p)
 
-    model = fit(pd.concat([fit_d, cal_d])[FEATS], pd.concat([fit_d, cal_d]).dh)
+    # D4: the band's q is calibrated for the FIT model; --ship-fit-only ships exactly that model (r1), the default
+    # refits on FIT + CAL as r0 did (its q is then calibrated for a model it was not measured on, review M6)
+    model = m_fit if ship_fit_only else fit(pd.concat([fit_d, cal_d])[FEATS], pd.concat([fit_d, cal_d]).dh)
     pt = model.predict(test_d[FEATS])
     st = s_of(test_d, pt)
     lo, hi = pt - qv(pt) * st, pt + qv(pt) * st
@@ -269,6 +273,7 @@ def main(fips: str, run: str, labels_path: Path, out_dir: Path, mondrian: bool =
             {
                 "q": q,
                 **bands_extra,
+                "shipped_model": "FIT only (q calibrated on it)" if ship_fit_only else "FIT + CAL",
                 "c": C,
                 "run": run,
                 "base": base,
@@ -291,6 +296,7 @@ if __name__ == "__main__":
     ap.add_argument("run")
     ap.add_argument("--labels", type=Path, help="default data/flood_v1/train/labels_<FIPS>.parquet")
     ap.add_argument("--mondrian", action="store_true", help="a band q per predicted regime (docs/09 D3)")
+    ap.add_argument("--ship-fit-only", action="store_true", help="ship the FIT model q was calibrated on (docs/09 D4)")
     ap.add_argument("--out", type=Path, default=DATA / "train", help="artefact dir (default data/flood_v1/train)")
     a = ap.parse_args()
-    main(a.fips, a.run, a.labels or DATA / "train" / f"labels_{a.fips}.parquet", a.out, a.mondrian)
+    main(a.fips, a.run, a.labels or DATA / "train" / f"labels_{a.fips}.parquet", a.out, a.mondrian, a.ship_fit_only)

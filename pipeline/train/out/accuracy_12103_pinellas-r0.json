@@ -89,6 +89,13 @@
     0.708,
     0.853
    ]
+  },
+  "raised_flag": {
+   "flagged": 305,
+   "truly_raised": 270,
+   "precision": 0.656,
+   "recall": 0.741,
+   "slab_1A_1B_flagged_precision": 0.487
   }
  },
  "county_independent": {
@@ -167,6 +174,13 @@
     0.462,
     0.653
    ]
+  },
+  "raised_flag": {
+   "flagged": 816,
+   "truly_raised": 826,
+   "precision": 0.902,
+   "recall": 0.891,
+   "slab_1A_1B_flagged_precision": 0.652
   }
  },
  "county_independent_r0_test_blocks": {
@@ -245,6 +259,13 @@
     0.387,
     0.781
    ]
+  },
+  "raised_flag": {
+   "flagged": 111,
+   "truly_raised": 109,
+   "precision": 0.847,
+   "recall": 0.862,
+   "slab_1A_1B_flagged_precision": 0.559
   }
  },
  "table_calls_vs_county_certificate": {

@@ -311,6 +311,64 @@ def nulls(value: pd.Series, reason) -> pd.Series:
     return r.where(value.isna(), None)
 
 
+def external_inputs(fips: str, run: str) -> dict:
+    """The inputs that are not spatia-data layers, with their fetch dates, counts and where the bytes are kept
+    (docs/09 B5, review S5). Missing caches are recorded as absent, never guessed."""
+
+    def js(p: Path) -> dict | None:
+        return json.loads(p.read_text()) if p.exists() else None
+
+    out: dict = {}
+    fd = js(ROOT / "data" / "fl" / "ec_all.meta.json")
+    out["fdem_certificates"] = (
+        {k: fd[k] for k in ("source", "fetched_at", "layer_last_edit", "count", "licence", "r2_prefix") if k in fd}
+        if fd
+        else None
+    )
+    cf = sorted((DATA / "labels_pinellas" / "raw").glob("*/fetch.json"))
+    if cf:
+        c = js(cf[-1]) or {}
+        out["pinellas_county_ec"] = {
+            "source": c.get("url"),
+            "fetched": c.get("fetched"),
+            "count": c.get("records_fetched"),
+            "r2_prefix": f"_flood/inputs/pinellas_county_ec/{c.get('fetched')}",
+        }
+    gp = OUT / f"geocodio_{fips}.parquet"
+    if gp.exists():
+        g = pd.read_parquet(gp, columns=["looked_up"])
+        out["geocodio"] = {
+            "lookups": len(g),
+            "looked_up": sorted(g.looked_up.astype(str).unique().tolist()),
+            "licence": LIC["geocodio"],
+        }
+    dp = OUT / f"dates_clean_{fips}.parquet"
+    if dp.exists():
+        d = pd.read_parquet(dp, columns=["model"])
+        out["certificate_date_cleaning"] = {"llm_model": sorted(d.model.astype(str).unique().tolist()), "rows": len(d)}
+    wp = OUT / f"wesm_{fips}.parquet"
+    out["usgs_wesm"] = (
+        {"source": WESM, "cached": dt.datetime.fromtimestamp(wp.stat().st_mtime, dt.UTC).date().isoformat()}
+        if wp.exists()
+        else None
+    )
+    meta = js(DATA / "lidar" / run / "meta.json") or {}
+    out["lidar_run"] = {
+        k: meta[k]
+        for k in (
+            "reground_from",
+            "ground_mask",
+            "water_constants_m",
+            "height_base",
+            "dem_tiles",
+            "lpc_tiles",
+            "lpc_source",
+        )
+        if k in meta
+    }
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("fips")
@@ -1198,6 +1256,7 @@ def main() -> None:
         "lidar_workunits": rep["lidar"]["workunits"],
         "gate": rep["gate_recheck"],
         "accuracy": accuracy,
+        "external_inputs": external_inputs(fips, run),
     }
     t = t.replace_schema_metadata(
         {**(t.schema.metadata or {}), b"spatia_flood": json.dumps(prov, default=str).encode()}

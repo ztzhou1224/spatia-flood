@@ -90,6 +90,26 @@ on combined +0.003..+0.340); self-test still OK. Dev build with the 0.25 limit: 
 lines MAE 0.468 ft, 87.1 % within 1 ft, 99.4 % inside the band (n 171); all 79 `check.py` rules pass; SFHA decided
 share 0.442.
 
+Then D4 / D5 / B5 and the release candidate `train_r1c` (`train.py 12103 pinellas_2018_r1g --labels
+data/flood_v1/labels_pinellas/labels_combined_12103.parquet --out data/flood_v1/train_r1c --mondrian --ship-fit-only`):
+- **D4**: r1 ships the FIT model its q was calibrated on (`bands.shipped_model`); measured cost on `train_r1m`'s test
+  set vs refitting on FIT + CAL: MAE 1.123 vs 1.120, BFE side 0.906 vs 0.912, coverage 0.894 vs 0.896.
+- **D3**: q by predicted regime (p ≤ 1.5 / 1.5-3 / > 3 ft) = 2.226 / 2.848 / 1.901 (CAL n 1,046 / 254 / 516).
+- **Gate v2** `train_r1c` vs r0 (`pipeline/train/out/gate_12103_r1dev-train_r1c.json`) **passes**: benchmark FDEM
+  1,236 houses MAE 0.983 vs 0.981 (CI −0.051..+0.057), BFE side 0.907 vs 0.899 (CI −0.002..+0.017; combined
+  +0.003..+0.021), coverage 0.898 (target − sd); **truly raised & unflagged coverage 0.74 (n 50) vs 0.52 (n 25),
+  CI +0.035..+0.427** (combined: 0.718 vs 0.485). Diagram 5-9 unflagged 0.803 vs 0.793.
+- **Card** (`accuracy.py --model data/flood_v1/train_r1c --no-table`): FDEM held-out n 1,236 MAE 0.983, coverage
+  0.898; county certificates in the held-out blocks n 193 MAE 2.019, coverage 0.865, BFE side 0.902; elevated 5-9
+  unflagged county n 25 coverage 0.72. **D5** raised flag (p > 3) against the certificate's own floor height:
+  FDEM precision 0.601, recall 0.693 (slab precision 0.32); county 0.769 / 0.741. r0's 0.656 / 0.741 used dh > 3 as
+  truth (its labels carry no certificate LAG), so the two are not comparable.
+- **B5**: county extract kept at `_flood/inputs/pinellas_county_ec/2026-10-07/` (22 files, 28.8 MB, `keep_input.py`);
+  the parquet's `spatia_flood.external_inputs` names FDEM (fetch 2026-10-08, layer edit 2026-10-01, 210,888), the
+  county layer (2026-10-07, 19,382), Geocodio (727, 2026-10-07), the date-cleaning LLM (gpt-5.5-2026-04-23, 265
+  rows), WESM and the lidar run (mask, water constants, height base).
+- Dev build with `train_r1c`: all 79 `check.py` rules pass.
+
 The questions as they were put:
 - **G-a, gate coverage rule.** As approved, any fall in coverage below the baseline is a regression, so a candidate
   calibrated to the 90 % target fails against r0's over-covering 0.922. Options: (1) judge coverage against the target

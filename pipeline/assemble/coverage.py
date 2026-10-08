@@ -69,7 +69,7 @@ def accuracy_card(fips: str, release: str) -> dict:
     acc = json.loads((ROOT / "pipeline" / "train" / "out" / f"accuracy_{fips}_{release}.json").read_text())
     keep = ("n", "MAE", "median error", "within 1 ft", "BFE side", "coverage", "coverage CI95", "decided correct")
     pops = {
-        pop: {g: {k: v[k] for k in keep} for g, v in acc[pop].items()}
+        pop: {g: ({k: v[k] for k in keep} if "n" in v else v) for g, v in acc[pop].items()}
         for pop in ("fdem_held_out", "county_independent")
     }
     eu = acc["county_independent"].get("elevated 5-9 not flagged", {})

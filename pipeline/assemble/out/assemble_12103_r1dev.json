@@ -165,13 +165,13 @@
  },
  "gate_recheck": {
   "n": 1429,
-  "MAE": 1.12,
-  "coverage": 0.896,
+  "MAE": 1.123,
+  "coverage": 0.894,
   "q": 2.2218097210228938
  },
  "stale_modeled": 3872,
  "bands_capped_at_roof": {
-  "n": 3,
+  "n": 5,
   "estimate_above_roof": 0
  },
  "calls_nulled_for_conflict": {
@@ -233,20 +233,20 @@
    "not_determinable": 33
   },
   "raised_flag": {
-   "False": 224686,
+   "False": 225607,
    "<null>": 128841,
-   "True": 19237
+   "True": 18316
   },
-  "modeled_band_width_median_ft": 2.04,
+  "modeled_band_width_median_ft": 2.05,
   "record_cert_lag_minus_lidar_ground_median_ft": -0.15
  },
  "bfe_call": {
   "all": {
    "not_applicable": 280521,
-   "below": 33099,
-   "too_close": 32312,
+   "below": 33106,
+   "too_close": 32534,
    "<null>": 19123,
-   "above": 7709
+   "above": 7480
   },
   "basis": {
    "<null>": 299644,
@@ -263,14 +263,14 @@
    "stale": 1131
   },
   "sfha_buildings": 92243,
-  "sfha_decided_share": 0.442
+  "sfha_decided_share": 0.44
  },
- "seconds": 100,
+ "seconds": 97,
  "parcel_table": {
   "rows": 432106,
   "distinct_geometries": 315982,
   "with_building": 414671,
-  "any_building_below_bfe": 56830,
+  "any_building_below_bfe": 57185,
   "buildings_spanning_parcels": 29992
  }
 }
