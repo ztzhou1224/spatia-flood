@@ -18,7 +18,8 @@ Current work: flood layer v1, `docs/04-plan-flood-layer-v1.md` (Florida statewid
 proof; the earlier Harris plan `docs/01-plan-harris-pilot.md` is the research basis). The first edition, Pinellas
 `pinellas-r0`, is built and published as a spatia-data pilot layer (`docs/05-handoff-2026-10-07.md`); its review and
 the fixes required before the next release are in `docs/07-review-pinellas-r0.md`; the outreach program (public
-records in, floodplain managers' review of the map) is `docs/08-outreach-program.md`. Implement phase by phase; each
+records in, floodplain managers' review of the map) is `docs/08-outreach-program.md`. The next release's plan is
+`docs/09-plan-pinellas-r1.md` (draft; owner decisions in its §2). Implement phase by phase; each
 phase has acceptance criteria. Do not widen scope beyond the plan without asking the owner.
 
 ## Rules that are not optional
