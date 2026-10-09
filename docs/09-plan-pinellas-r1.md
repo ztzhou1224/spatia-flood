@@ -110,6 +110,14 @@ data/flood_v1/labels_pinellas/labels_combined_12103.parquet --out data/flood_v1/
   rows), WESM and the lidar run (mask, water constants, height base).
 - Dev build with `train_r1c`: all 79 `check.py` rules pass.
 
+- **C1 open item closed**: the two positive-mode tiles (0.78760 m, 0.40609 m) touch the rings of 13 buildings (5 of
+  39,537 and 8 of 5,711; 8 for at least half the ring; scratch measurement on the r1g run): negligible, the approved
+  rule (negative modes only) stands.
+- **F2**: `tests/` (pytest, `uv run pytest` or `.venv/bin/python -m pytest`): the review's (a)-(h) minimum set plus
+  split / bands; 23 pass. Extracted for it: `assemble.null_reasons`, `record_call`, `modeled_call` (same logic). It
+  caught one real bug: `segment_rule` failed when no interpolation in a frame had a null (float `null` column).
+- Issue dates: the r1 certificate selection needs no new LLM estimates (213 invalid dates, 213 estimated, 0 unknown).
+
 The questions as they were put:
 - **G-a, gate coverage rule.** As approved, any fall in coverage below the baseline is a regression, so a candidate
   calibrated to the 90 % target fails against r0's over-covering 0.922. Options: (1) judge coverage against the target

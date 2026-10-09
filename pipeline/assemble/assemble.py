@@ -288,6 +288,7 @@ def interpolate_bfe(
 def segment_rule(ip: pd.DataFrame, limit: float = SEGMENT_OUTSIDE) -> pd.DataFrame:
     """E8: an interpolation whose path leaves the building's SFHA by more than `limit` of its length is not used."""
     ip = ip.copy()
+    ip[["null", "why"]] = ip[["null", "why"]].astype(object)  # all-NaN (float) when no row was null yet
     out = ip.bfe.notna() & (ip.out_frac > limit)
     ip.loc[out, ["bfe", "lo", "hi"]] = np.nan
     ip.loc[out, "null"] = "not_determinable"
@@ -309,6 +310,26 @@ def nulls(value: pd.Series, reason) -> pd.Series:
         else reason.astype(object)
     )
     return r.where(value.isna(), None)
+
+
+def record_call(v, bfe, blo, bhi, sig) -> np.ndarray:
+    """A record floor v against the BFE: too_close within Z90 sigma of a static BFE's conversion; else above when
+    v >= the BFE band's top (at the BFE counts as above), below under its bottom, too_close inside it."""
+    return np.where(
+        np.abs(v - bfe) < Z90 * sig, "too_close", np.where(v >= bhi, "above", np.where(v < blo, "below", "too_close"))
+    )
+
+
+def modeled_call(flo, fhi, blo, bhi) -> np.ndarray:
+    """A modeled floor band [flo, fhi] against the BFE band [blo, bhi]: above / below only when they do not overlap."""
+    return np.where(flo >= bhi, "above", np.where(fhi < blo, "below", "too_close"))
+
+
+def null_reasons(risk, has_p, residential, lpc_null) -> np.ndarray:
+    """The one null reason every floor column of a row without a floor shares (docs/09 E9)."""
+    return np.where(
+        ~risk, "not_evaluated", np.where(~has_p, "no_coverage", np.where(~residential, "not_evaluated", lpc_null))
+    )
 
 
 def external_inputs(fips: str, run: str) -> dict:
@@ -802,11 +823,7 @@ def main() -> None:
     p = np.full(len(b), np.nan)
     plo, phi = p.copy(), p.copy()
     p[elig], plo[elig], phi[elig] = predict(mm[elig])
-    why_not = np.where(
-        ~risk,
-        "not_evaluated",
-        np.where(~has_p, "no_coverage", np.where(~residential, "not_evaluated", lpc_null.values)),
-    )
+    why_not = null_reasons(risk, has_p, residential, lpc_null.values)
 
     # records: the latest certificate per building whatever its stage (labels.py certificates_<FIPS>.parquet, which
     # carries the certificate's own LAG and stage); r0 read the labels and fetched the LAG by OBJECTID
@@ -1020,12 +1037,8 @@ def main() -> None:
     # the conversion sigma of a STATIC BFE only; an interpolated BFE's uncertainty is its band (E12)
     sig = np.where(b.bfe_method.values == "static", np.nan_to_num(b.bfe_precision_ft.values.astype(float)), 0.0)
     have = b.touches_sfha.values & ~np.isnan(bfe) & ~np.isnan(ffe)
-    rec_call = np.where(
-        np.abs(ffe - bfe) < Z90 * sig,
-        "too_close",
-        np.where(ffe >= bhi, "above", np.where(ffe < blo, "below", "too_close")),
-    )
-    mod_call = np.where(flo >= bhi, "above", np.where(fhi < blo, "below", "too_close"))
+    rec_call = record_call(ffe, bfe, blo, bhi, sig)
+    mod_call = modeled_call(flo, fhi, blo, bhi)
     call = np.where(~b.touches_sfha.values, "not_applicable", np.where(have, np.where(rec, rec_call, mod_call), None))
     conflict = b.ffe_record_lidar_conflict.fillna(False).values.astype(bool) & rec
     rep["calls_nulled_for_conflict"] = {k: int(((call == k) & conflict).sum()) for k in ("above", "below", "too_close")}
@@ -1045,11 +1058,7 @@ def main() -> None:
     # E1: the same record rule on the certificate's lowest floor (C2a); never on a modeled floor, never on a conflict
     lf = b.lowest_floor_ft.values
     have_l = b.touches_sfha.values & ~np.isnan(bfe) & ~np.isnan(lf) & ~conflict
-    low_call = np.where(
-        np.abs(lf - bfe) < Z90 * sig,
-        "too_close",
-        np.where(lf >= bhi, "above", np.where(lf < blo, "below", "too_close")),
-    )
+    low_call = record_call(lf, bfe, blo, bhi, sig)
     lcall = np.where(~b.touches_sfha.values, "not_applicable", np.where(have_l, low_call, None))
     b["bfe_call_lowest_floor"] = lcall
     b["bfe_call_lowest_floor_null"] = np.where(
