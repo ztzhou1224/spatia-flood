@@ -6,10 +6,9 @@ On 2026-10-09 the owner moved the flood work into
 `fl_building_first_floor` artefact. It was taken from the newest branch, `claude/zen-wright-m851wi`
 (commit c97b20b, Pinellas r1); `main` and `claude/rules-in-force` are both its ancestors.
 
-- User-facing flood layers: `fl_building_first_floor`, `fema_flood_zones` and `fema_flood_zones_h3`. The
-  other flood inputs (`fema_bfe_context`, `fema_bfe_context_h3`, `fl_building_first_floor_footprint`,
-  `fema_firm_panels`, `fema_flood_zone_prevalence`) are published with `role: dependent` (spatia-data
-  contract 2.30).
+- User-facing flood layers: `fl_building_first_floor` and its footprint, `fema_flood_zones`,
+  `fema_flood_zones_h3` and `fema_flood_zone_prevalence`. `fema_bfe_context`, `fema_bfe_context_h3` and
+  `fema_firm_panels` are published with `role: dependent` (spatia-data contract 2.30).
 - The `_flood/` artefact prefix in the bucket is unchanged.
 
 This repo's history, up to the move, is in its git log.
