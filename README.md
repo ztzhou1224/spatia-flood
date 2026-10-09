@@ -1,24 +1,15 @@
-# spatia-flood
+# spatia-flood (archived; moved into spatia-data)
 
-House-level flood elevation evidence: what is the lowest floor of a building, relative to the ground
-and to the base flood elevation (BFE), and how confident can we be without a surveyed Elevation
-Certificate?
+On 2026-10-09 the owner moved the flood work into
+[spatia-data](https://github.com/ztzhou1224/spatia-data). Everything this repo held is there under
+**`flood/`**: docs, research, review, tests, the viewer and `pipeline/`, which produces the
+`fl_building_first_floor` artefact. It was taken from the newest branch, `claude/zen-wright-m851wi`
+(commit c97b20b, Pinellas r1); `main` and `claude/rules-in-force` are both its ancestors.
 
-This repo starts with research and one pilot:
+- User-facing flood layers: `fl_building_first_floor`, `fema_flood_zones` and `fema_flood_zones_h3`. The
+  other flood inputs (`fema_bfe_context`, `fema_bfe_context_h3`, `fl_building_first_floor_footprint`,
+  `fema_firm_panels`, `fema_flood_zone_prevalence`) are published with `role: dependent` (spatia-data
+  contract 2.30).
+- The `_flood/` artefact prefix in the bucket is unchanged.
 
-- [`docs/00-summary.md`](docs/00-summary.md) — what was learned so far (from the spatia-report /
-  spatia-data investigation that led here), with the measured numbers.
-- [`docs/01-plan-harris-pilot.md`](docs/01-plan-harris-pilot.md) — the Harris County, TX pilot
-  plan: 1 m lidar ground for the pilot area, Mapillary street imagery (Bee Maps as a
-  paid fallback; no Google Street View), and a head-to-head benchmark of floor-height methods against Harris County's
-  measured first-floor elevations.
-- [`docs/02-floor-height-methods.md`](docs/02-floor-height-methods.md) — the literature and model
-  survey the benchmark shortlist comes from.
-- [`docs/03-product-b2b.md`](docs/03-product-b2b.md) — the product direction: B2B only, sold as a
-  data licence, an API or a flood portal; buyers, licence limits on what we may resell, the record
-  schema, Florida first.
-- [`research/`](research/) — the scripts behind the Florida Elevation Certificate backtest and the
-  public-source survey (reproducible; they download public data, no data is committed).
-
-Status: **planning** (pilot plan GIS-reviewed, approved with changes). Nothing is built yet; the pilot is implemented by a separate session from
-`docs/01-plan-harris-pilot.md`.
+This repo's history, up to the move, is in its git log.

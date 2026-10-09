@@ -1,6 +1,0 @@
-FL: 43547 houses; y q10/50/90 [0.6 1.  2.9]; raised (> 6 ft) 1%; with BFE 100%; own year built 93%
-NC: 122444 houses; y q10/50/90 [ 1.7  4.5 11.7]; raised (> 6 ft) 39%; with BFE 100%; own year built 97%
-VA: 2684 houses; y q10/50/90 [1.4 3.8 7.6]; raised (> 6 ft) 15%; with BFE 77%; own year built 98%
-NYC: 85447 houses; y q10/50/90 [0.9 3.8 8.7]; raised (> 6 ft) 24%; with BFE 5%; own year built 97%
-HAR: 7661 houses; y q10/50/90 [0.7 1.4 2.1]; raised (> 6 ft) 1%; with BFE 65%; own year built 96%
-total 261783: {'NC': 122444, 'NYC': 85447, 'FL': 43547, 'HAR': 7661, 'VA': 2684}
