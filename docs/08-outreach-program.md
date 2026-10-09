@@ -41,6 +41,13 @@ first reviewer login:
 
 Until P1-P4 ship in a release that passes the gate, show the map only in a guided demo (owner present), never a login.
 
+**Status 2026-10-09** (`pinellas-r1`, gate v2 passed, viewer live; `docs/05` §11): P1 met (card shows both populations,
+r1: FDEM 0.983 / 0.898, county held-out 2.02 / 0.865, with the elevated-house warning); P2 met (`floor_definition`,
+`lowest_floor_ft`, `bfe_call_lowest_floor`); P3 met for the water / seawall ground (masked median, `ground_suspect`) and
+for false flags on sloped lots (229 → 31 on 475 certificate lots), at the cost of more missed raised houses there (3 → 99);
+P4 met (null call on conflicts, 0 `record_lidar_conflict`; `raised_flag` from the record height, 0 contradictions);
+P5 met (live test 15 / 15); P6 met (§8 regenerated). The spatia-data layer still carries r0 until the re-pin (G2).
+
 ## 3. Track A: data requests (public records)
 
 ### 3.1 Principles

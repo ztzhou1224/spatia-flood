@@ -142,6 +142,12 @@ Reproduced by at least two independent passes:
 
 ## 5. What must change, in order
 
+**Status 2026-10-09**: items 1-10 below shipped in `pinellas-r1` (built, gate v2 passed; spatia-data re-pin pending), with
+the measured outcomes in `docs/09` §3 "Progress" and `docs/05` §11. Changes from the fix column, by owner decision
+(`docs/09` §2): conflicting certificates get a null call, not `too_close` (Q2); the ground is the masked ring median (Q3);
+interpolation allows ≤ 25 % of the line-to-line path outside the building's SFHA (G-b); gate coverage is judged against
+the 0.90 target (G-a). Not in r1: NFHL `DEPTH` / `WTR_NM`, preliminary FIRM and LOMA data (spatia-data asks), the legal reads.
+
 Before any outsider gets a viewer login (`docs/08` §2) and before the next release passes the gate:
 
 1. **Accuracy disclosure (DA1)**: county-certificate score on the card, in `docs/06`, in the parquet `gate` and the

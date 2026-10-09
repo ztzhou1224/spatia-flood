@@ -87,6 +87,8 @@ buildings from the building table, never by summing this one.
 
 ## Accuracy of modeled floors (two populations; review `docs/07` DA1)
 
+### `pinellas-r0`
+
 The floor model is scored on two populations, and neither number stands alone. Source:
 `python pipeline/train/accuracy.py 12103 pinellas_2018 --model data/flood_v1/train_r0 --release pinellas-r0 --county-labels data/flood_v1/labels_pinellas/r0/labels_pinellas_12103.parquet` (the county labels as r0 matched them, before B1 / B4)
 (`pipeline/train/out/accuracy_12103_pinellas-r0.json`). Target = certificate first living floor − lidar ground, the
@@ -111,6 +113,31 @@ model says (median error −1.5 ft), i.e. toward a false `below`. On the publish
 the 222 `above` calls on county-only modeled rows are contradicted by the certificate floor against the table's BFE.
 The gap is in elevated houses, not label noise: same-day FDEM / county pairs agree to 0.03 ft MAE (review `s5_county.py`).
 r1 adds the county labels and per-regime bands (`docs/09` B4, D3).
+
+### `pinellas-r1`
+
+Source: `python pipeline/train/accuracy.py 12103 pinellas_2018_r1g --model data/flood_v1/train_r1c --release
+pinellas-r1` (`pipeline/train/out/accuracy_12103_pinellas-r1.json`). The r1 model trains on county certificates
+too, so the county population is the county certificates in the model's **held-out** blocks (finished construction,
+no FDEM certificate); target = certificate floor − the masked ring median.
+
+| `pinellas-r1` | FDEM held-out (benchmark) | County certificates, held-out blocks |
+|---|---|---|
+| houses scored | 1,236 | 193 |
+| MAE / median error (ft) | 0.983 / +0.04 | 2.019 / +0.05 |
+| within 1 ft | 0.748 | 0.508 |
+| BFE side correct | 0.907 | 0.902 |
+| 90 % band coverage (95 % CI) | 0.898 (0.880-0.914) | 0.865 (0.810-0.906) |
+| decided calls correct | 0.983 | 0.951 |
+| slab 1A / 1B: n, MAE, coverage | 1,017, 0.77, 0.912 | 110, 1.31, 0.918 |
+| elevated 5-9: n, MAE, coverage | 209, 1.96, 0.828 | 83, 2.96, 0.795 |
+| elevated 5-9 not flagged raised: n, coverage | 122, 0.803 | 25, 0.720 (0.524-0.857) |
+| `raised_flag` precision / recall (truth: certificate floor − certificate LAG > 3 ft) | 0.601 / 0.693 | 0.769 / 0.741 |
+
+Against r0 on the same 1,236 benchmark houses (`gate.py`, paired block bootstrap): MAE unchanged, BFE side 0.907 vs
+0.899, coverage at the 0.90 target where r0 over-covered (0.922), and the band's coverage of truly raised houses the
+model does not flag 0.74 vs 0.52 (n 50 vs 25; 95 % CI of the difference +0.04..+0.43). The band is still **not
+guaranteed for unflagged elevated houses** (0.72-0.80 above).
 
 ## Limits of the call (screening, not a determination)
 

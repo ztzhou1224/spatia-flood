@@ -19,40 +19,42 @@
   <p class="banner">Screening, not a determination. Not for insurance rating, permitting or a purchase decision without
     the building's Elevation Certificate.</p>
   <h1>What this map can and cannot tell you</h1>
-  <p class="sub">Release pinellas-r0 (Pinellas County, FL). From the internal review of this release
-    (spatia-flood <code>docs/07</code>); each item is fixed in the next release (<code>docs/09</code>).</p>
+  <p class="sub">Release pinellas-r1 (Pinellas County, FL). From the internal review of the first release
+    (spatia-flood <code>docs/07</code>) and what the second one changed (<code>docs/09</code>).</p>
 
-  <h2>1. Modeled floors are less accurate on elevated houses than the headline number</h2>
-  <p>Most buildings have no Elevation Certificate, so their floor is estimated from lidar. Scored against certificates
-    from the state (FDEM) the estimate is off by about 1 ft on average; scored against the county's own certificates,
-    which the model never saw and which are mostly newer, elevated houses, it is off by about 2.2 ft. For an elevated
-    house that the model does <b>not</b> mark as raised, the shown range contains the real floor only a bit more than
-    half the time, and the misses are mostly floors that are higher than shown. A "below the BFE" on such a house is
-    the call most likely to be wrong. Both scores are on the county card, each with the houses it was measured on.</p>
+  <h2>1. Modeled floors are least reliable on elevated houses</h2>
+  <p>Most buildings have no Elevation Certificate, so their floor is estimated from lidar. Against state (FDEM)
+    certificates the model has not seen, the estimate is off by about 1 ft on average; against the county's own
+    certificates in the same held-out areas, which are mostly newer, elevated houses, by about 2 ft. For an elevated
+    house the model does <b>not</b> mark as raised, the shown range contains the real floor only about three times in
+    four (few such houses were available to measure this), and the misses are mostly floors higher than shown. A
+    "below the BFE" on such a house is the call most likely to be wrong. Both scores are on the county card.</p>
 
-  <h2>2. Some values are not what their label says</h2>
+  <h2>2. Ground, certificates and new buildings</h2>
   <ul>
-    <li><b>Ground.</b> "Ground" is the lowest lidar point in a narrow ring around the footprint. Next to a canal or a
-      seawall that is the water or the seawall base, not the yard; on sloped lots it is the low side. On those lots
-      the floor height above ground looks too high, and the building may be marked "raised" when it is not.</li>
-    <li><b>Certificates that are designs.</b> Some certificates were filed from construction drawings or during
-      construction. They are shown as records but describe a planned floor, not a measured one.</li>
-    <li><b>Buildings newer than the lidar.</b> The lidar was flown in winter 2018-19. A building built later is
-      estimated from the ground as it was before construction, even though its date says 2018-19.</li>
+    <li><b>Ground.</b> "Ground" is the middle (median) lidar height in a narrow ring around the footprint, with water
+      and seawall toes removed. On sloped or terraced lots, or next to a wall or the water, it is less certain; the
+      record says "ground suspect" there.</li>
+    <li><b>Certificates.</b> Only certificates of finished construction are used as records. Certificates from
+      construction drawings or taken during construction are listed on the record but not used.</li>
+    <li><b>Buildings newer than the lidar.</b> The lidar was flown in winter 2018-19. A building the property records
+      date to 2019 or later gets no modeled floor ("stale"); its roof and ground may describe the lot before it.</li>
   </ul>
 
   <h2>3. "Above" or "below" compares the first living floor</h2>
-  <p>The call compares the first floor people live on with the BFE. For an elevated house with an enclosed area
-    underneath (garage, storage), the NFIP "lowest floor" is that enclosure, which is usually below the BFE even when
-    the living floor is above it. For AO zones (shallow flooding with a depth, not an elevation) the call uses a
-    neighbouring zone's BFE and should be ignored. Some "above" calls rest on certificates that disagree with the lidar
-    by many feet; those are marked on the building's record.</p>
+  <p>The main call compares the first floor people live on with the BFE. For an elevated house with an enclosed area
+    underneath (garage, storage), the NFIP "lowest floor" is usually that enclosure, which can be below the BFE even
+    when the living floor is above it. Where a certificate gives it, the record also shows the lowest floor and its own
+    call; for modeled houses the lowest floor is not known. AO zones (shallow flooding given as a depth) get no BFE and
+    no call. Where a certificate disagrees with the lidar by many feet, no call is made.</p>
 
   <h2>4. What a local reviewer will check first is not in the map yet</h2>
   <ul>
-    <li>FEMA issued a preliminary countywide FIRM for Pinellas on 2025-05-15; the map uses the effective FIRM.</li>
+    <li>FEMA issued a preliminary countywide FIRM for Pinellas on 2025-05-15; the map uses the effective FIRM (each
+      record names the panel date and the county's FIRM status).</li>
     <li>Letters of Map Amendment (LOMAs) that take a building out of the floodplain are not applied.</li>
-    <li>The county has three FIRM effective dates; each building shows the date of the panel it sits on.</li>
+    <li>Between FEMA's BFE lines, a BFE is estimated only where the path between the two lines stays mostly inside the
+      building's own flood zone; elsewhere there is no BFE and no call.</li>
   </ul>
 
   <h2>Units and datum</h2>

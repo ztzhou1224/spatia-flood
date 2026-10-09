@@ -110,9 +110,13 @@ def main() -> None:
     b = pd.read_parquet(OUT / f"buildings_{a.fips}.parquet", columns=cols)
     b["cell"] = [h3.latlng_to_cell(la, lo, a.res) for la, lo in zip(b.lat, b.lon, strict=True)]
     gate = json.loads((ROOT / "pipeline" / "train" / "out" / f"gate_{a.fips}_{a.release}.json").read_text())
-    cand = gate["scores"]["candidate"]
+    if "scores" in gate:  # gate v1 (r0)
+        cand, n_test = gate["scores"]["candidate"], gate["n_test"]
+    else:  # gate v2 (r1 on): the benchmark FDEM table
+        t = gate["tables"]["benchmark | fdem"]
+        cand, n_test = t["candidate"], t["houses"]
     held_flagged = int(((b.ffh_class == "record") & b.raised_flag.fillna(False)).sum())
-    calib = "county" if gate["n_test"] > 0 and held_flagged > 0 else "none"
+    calib = "county" if n_test > 0 and held_flagged > 0 else "none"
 
     cells = b.groupby("cell").apply(summarise, include_groups=False).reset_index()
     cells["county_fips"] = a.fips

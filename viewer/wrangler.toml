@@ -18,6 +18,6 @@ bucket_name = "spatia-data"  # private; the Worker reads only _flood/viewer/ (se
 
 [vars]
 FIPS = "12103"
-RELEASE = "pinellas-r0"
+RELEASE = "pinellas-r1"
 VIEWER_USER = "flood"
 # VIEWER_PASSWORD is a secret: `wrangler secret put VIEWER_PASSWORD` (never in this file)
